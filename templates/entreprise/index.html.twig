@@ -6,7 +6,10 @@
     <ul class="mt-6">
         {% for entreprise in entreprises %}
             <li class="mb-6 p-4 border rounded bg-gray-50">
-                <strong class="text-lg">{{ entreprise.nomEntreprise }}</strong> <span class="text-gray-600">({{ entreprise.siret }})</span><br>
+                <a href="{{ path('entreprise_show', {'idEntreprise': entreprise.idEntreprise}) }}" class="text-lg font-bold text-blue-700 hover:underline">
+                    {{ entreprise.nomEntreprise }}
+                </a>
+                <span class="text-gray-600">({{ entreprise.siret }})</span><br>
                 <div class="mt-2">
                     <a href="{{ path('entreprise_edit', {'id': entreprise.idEntreprise}) }}" class="text-blue-600 mr-4">Modifier</a>
                     <a href="{{ path('entreprise_delete', {'id': entreprise.idEntreprise}) }}" class="text-red-600">Supprimer</a>

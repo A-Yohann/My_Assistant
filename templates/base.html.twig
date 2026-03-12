@@ -21,6 +21,7 @@
                     <div class="bg-black text-white px-4 py-2 rounded mr-4">
                         {{ app.user.email }}
                     </div>
+                    <a href="{{ path('entreprise_index') }}" class="bg-blue-500 text-white px-4 py-2 rounded mr-4">Entreprises</a>
                     <a href="{{ path('entreprise_new_multi', {'step': 1}) }}" class="bg-blue-600 text-white px-4 py-2 rounded mr-4">Ajouter mon entreprise</a>
                     <form action="{{ path('app_logout') }}" method="post">
                         <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded">Déconnexion</button>

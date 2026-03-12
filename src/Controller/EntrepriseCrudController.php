@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Routing\Attribute\MapEntity;
 
 
 #[Route('/entreprise')]
@@ -84,6 +85,7 @@ class EntrepriseCrudController extends AbstractController
                     $entreprise->setEmail($formData['email'] ?? '');
                     $entreprise->setFormeJuridique($formData['formeJuridique'] ?? '');
                     $entreprise->setStatus($formData['status'] ?? '');
+                    $entreprise->setTelephone($formData['telephone'] ?? '');
                     if (!empty($formData['dateCreation'])) {
                         $entreprise->setDateCreation(new \DateTime($formData['dateCreation']));
                     }
@@ -146,4 +148,15 @@ class EntrepriseCrudController extends AbstractController
         $this->addFlash('success', 'Entreprise supprimée !');
         return $this->redirectToRoute('entreprise_index');
     }
+        #[Route('/{idEntreprise}', name: 'entreprise_show')]
+        public function show(int $idEntreprise, EntityManagerInterface $em): Response
+        {
+            $entreprise = $em->getRepository(Entreprise::class)->find($idEntreprise);
+            if (!$entreprise) {
+                throw $this->createNotFoundException('Entreprise non trouvée');
+            }
+            return $this->render('entreprise/show.html.twig', [
+                'entreprise' => $entreprise,
+            ]);
+        }
 }
