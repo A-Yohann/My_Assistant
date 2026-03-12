@@ -3,60 +3,21 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg" viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
 
         {% block javascripts %}
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const btn = document.getElementById('user-menu-btn');
-            const menu = document.getElementById('user-menu');
-            if (btn && menu) {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    menu.classList.toggle('hidden');
-                });
-                document.addEventListener('click', function() {
-                    menu.classList.add('hidden');
-                });
-            }
-        });
-        </script>
         {% endblock %}
     </head>
     <body>
-        <nav class="flex items-center justify-between p-4 bg-gray-100">
-            <div>
-                <a href="/" class="font-bold text-xl">Accueil</a>
-            </div>
-            <div class="flex items-center">
-                {% if app.user %}
-                        <div class="relative mr-4">
-                            <button id="user-menu-btn" class="bg-black text-white px-4 py-2 rounded focus:outline-none flex items-center">
-                                <img src="{{ app.user.getAvatar() ?? '/default-avatar.png' }}" alt="Avatar" class="w-8 h-8 rounded-full mr-2 object-cover">
-                                {{ app.user.email }}
-                            </button>
-                            <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-10">
-                                <a href="{{ path('account_show') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Gestion de compte</a>
-                            </div>
-                        </div>
-                    <a href="{{ path('entreprise_index') }}" class="bg-blue-500 text-white px-4 py-2 rounded mr-4">Entreprises</a>
-                    <a href="{{ path('contact') }}" class="bg-blue-400 text-white px-4 py-2 rounded mr-4">Contact</a>
-                    <a href="{{ path('entreprise_new_multi', {'step': 1}) }}" class="bg-blue-600 text-white px-4 py-2 rounded mr-4">Ajouter mon entreprise</a>
-                    <form action="{{ path('app_logout') }}" method="post">
-                        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded">Déconnexion</button>
-                    </form>
-                {% else %}
-                    <a href="{{ path('app_register_multi') }}" class="mr-4 text-blue-600">Inscription</a>
-                    <a href="{{ path('app_login') }}" class="text-blue-600 mr-4">Connexion</a>
-                {% endif %}
-            </div>
-        </nav>
+
+            {% include 'header/header.html.twig' %}
+
         {% block body %}
             <h1 class="text-3xl font-bold "> ceci est mon titre tailwind</h1>
         {% endblock %}
-            
+            {% include 'footer/footer.html.twig' %}
     </body>
 </html>
