@@ -1,0 +1,87 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Notes{% endblock %}
+
+{% block body %}
+<div class="min-h-screen flex flex-col items-center justify-center bg-[#f2f2f2]">
+    <h1 class="text-4xl font-bold mb-8">Notes - Vue Semaine</h1>
+    <div class="w-full max-w-5xl bg-white rounded-lg shadow p-8">
+        <div class="grid grid-cols-8 gap-2 mb-4">
+            <div class="text-center font-bold">Heure</div>
+            <div class="text-center font-bold">Lundi</div>
+            <div class="text-center font-bold">Mardi</div>
+            <div class="text-center font-bold">Mercredi</div>
+            <div class="text-center font-bold">Jeudi</div>
+            <div class="text-center font-bold">Vendredi</div>
+            <div class="text-center font-bold">Samedi</div>
+            <div class="text-center font-bold">Dimanche</div>
+        </div>
+        {% set heures = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"] %}
+        {% for heure in heures %}
+            <div class="grid grid-cols-8 gap-2 mb-2">
+                <div class="text-center font-semibold">{{ heure }}</div>
+                {% for i in 1..7 %}
+                    <div class="bg-[#f2f2f2] border border-[#e5e5e5] h-16 rounded hover:bg-[#e0e7ff] transition cursor-pointer flex items-center justify-center text-sm" onclick="openNoteModal('{{ heure }}', '{{ i }}')" ondrop="dropNote(event, '{{ heure }}', '{{ i }}')" ondragover="allowDrop(event)">
+                        <!-- Note exemple -->
+                        {% if heure == '10:00' and i == 2 %}
+                            <div class="bg-[#3B0764] text-white px-2 py-1 rounded" draggable="true" ondragstart="dragNote(event, 'note1')" id="note1">Rendez-vous</div>
+                        {% endif %} {% if heure == '15:00' and i == 5 %}
+                            <div class="bg-[#3B0764] text-white px-2 py-1 rounded" draggable="true" ondragstart="dragNote(event, 'note2')" id="note2">Appel client</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Modal Pop-up -->
+    <div id="noteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 hidden z-50">
+        <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-4">Ajouter une note</h2>
+            <form>
+                <div class="mb-4">
+                    <label class="block mb-1">Heure</label>
+                    <input id="modalHeure" type="text" class="w-full border rounded p-2" readonly>
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-1">Jour</label>
+                    <input id="modalJour" type="text" class="w-full border rounded p-2" readonly>
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-1">Note</label>
+                    <textarea class="w-full border rounded p-2" rows="3"></textarea>
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" onclick="closeNoteModal()" class="bg-gray-400 text-white px-4 py-2 rounded mr-2">Annuler</button>
+                    <button type="submit" class="bg-[#3B0764] text-white px-4 py-2 rounded">Ajouter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openNoteModal(heure, jour) {
+            document.getElementById('noteModal').classList.remove('hidden');
+            document.getElementById('modalHeure').value = heure;
+            const jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+            document.getElementById('modalJour').value = jours[jour-1];
+        }
+        function closeNoteModal() {
+            document.getElementById('noteModal').classList.add('hidden');
+        }
+        // Drag & Drop
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+        function dragNote(ev, noteId) {
+            ev.dataTransfer.setData("text", noteId);
+        }
+        function dropNote(ev, heure, jour) {
+            ev.preventDefault();
+            var noteId = ev.dataTransfer.getData("text");
+            var note = document.getElementById(noteId);
+            ev.target.appendChild(note);
+        }
+    </script>
+</div>
+{% endblock %}
