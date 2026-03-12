@@ -16,9 +16,19 @@
             <div>
                 <a href="/" class="font-bold text-xl">Accueil</a>
             </div>
-            <div>
-                <a href="{{ path('app_register') }}" class="mr-4 text-blue-600">Inscription</a>
-                <a href="{{ path('app_login') }}" class="text-blue-600">Connexion</a>
+            <div class="flex items-center">
+                {% if app.user %}
+                    <div class="bg-black text-white px-4 py-2 rounded mr-4">
+                        {{ app.user.email }}
+                    </div>
+                    <a href="{{ path('entreprise_new_multi', {'step': 1}) }}" class="bg-blue-600 text-white px-4 py-2 rounded mr-4">Ajouter mon entreprise</a>
+                    <form action="{{ path('app_logout') }}" method="post">
+                        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded">Déconnexion</button>
+                    </form>
+                {% else %}
+                    <a href="{{ path('app_register_multi') }}" class="mr-4 text-blue-600">Inscription</a>
+                    <a href="{{ path('app_login') }}" class="text-blue-600 mr-4">Connexion</a>
+                {% endif %}
             </div>
         </nav>
         {% block body %}

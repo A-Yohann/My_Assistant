@@ -9,7 +9,7 @@ class Siege
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $idSiege;
+    private $id;
 
     #[ORM\Column(type: 'string', length: 50)]
     private $nomSiege;
@@ -23,5 +23,48 @@ class Siege
     #[ORM\Column(type: 'boolean')]
     private $statuJuridique;
 
-    // Getters & setters à ajouter
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getNomSiege(): ?string
+    {
+        return $this->nomSiege;
+    }
+    public function setNomSiege(string $nomSiege): self
+    {
+        $this->nomSiege = $nomSiege;
+        return $this;
+    }
+
+    public function getAddresseSiege(): ?string
+    {
+        return $this->AddresseSiege;
+    }
+    public function setAddresseSiege(string $AddresseSiege): self
+    {
+        $this->AddresseSiege = $AddresseSiege;
+        return $this;
+    }
+
+    public function getDateCreation(): ?\DateTimeInterface
+    {
+        return $this->dateCreation;
+    }
+    public function setDateCreation(\DateTimeInterface $dateCreation): self
+    {
+        $this->dateCreation = $dateCreation;
+        return $this;
+    }
+
+    public function isStatuJuridique(): ?bool
+    {
+        return $this->statuJuridique;
+    }
+    public function setStatuJuridique(bool $statuJuridique): self
+    {
+        $this->statuJuridique = $statuJuridique;
+        return $this;
+    }
 }

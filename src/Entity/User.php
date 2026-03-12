@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Entity;
 
 use App\Repository\UserRepository;
@@ -7,6 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -20,6 +21,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 180)]
     private ?string $email = null;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Entreprise::class, mappedBy="user")
+     */
+    private $entreprises;
+
+    public function __construct()
+    {
+        $this->entreprises = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection|Entreprise[]
+     */
+    public function getEntreprises(): Collection
+    {
+        return $this->entreprises;
+    }
 
     /**
      * @var list<string> The user roles

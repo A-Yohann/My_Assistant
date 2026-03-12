@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Ajouter une entreprise (étape 1)</h1>
+    <form method="post" enctype="multipart/form-data">
+        <label for="nomEntreprise" class="block mb-1">Nom de l'entreprise</label>
+        <input type="text" name="nomEntreprise" id="nomEntreprise" class="block w-full border p-2 mb-4 rounded" required>
+        <label for="siret" class="block mb-1">SIRET</label>
+        <input type="text" name="siret" id="siret" class="block w-full border p-2 mb-4 rounded" required>
+        <label for="formeJuridique" class="block mb-1">Forme juridique</label>
+        <input type="text" name="formeJuridique" id="formeJuridique" class="block w-full border p-2 mb-4 rounded" required>
+        <label for="status" class="block mb-1">Statut</label>
+        <input type="text" name="status" id="status" class="block w-full border p-2 mb-4 rounded">
+        <label for="dateCreation" class="block mb-1">Date de création</label>
+        <input type="date" name="dateCreation" id="dateCreation" class="block w-full border p-2 mb-4 rounded" required>
+        <label for="logo" class="block mb-1">Logo de l'entreprise</label>
+        <input type="file" name="logo" id="logo" class="block w-full border p-2 mb-4 rounded" accept="image/*">
+        <div class="flex justify-between">
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Suivant</button>
+        </div>
+    </form>
+{% endblock %}

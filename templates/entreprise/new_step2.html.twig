@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Ajouter une entreprise (étape 2)</h1>
+    <form method="post">
+        <label for="numeroRue" class="block mb-1">Numéro de rue</label>
+        <input type="text" name="numeroRue" id="numeroRue" class="block w-full border p-2 mb-4 rounded" required>
+        <label for="nomRue" class="block mb-1">Nom de la rue</label>
+        <input type="text" name="nomRue" id="nomRue" class="block w-full border p-2 mb-4 rounded" required>
+        <label for="complementAdresse" class="block mb-1">Complément d'adresse</label>
+        <input type="text" name="complementAdresse" id="complementAdresse" class="block w-full border p-2 mb-4 rounded">
+        <label for="codePostal" class="block mb-1">Code postal</label>
+        <input type="text" name="codePostal" id="codePostal" class="block w-full border p-2 mb-4 rounded" required>
+        <label for="ville" class="block mb-1">Ville</label>
+        <input type="text" name="ville" id="ville" class="block w-full border p-2 mb-4 rounded" required>
+        <label for="pays" class="block mb-1">Pays</label>
+        <input type="text" name="pays" id="pays" class="block w-full border p-2 mb-4 rounded" required>
+        <div class="flex justify-between">
+            <a href="{{ path('entreprise_new') }}" class="bg-black text-white px-4 py-2 rounded">Retour</a>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Valider</button>
+        </div>
+    </form>
+{% endblock %}

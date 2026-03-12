@@ -9,7 +9,7 @@ class Dashbord
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $idDashbord;
+    private $id;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     private $totalRevenu;
@@ -26,5 +26,8 @@ class Dashbord
     #[ORM\Column(type: 'integer')]
     private $nombreFacture;
 
-    // Getters & setters à ajouter
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 }
