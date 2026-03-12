@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion de compte{% endblock %}
+
+{% block body %}
+<div class="max-w-md mx-auto p-8 rounded-lg bg-purple-900">
+    <form method="post" enctype="multipart/form-data">
+        <div class="flex justify-center mb-6">
+            <label for="profile_image" class="w-20 h-20 rounded-full bg-gray-200 overflow-hidden cursor-pointer block">
+                <img src="{{ avatar }}" alt="Avatar" class="w-full h-full object-cover">
+                <input type="file" id="profile_image" name="profile_image" accept="image/*" class="hidden" onchange="this.form.submit()">
+            </label>
+        </div>
+        <label for="email" class="block text-white mb-1">Email</label>
+        <input type="email" id="email" name="email" placeholder="Votre email" class="block w-full mb-4 p-2 rounded bg-gray-100">
+        <label for="password" class="block text-white mb-1">Mot de passe</label>
+        <input type="password" id="password" name="password" placeholder="Votre mot de passe" class="block w-full mb-4 p-2 rounded bg-gray-100">
+        <label for="telephone" class="block text-white mb-1">Telephone</label>
+        <input type="text" id="telephone" name="telephone" placeholder="Votre telephone" class="block w-full mb-6 p-2 rounded bg-gray-100">
+        <div class="flex justify-between">
+            <button type="button" class="bg-black text-white px-6 py-2 rounded">Annuler</button>
+            <button type="submit" class="bg-black text-white px-6 py-2 rounded">Envoyer</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

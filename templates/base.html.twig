@@ -9,6 +9,21 @@
         {% endblock %}
 
         {% block javascripts %}
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const btn = document.getElementById('user-menu-btn');
+            const menu = document.getElementById('user-menu');
+            if (btn && menu) {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    menu.classList.toggle('hidden');
+                });
+                document.addEventListener('click', function() {
+                    menu.classList.add('hidden');
+                });
+            }
+        });
+        </script>
         {% endblock %}
     </head>
     <body>
@@ -18,9 +33,14 @@
             </div>
             <div class="flex items-center">
                 {% if app.user %}
-                    <div class="bg-black text-white px-4 py-2 rounded mr-4">
-                        {{ app.user.email }}
-                    </div>
+                        <div class="relative mr-4">
+                            <button id="user-menu-btn" class="bg-black text-white px-4 py-2 rounded focus:outline-none">
+                                {{ app.user.email }}
+                            </button>
+                            <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-10">
+                                <a href="{{ path('account_manage') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Gestion de compte</a>
+                            </div>
+                        </div>
                     <a href="{{ path('entreprise_index') }}" class="bg-blue-500 text-white px-4 py-2 rounded mr-4">Entreprises</a>
                     <a href="{{ path('contact') }}" class="bg-blue-400 text-white px-4 py-2 rounded mr-4">Contact</a>
                     <a href="{{ path('entreprise_new_multi', {'step': 1}) }}" class="bg-blue-600 text-white px-4 py-2 rounded mr-4">Ajouter mon entreprise</a>
@@ -36,5 +56,6 @@
         {% block body %}
             <h1 class="text-3xl font-bold "> ceci est mon titre tailwind</h1>
         {% endblock %}
+            
     </body>
 </html>
