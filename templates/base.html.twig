@@ -34,7 +34,8 @@
             <div class="flex items-center">
                 {% if app.user %}
                         <div class="relative mr-4">
-                            <button id="user-menu-btn" class="bg-black text-white px-4 py-2 rounded focus:outline-none">
+                            <button id="user-menu-btn" class="bg-black text-white px-4 py-2 rounded focus:outline-none flex items-center">
+                                <img src="{{ app.user.getAvatar() ?? '/default-avatar.png' }}" alt="Avatar" class="w-8 h-8 rounded-full mr-2 object-cover">
                                 {{ app.user.email }}
                             </button>
                             <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-10">
