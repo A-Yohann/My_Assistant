@@ -12,6 +12,15 @@
         {% endblock %}
     </head>
     <body>
+        <nav class="flex items-center justify-between p-4 bg-gray-100">
+            <div>
+                <a href="/" class="font-bold text-xl">Accueil</a>
+            </div>
+            <div>
+                <a href="{{ path('app_register') }}" class="mr-4 text-blue-600">Inscription</a>
+                <a href="{{ path('app_login') }}" class="text-blue-600">Connexion</a>
+            </div>
+        </nav>
         {% block body %}
             <h1 class="text-3xl font-bold "> ceci est mon titre tailwind</h1>
         {% endblock %}
