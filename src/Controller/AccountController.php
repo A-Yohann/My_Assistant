@@ -9,6 +9,17 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class AccountController extends AbstractController
 {
+    #[Route('/account', name: 'account_show')]
+    public function show(): Response
+    {
+        $user = $this->getUser();
+        return $this->render('account/show.html.twig', [
+            'avatar' => $user->getAvatar() ?? '/default-avatar.png',
+            'email' => $user->getEmail(),
+            'telephone' => method_exists($user, 'getTelephone') ? $user->getTelephone() : '',
+        ]);
+    }
+
     #[Route('/account/manage', name: 'account_manage')]
     public function manage(Request $request, EntityManagerInterface $em): Response
     {
