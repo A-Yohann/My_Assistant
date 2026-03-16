@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page introuvable - My Assistant{% endblock %}
+
+{% block body %}
+<div class="flex justify-center py-12 px-4">
+    <div class="bg-[#3B0764] text-white rounded-xl shadow-xl max-w-4xl w-full p-10 space-y-8 text-center">
+
+        <section>
+            <h1 class="text-4xl font-bold mb-4">404</h1>
+            <p class="text-xl mb-4">Oups… La page que vous cherchez n'existe pas.</p>
+            <p class="text-lg leading-relaxed">
+                Peut-être que l'URL est incorrecte ou que la page a été déplacée. Pas de panique, nous allons vous remettre sur la bonne voie.
+            </p>
+        </section>
+
+        <section>
+            <a href="{{ path('homepage') }}" class="inline-block mt-6 bg-white text-[#3B0764] font-semibold py-3 px-6 rounded-lg shadow hover:bg-gray-100 transition">
+                Retour à l'accueil
+            </a>
+        </section>
+
+        <section class="text-left">
+            <h2 class="text-2xl font-bold mb-4">Besoin d'aide ?</h2>
+            <p class="text-lg leading-relaxed mb-2">
+                Vous pouvez contacter notre support à <span class="underline">[EMAIL CONTACT]</span> — nous répondrons sous 24h.
+            </p>
+        </section>
+
+    </div>
+</div>
+{% endblock %}
