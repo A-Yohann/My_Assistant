@@ -1,0 +1,92 @@
+{# templates/privacy.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Politique de Confidentialité - My Assistant{% endblock %}
+
+{% block body %}
+<div class="flex justify-center py-12 px-4">
+    {# Carte violette centrée avec marges blanches autour #}
+    <div class="bg-purple-700 text-white rounded-xl shadow-xl max-w-4xl w-full p-10 space-y-8">
+
+        <section>
+            <h1 class="text-3xl font-bold mb-4 text-center">Politique de Confidentialité</h1>
+            <p class="text-lg leading-relaxed mb-2">Dernière mise à jour : 11 mars 2026</p>
+            <p class="text-lg leading-relaxed mb-2">
+                Responsable du traitement : My Assistant, [ADRESSE], <span class="underline">[EMAIL CONTACT]</span> est responsable du traitement de vos données personnelles.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold mb-4">Données collectées</h2>
+            <p class="text-lg leading-relaxed mb-2">
+                Dans le cadre de l'utilisation de la plateforme, nous collectons :
+            </p>
+            <ul class="list-disc list-inside space-y-1 text-left mx-auto max-w-xl">
+                <li>Compte utilisateur : nom, prénom, adresse e-mail, mot de passe chiffré</li>
+                <li>Formulaire de contact : nom, e-mail, contenu du message</li>
+                <li>Données techniques : logs de connexion, adresse IP, informations navigateur</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold mb-4">Finalités et bases légales</h2>
+            <ul class="list-disc list-inside space-y-1 text-left mx-auto max-w-xl">
+                <li>Gestion de votre compte et fourniture du service → Exécution du contrat (art. 6.1.b RGPD)</li>
+                <li>Amélioration de la plateforme et sécurité → Intérêt légitime (art. 6.1.f RGPD)</li>
+                <li>Réponse à vos demandes de contact → Intérêt légitime (art. 6.1.f RGPD)</li>
+                <li>Obligations comptables et légales → Obligation légale (art. 6.1.c RGPD)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold mb-4">Conservation des données</h2>
+            <ul class="list-disc list-inside space-y-1 text-left mx-auto max-w-xl">
+                <li>Données de compte : durée de l'abonnement + 3 ans</li>
+                <li>Logs de connexion : 12 mois</li>
+                <li>Messages de contact : 3 ans</li>
+                <li>Données de facturation : 10 ans (obligation légale)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold mb-4">Destinataires</h2>
+            <p class="text-lg leading-relaxed mb-2">
+                Vos données sont accessibles à notre équipe interne et à nos sous-traitants techniques (hébergement, infrastructure). Nous ne vendons jamais vos données à des tiers. Tout sous-traitant est soumis à des garanties conformes au RGPD.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold mb-4">Vos droits</h2>
+            <p class="text-lg leading-relaxed mb-2">
+                Conformément au RGPD, vous disposez des droits d'accès, de rectification, d'effacement, de limitation, de portabilité et d'opposition. Pour les exercer, contactez-nous à <span class="underline">[EMAIL CONTACT]</span>.
+                Vous pouvez également introduire une réclamation auprès de la CNIL (<a href="https://www.cnil.fr" class="underline">www.cnil.fr</a>).
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold mb-4">Sécurité</h2>
+            <p class="text-lg leading-relaxed mb-2">
+                Nous appliquons des mesures de sécurité adaptées : chiffrement HTTPS, hachage des mots de passe, contrôle des accès et sauvegardes régulières.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold mb-4">Cookies</h2>
+            <p class="text-lg leading-relaxed mb-2">
+                La plateforme utilise uniquement des cookies strictement nécessaires à son fonctionnement (session, authentification). Aucun cookie publicitaire ou de tracking tiers n'est déposé sans votre consentement.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold mb-4">Modifications</h2>
+            <p class="text-lg leading-relaxed mb-2">
+                Toute modification substantielle de cette politique vous sera notifiée par e-mail avant son entrée en vigueur.
+            </p>
+            <p class="text-lg leading-relaxed">
+                Des questions ? Contactez-nous : <span class="underline">[EMAIL CONTACT]</span>
+            </p>
+        </section>
+
+    </div>
+</div>
+{% endblock %}
