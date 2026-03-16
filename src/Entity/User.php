@@ -23,7 +23,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
 
     /**
-     * @ORM\OneToMany(targetEntity=Entreprise::class, mappedBy="user")
+     * @ORM\OneToMany(targetEntity=Entreprise::class, mappedBy="user", cascade={"persist", "remove"})
      */
     private $entreprises;
 
@@ -37,7 +37,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getEntreprises(): Collection
     {
-        return $this->entreprises;
+        return $this->entreprises ?? new \Doctrine\Common\Collections\ArrayCollection();
+            if (!$this->entreprises->contains($entreprise)) {
+                $this->entreprises[] = $entreprise;
+                $entreprise->setUser($this);
+            }
+            return $this;
+            if ($this->entreprises->contains($entreprise)) {
+                $this->entreprises->removeElement($entreprise);
+                if ($entreprise->getUser() === $this) {
+                    $entreprise->setUser(null);
+                }
+            }
+            return $this;
     }
 
     /**

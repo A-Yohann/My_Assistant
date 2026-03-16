@@ -7,8 +7,20 @@ use App\Entity\Siege;
 use App\Entity\Dashbord;
 
 #[ORM\Entity]
-class Entreprise
-{
+class Entreprise {
+    #[ORM\Column(type: 'decimal', precision: 5, scale: 2, nullable: false, options: ["default" => 0.2])]
+    private $tva = 0.2;
+
+    public function getTva(): float
+    {
+        return $this->tva;
+    }
+
+    public function setTva(float $tva): self
+    {
+        $this->tva = $tva;
+        return $this;
+    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]

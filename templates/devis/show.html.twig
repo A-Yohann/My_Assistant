@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail du devis{% endblock %}
+
+{% block body %}
+<div class="container mx-auto max-w-4xl mt-10 bg-white p-8 rounded shadow">
+    <h1 class="text-2xl font-bold mb-6">Détail du devis</h1>
+    <table class="min-w-full bg-white">
+        <tr><th>Numéro</th><td>{{ devis.numeroDevis }}</td></tr>
+        <tr><th>Date émission</th><td>{{ devis.dateEmission|date('d/m/Y') }}</td></tr>
+        <tr><th>Date validité</th><td>{{ devis.dateValidite|date('d/m/Y') }}</td></tr>
+        <tr><th>Montant HT</th><td>{{ devis.montantHT }} €</td></tr>
+        <tr><th>Montant TTC</th><td>{{ devis.montantTtc }} €</td></tr>
+        <tr><th>Taux TVA</th><td>{{ devis.tauxTVA }}</td></tr>
+        <tr><th>Statut</th><td>
+            {% if devis.etat == 'en_attente' %}En attente{% elseif devis.etat == 'valide' %}Validé{% elseif devis.etat == 'commande' %}En attente de paiement{% elseif devis.etat == 'paye' %}Payé{% else %}{{ devis.etat }}{% endif %}
+        </td></tr>
+        <tr><th>Description</th><td>{{ devis.description }}</td></tr>
+        <tr><th>Entreprise</th><td>{{ devis.entreprise.nomEntreprise ?? 'N/A' }}</td></tr>
+    </table>
+    <a href="{{ path('devis_index') }}" class="mt-4 inline-block text-blue-600 hover:underline">Retour à la liste</a>
+        {% if not devis.signature %}
+            <a href="{{ path('devis_signer', {'id': devis.id}) }}" class="mt-4 ml-4 inline-block text-green-600 hover:underline">Signer électroniquement</a>
+        {% else %}
+            <span class="mt-4 ml-4 inline-block text-green-600">Déjà signé</span>
+        {% endif %}
+    <a href="{{ path('devis_pdf', {'id': devis.id}) }}" class="mt-4 ml-4 inline-block text-green-600 hover:underline">Télécharger PDF</a>
+    <a href="{{ path('devis_envoyer', {'id': devis.id}) }}" class="mt-4 ml-4 inline-block text-blue-600 hover:underline">Envoyer par mail</a>
+</div>
+{% endblock %}

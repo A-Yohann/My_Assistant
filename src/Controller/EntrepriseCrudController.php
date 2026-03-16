@@ -9,13 +9,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Routing\Attribute\MapEntity;
+
 
 
 #[Route('/entreprise')]
 class EntrepriseCrudController extends AbstractController
 {
-    #[Route('/', name: 'entreprise_index')]
+    #[Route('/', name: 'app_entreprise')]
     public function index(EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
@@ -32,11 +32,30 @@ class EntrepriseCrudController extends AbstractController
         $form = $this->createForm(EntrepriseType::class, $entreprise);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            // Gestion du logo
+            $logoFile = $form->get('logo')->getData();
+            if ($logoFile) {
+                $logoName = uniqid().'.'.$logoFile->guessExtension();
+                $logoFile->move($this->getParameter('kernel.project_dir').'/public/uploads/logos', $logoName);
+                $entreprise->setLogo('/uploads/logos/'.$logoName);
+            }
+            // Valeur par défaut pour roles
+            if ($entreprise->getRoles() === null) {
+                $entreprise->setRoles(false);
+            }
+            // Valeur par défaut pour complementAdresse
+            if ($entreprise->getComplementAdresse() === null) {
+                $entreprise->setComplementAdresse('');
+            }
+            // Valeur par défaut pour type
+            if ($entreprise->getType() === null) {
+                $entreprise->setType(false);
+            }
             $entreprise->setUser($this->getUser());
             $em->persist($entreprise);
             $em->flush();
             $this->addFlash('success', 'Entreprise créée !');
-            return $this->redirectToRoute('entreprise_index');
+            return $this->redirectToRoute('app_entreprise');
         }
         return $this->render('entreprise/new.html.twig', [
             'form' => $form->createView(),
@@ -132,7 +151,7 @@ class EntrepriseCrudController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
             $this->addFlash('success', 'Entreprise modifiée !');
-            return $this->redirectToRoute('entreprise_index');
+            return $this->redirectToRoute('app_entreprise');
         }
         return $this->render('entreprise/edit.html.twig', [
             'form' => $form->createView(),
@@ -146,7 +165,7 @@ class EntrepriseCrudController extends AbstractController
         $em->remove($entreprise);
         $em->flush();
         $this->addFlash('success', 'Entreprise supprimée !');
-        return $this->redirectToRoute('entreprise_index');
+        return $this->redirectToRoute('app_entreprise');
     }
         #[Route('/{id}', name: 'entreprise_show')]
         public function show(int $id, EntityManagerInterface $em): Response
