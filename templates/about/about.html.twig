@@ -1,0 +1,45 @@
+{# templates/about.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}À propos - My Assistant{% endblock %}
+
+{% block body %}
+<div class="flex justify-center py-12 px-4">
+    {# Carte violette centrée avec marges blanches autour #}
+    <div class="bg-purple-700 text-white rounded-xl shadow-xl max-w-4xl w-full p-10 space-y-8">
+
+        <section>
+            <h1 class="text-3xl font-bold mb-4 text-center">Bienvenue chez My Assistant</h1>
+            <p class="text-lg leading-relaxed">
+                My Assistant est une solution de gestion d'entreprise conçue pour simplifier le quotidien des équipes et des dirigeants, quelle que soit la taille de leur structure.
+                Notre mission est simple : vous donner les outils pour piloter votre activité avec clarté et efficacité, sans complexité inutile.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold mb-4">Ce que nous faisons</h2>
+            <p class="text-lg leading-relaxed mb-2">
+                Nous avons développé une plateforme centralisée qui réunit la gestion de projets et de tâches avec le suivi de facturation, pour que vous puissiez vous concentrer sur l'essentiel : faire avancer votre business.
+            </p>
+            <ul class="list-disc list-inside space-y-1 text-left mx-auto max-w-xl">
+                <li><span class="font-semibold">Gestion de projets & tâches:</span> Organisez vos projets, assignez des tâches, suivez l'avancement en temps réel et respectez vos délais.</li>
+                <li><span class="font-semibold">Facturation:</span> Créez et envoyez vos devis et factures en quelques clics, suivez vos paiements et gardez une vue claire sur votre trésorerie.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold mb-4">Notre engagement</h2>
+            <p class="text-lg leading-relaxed mb-2">
+                Nous croyons qu'un bon outil de gestion doit être fiable, intuitif et accessible. C'est pourquoi nous travaillons chaque jour à améliorer notre plateforme en écoutant nos utilisateurs.
+            </p>
+            <p class="text-lg leading-relaxed mb-2">
+                Vos données sont hébergées de manière sécurisée et traitées dans le strict respect du RGPD.
+            </p>
+            <p class="text-lg leading-relaxed">
+                Une question ? Un projet ? Contactez-nous à <span class="underline">[EMAIL CONTACT]</span> — nous répondons sous 24h.
+            </p>
+        </section>
+
+    </div>
+</div>
+{% endblock %}
