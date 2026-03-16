@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Note{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-4">{{ edit ? 'Modifier la note' : 'Ajouter une note' }}</h1>
+    {{ form_start(form) }}
+        {{ form_row(form.titre) }}
+        {{ form_row(form.contenu) }}
+        {{ form_row(form.priorite) }}
+        <button class="btn btn-primary" type="submit">{{ edit ? 'Mettre à jour' : 'Ajouter' }}</button>
+        <a href="{{ path('notes') }}" class="btn btn-secondary">Annuler</a>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

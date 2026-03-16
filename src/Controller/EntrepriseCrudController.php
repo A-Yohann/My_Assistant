@@ -148,10 +148,10 @@ class EntrepriseCrudController extends AbstractController
         $this->addFlash('success', 'Entreprise supprimée !');
         return $this->redirectToRoute('entreprise_index');
     }
-        #[Route('/{idEntreprise}', name: 'entreprise_show')]
-        public function show(int $idEntreprise, EntityManagerInterface $em): Response
+        #[Route('/{id}', name: 'entreprise_show')]
+        public function show(int $id, EntityManagerInterface $em): Response
         {
-            $entreprise = $em->getRepository(Entreprise::class)->find($idEntreprise);
+            $entreprise = $em->getRepository(Entreprise::class)->find($id);
             if (!$entreprise) {
                 throw $this->createNotFoundException('Entreprise non trouvée');
             }

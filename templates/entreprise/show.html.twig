@@ -26,8 +26,8 @@
         {{ entreprise.pays }}
     </div>
     <div class="flex gap-4 mt-4">
-        <a href="{{ path('entreprise_edit', {'id': entreprise.idEntreprise}) }}" class="bg-blue-600 text-white px-4 py-2 rounded">Modifier</a>
-        <a href="{{ path('entreprise_delete', {'id': entreprise.idEntreprise}) }}" class="bg-red-600 text-white px-4 py-2 rounded">Supprimer</a>
+        <a href="{{ path('entreprise_edit', {'id': entreprise.id}) }}" class="bg-blue-600 text-white px-4 py-2 rounded">Modifier</a>
+        <a href="{{ path('entreprise_delete', {'id': entreprise.id}) }}" class="bg-red-600 text-white px-4 py-2 rounded">Supprimer</a>
         <a href="{{ path('entreprise_index') }}" class="bg-gray-600 text-white px-4 py-2 rounded">Retour</a>
     </div>
 {% endblock %}

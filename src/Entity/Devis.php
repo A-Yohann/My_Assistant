@@ -42,7 +42,7 @@ class Devis
     private $signature;
 
     #[ORM\ManyToOne(targetEntity: Entreprise::class)]
-    #[ORM\JoinColumn(name: 'idEntreprise', referencedColumnName: 'idEntreprise')]
+    #[ORM\JoinColumn(name: 'entreprise_id', referencedColumnName: 'id')]
     private $entreprise;
 
     // Getters & setters à ajouter

@@ -12,7 +12,7 @@ class Entreprise
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $idEntreprise;
+    private $id;
 
     #[ORM\Column(type: 'string', length: 100)]
     private $nomEntreprise;
@@ -87,9 +87,9 @@ class Entreprise
 
     // Getters & Setters
 
-    public function getIdEntreprise(): ?int
+    public function getId(): ?int
     {
-        return $this->idEntreprise;
+        return $this->id;
     }
 
     public function getNomEntreprise(): ?string

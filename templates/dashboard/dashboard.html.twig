@@ -21,13 +21,15 @@
         <!-- Profil -->
         <div class="flex justify-center mb-6">
             <div class="flex items-center bg-[#231F20] text-white rounded-lg px-8 py-4">
-                <img src="{{ user.avatar ? user.avatar : '/assets/img/logo.png' }}" alt="Avatar" class="h-16 w-16 rounded-full mr-4">
+                <img src="{{ user and user.avatar ? user.avatar : '/assets/img/logo.png' }}" alt="Avatar" class="h-16 w-16 rounded-full mr-4">
                 <div>
                     <div class="font-bold text-lg">
-                        {% if user.nom is defined and user.prenom is defined %}
+                        {% if user and user.nom is defined and user.prenom is defined %}
                             {{ user.nom }} {{ user.prenom }}
-                        {% else %}
+                        {% elseif user %}
                             {{ user.getUserIdentifier() }}
+                        {% else %}
+                            Invité
                         {% endif %}
                     </div>
                     <div class="text-sm">{{ user.email }}</div>
@@ -99,18 +101,19 @@
                 <div class="bg-[#3B0764] text-white rounded p-6 mb-6">
                     <div class="flex justify-between items-center mb-2">
                         <span class="font-bold">Vos notes</span>
-                        <button class="bg-black text-white px-2 py-1 rounded text-xs">Ajoutez une note</button>
+                        <a href="{{ path('notes') }}" class="bg-black text-white px-2 py-1 rounded text-xs">Voir toutes</a>
                     </div>
-                    <div class="mb-2 bg-white text-black rounded p-2">
-                        <div class="font-bold text-xs">À rappeler</div>
-                        <div>Rappeler M.JEAN à 18H</div>
-                        <div class="text-xs text-right">Note mise le 10/03/26</div>
-                    </div>
-                    <div class="mb-2 bg-white text-black rounded p-2">
-                        <div class="font-bold text-xs">Tâche à faire</div>
-                        <div>Achetez cartouche d'encre</div>
-                        <div class="text-xs text-right">Note mise le 10/03/26</div>
-                    </div>
+                    {% if lastNotes is not empty %}
+                        {% for note in lastNotes %}
+                            <div class="mb-2 bg-white text-black rounded p-2">
+                                <div class="font-bold text-xs">{{ note.titre }}</div>
+                                <div>{{ note.contenu|u.truncate(40) }}</div>
+                                <div class="text-xs text-right">Note mise le {{ note.dateCreation ? note.dateCreation|date('d/m/y') : '' }}</div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-xs">Aucune note récente.</div>
+                    {% endif %}
                 </div>
                 <div class="bg-[#3B0764] text-white rounded p-6">
                     <div class="flex justify-between items-center mb-2">
