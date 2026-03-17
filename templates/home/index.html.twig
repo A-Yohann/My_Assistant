@@ -1,7 +1,91 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}Accueil{% endblock %}
 
 {% block body %}
-    <h1 class="text-3xl font-bold  text-center"> ceci est mon titre tailwind</h1>
+
+<section class="text-center max-w-4xl mx-auto mt-10 px-4">
+    <h1 class="text-4xl font-bold">Simplifiez votre gestion d'entreprise</h1>
+
+    <p class="mt-4 text-lg text-gray-600">
+        Découvrez notre application tout-en-un pour gérer vos finances, projets et équipes facilement.
+    </p>
+
+    <button class="bg-[#3B0764] hover:bg-purple-900 text-white font-semibold py-3 px-6 rounded-lg mt-6 transition">
+        Commencez dès maintenant
+    </button>
+</section>
+
+<section class="max-w-6xl mx-auto mt-16 px-4">
+    <h2 class="text-2xl font-bold mb-8 text-center">Fonctionnalités clés</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+        <!-- Card 1 -->
+        <div class="bg-[#3B0764] rounded-xl shadow-lg p-6 hover:shadow-2xl transition transform hover:-translate-y-2">
+            <div class="text-4xl mb-4">💰</div>
+            <h3 class="text-xl font-bold mb-2 text-[#f2f2f2]">Gestion financière</h3>
+            <p class="text-[#f2f2f2]">
+                Suivez vos revenus, dépenses et bénéfices en temps réel pour prendre de meilleures décisions.
+            </p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="bg-[#3B0764] rounded-xl shadow-lg p-6 hover:shadow-2xl transition transform hover:-translate-y-2">
+            <div class="text-4xl mb-4">📊</div>
+            <h3 class="text-xl font-bold mb-2 text-[#f2f2f2]">Suivi de projet</h3>
+            <p class="text-[#f2f2f2]">
+                Organisez vos tâches et suivez l’avancement de vos projets efficacement.
+            </p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="bg-[#3B0764] rounded-xl shadow-lg p-6 hover:shadow-2xl transition transform hover:-translate-y-2">
+            <div class="text-4xl mb-4">👥</div>
+            <h3 class="text-xl font-bold mb-2 text-[#f2f2f2]">Collaboration</h3>
+            <p class="text-[#f2f2f2]">
+                Travaillez en équipe, partagez vos fichiers et communiquez facilement.
+            </p>
+        </div>
+
+    </div>
+</section> <!-- ✅ fermeture ajoutée ici -->
+
+<section class="max-w-6xl mx-auto mt-16 px-4">
+    <div class="grid md:grid-cols-2 gap-10 items-center">
+
+        <!-- Texte à gauche -->
+        <div>
+            <h2 class="text-2xl font-bold mb-4">Gagnez du temps et de l'argent</h2>
+
+            <ul class="space-y-2 text-gray-600">
+                <li>✅ Gestion des devis et factures simplifiée</li>
+                <li>✅ Obtenez des insights précieux pour optimiser votre entreprise</li>
+                <li>✅ Améliorez la collaboration et la communication</li>
+                <li>✅ Accédez à vos données en temps réel</li>
+            </ul>
+
+
+        </div>
+
+        <!-- Image à droite -->
+        <div class="flex justify-center">
+            <img src="/assets/img/time.jpg" alt="Gagnez du temps">
+        </div>
+
+    </div>
+</section>
+<section class="w-full bg-[#3B0764] text-white shadow-xl py-16 mb-10 mt-16">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">
+            Rejoignez des milliers d'entrepreneurs qui nous font confiance
+        </h2>
+        <p class="text-lg md:text-xl mb-6">
+            Optimisez votre gestion, gagnez du temps et boostez votre productivité avec notre application.
+        </p>
+        <button class="bg-white text-[#3B0764] font-semibold py-3 px-6 rounded-lg hover:bg-gray-100 transition mb-5">
+            Commencez dès maintenant
+        </button>
+    </div>
+</section>
 {% endblock %}
