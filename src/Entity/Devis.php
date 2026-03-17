@@ -4,47 +4,125 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-class Devis {
+class Devis
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private $id;
+
+    #[ORM\Column(type: 'string', length: 50)]
+    private $numeroDevis;
+
+    #[ORM\Column(type: 'date')]
+    private $dateEmission;
+
+    #[ORM\Column(type: 'date')]
+    private $dateValidite;
+
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    private $montantHT;
+
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    private $montantTtc;
+
+    #[ORM\Column(type: 'decimal', precision: 5, scale: 2)]
+    private $tauxTVA;
+
+    #[ORM\Column(type: 'boolean')]
+    private $status = false;
+
+    #[ORM\Column(type: 'string', length: 20)]
+    private $etat = 'en_attente';
+
     #[ORM\Column(type: 'boolean')]
     private $signature = false;
 
-    public function isSignature(): bool
-    {
-        return $this->signature;
-    }
+    #[ORM\Column(type: 'string', length: 64, nullable: true)]
+    private ?string $signatureToken = null;
 
-    public function setSignature(bool $signature): self
-    {
-        $this->signature = $signature;
-        return $this;
-    }
-        #[ORM\Column(type: 'string', length: 20)]
-        private $etat = 'en_attente';
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $signatureDate = null;
 
-        public function getEtat(): ?string
-        {
-            return $this->etat;
-        }
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $signatureImage = null;
 
-        public function setEtat(string $etat): self
-        {
-            $this->etat = $etat;
-            return $this;
-        }
+    #[ORM\Column(type: 'text')]
+    private $description;
+
+    #[ORM\Column(type: 'date')]
+    private $dateCreation;
+
+    #[ORM\ManyToOne(targetEntity: Entreprise::class)]
+    #[ORM\JoinColumn(name: 'entreprise_id', referencedColumnName: 'id')]
+    private $entreprise;
+
+    #[ORM\ManyToOne(targetEntity: Client::class)]
+    #[ORM\JoinColumn(name: 'client_id', referencedColumnName: 'id_client', nullable: true)]
+    private $client;
+
+    // --- Getters & Setters ---
+
     public function getId(): ?int
     {
         return $this->id;
     }
-    public function getEntreprise(): ?Entreprise
+
+    public function getNumeroDevis(): ?string
     {
-        return $this->entreprise;
+        return $this->numeroDevis;
     }
 
-    public function setEntreprise(?Entreprise $entreprise): self
+    public function setNumeroDevis(string $numeroDevis): self
     {
-        $this->entreprise = $entreprise;
+        $this->numeroDevis = $numeroDevis;
         return $this;
     }
+
+    public function getDateEmission(): ?\DateTimeInterface
+    {
+        return $this->dateEmission;
+    }
+
+    public function setDateEmission(\DateTimeInterface $dateEmission): self
+    {
+        $this->dateEmission = $dateEmission;
+        return $this;
+    }
+
+    public function getDateValidite(): ?\DateTimeInterface
+    {
+        return $this->dateValidite;
+    }
+
+    public function setDateValidite(\DateTimeInterface $dateValidite): self
+    {
+        $this->dateValidite = $dateValidite;
+        return $this;
+    }
+
+    public function getMontantHT(): ?float
+    {
+        return $this->montantHT;
+    }
+
+    public function setMontantHT(float $montantHT): self
+    {
+        $this->montantHT = $montantHT;
+        return $this;
+    }
+
+    public function getMontantTtc(): ?float
+    {
+        return $this->montantTtc;
+    }
+
+    public function setMontantTtc(float $montantTtc): self
+    {
+        $this->montantTtc = $montantTtc;
+        return $this;
+    }
+
     public function getTauxTVA(): ?float
     {
         return $this->tauxTVA;
@@ -64,6 +142,61 @@ class Devis {
     public function setStatus(bool $status): self
     {
         $this->status = $status;
+        return $this;
+    }
+
+    public function getEtat(): ?string
+    {
+        return $this->etat;
+    }
+
+    public function setEtat(string $etat): self
+    {
+        $this->etat = $etat;
+        return $this;
+    }
+
+    public function isSignature(): bool
+    {
+        return $this->signature;
+    }
+
+    public function setSignature(bool $signature): self
+    {
+        $this->signature = $signature;
+        return $this;
+    }
+
+    public function getSignatureToken(): ?string
+    {
+        return $this->signatureToken;
+    }
+
+    public function setSignatureToken(?string $signatureToken): self
+    {
+        $this->signatureToken = $signatureToken;
+        return $this;
+    }
+
+    public function getSignatureDate(): ?\DateTimeInterface
+    {
+        return $this->signatureDate;
+    }
+
+    public function setSignatureDate(?\DateTimeInterface $signatureDate): self
+    {
+        $this->signatureDate = $signatureDate;
+        return $this;
+    }
+
+    public function getSignatureImage(): ?string
+    {
+        return $this->signatureImage;
+    }
+
+    public function setSignatureImage(?string $signatureImage): self
+    {
+        $this->signatureImage = $signatureImage;
         return $this;
     }
 
@@ -89,95 +222,25 @@ class Devis {
         return $this;
     }
 
-    // ...existing code...
-// ...existing code...
-    public function getMontantTtc(): ?float
+    public function getEntreprise(): ?Entreprise
     {
-        return $this->montantTtc;
+        return $this->entreprise;
     }
 
-    public function setMontantTtc(float $montantTtc): self
+    public function setEntreprise(?Entreprise $entreprise): self
     {
-        $this->montantTtc = $montantTtc;
+        $this->entreprise = $entreprise;
         return $this;
     }
-    public function getMontantHT(): ?float
+
+    public function getClient(): ?Client
     {
-        return $this->montantHT;
+        return $this->client;
     }
 
-    public function setMontantHT(float $montantHT): self
+    public function setClient(?Client $client): self
     {
-        $this->montantHT = $montantHT;
+        $this->client = $client;
         return $this;
     }
-    public function getDateValidite(): ?\DateTimeInterface
-    {
-        return $this->dateValidite;
-    }
-
-    public function setDateValidite(\DateTimeInterface $dateValidite): self
-    {
-        $this->dateValidite = $dateValidite;
-        return $this;
-    }
-    public function getDateEmission(): ?\DateTimeInterface
-    {
-        return $this->dateEmission;
-    }
-
-    public function setDateEmission(\DateTimeInterface $dateEmission): self
-    {
-        $this->dateEmission = $dateEmission;
-        return $this;
-    }
-    public function getNumeroDevis(): ?string
-    {
-        return $this->numeroDevis;
-    }
-
-    public function setNumeroDevis(string $numeroDevis): self
-    {
-        $this->numeroDevis = $numeroDevis;
-        return $this;
-    }
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
-
-    #[ORM\Column(type: 'string', length: 50)]
-    private $numeroDevis;
-
-    #[ORM\Column(type: 'date')]
-    private $dateEmission;
-
-    #[ORM\Column(type: 'date')]
-    private $dateValidite;
-
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
-    private $montantHT;
-
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
-    private $montantTtc;
-
-    #[ORM\Column(type: 'decimal', precision: 5, scale: 2)]
-    private $tauxTVA;
-
-    #[ORM\Column(type: 'boolean')]
-    private $status;
-
-    #[ORM\Column(type: 'text')]
-    private $description;
-
-    #[ORM\Column(type: 'date')]
-    private $dateCreation;
-
-    // ...existing code...
-
-    #[ORM\ManyToOne(targetEntity: Entreprise::class)]
-    #[ORM\JoinColumn(name: 'entreprise_id', referencedColumnName: 'id')]
-    private $entreprise;
-
-    // Getters & setters à ajouter
 }

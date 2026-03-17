@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des clients{% endblock %}
+
+{% block body %}
+<div class="container mx-auto max-w-4xl mt-10 bg-white p-8 rounded shadow">
+    <h1 class="text-2xl font-bold mb-6">Liste des clients</h1>
+    <table class="min-w-full bg-white">
+        <thead>
+            <tr class="bg-[#3B0764] text-white">
+                <th class="px-4 py-2 text-left">Nom</th>
+                <th class="px-4 py-2 text-left">Prénom</th>
+                <th class="px-4 py-2 text-left">Email</th>
+                <th class="px-4 py-2 text-left">Téléphone</th>
+                <th class="px-4 py-2 text-left">Ville</th>
+                <th class="px-4 py-2 text-left">Date création</th>
+                <th class="px-4 py-2 text-left">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for client in clients %}
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-2">{{ client.nom }}</td>
+                    <td class="px-4 py-2">{{ client.prenom }}</td>
+                    <td class="px-4 py-2">{{ client.email }}</td>
+                    <td class="px-4 py-2">{{ client.telephone }}</td>
+                    <td class="px-4 py-2">{{ client.ville ?? '-' }}</td>
+                    <td class="px-4 py-2">{{ client.dateCreation|date('d/m/Y') }}</td>
+                    <td class="px-4 py-2">
+                        <a href="{{ path('client_show', {'id': client.idClient}) }}" class="text-blue-600 hover:underline">Voir</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="7" class="text-center py-4 text-gray-400">Aucun client trouvé.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

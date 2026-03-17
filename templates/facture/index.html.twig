@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des factures{% endblock %}
+
+{% block body %}
+<div class="container mx-auto max-w-4xl mt-10 bg-white p-8 rounded shadow">
+    <h1 class="text-2xl font-bold mb-6">Liste des factures</h1>
+    <table class="min-w-full bg-white">
+        <thead>
+            <tr>
+                <th class="px-4 py-2">Numéro</th>
+                <th class="px-4 py-2">Date création</th>
+                <th class="px-4 py-2">Date échéance</th>
+                <th class="px-4 py-2">Montant HT</th>
+                <th class="px-4 py-2">Montant TTC</th>
+                <th class="px-4 py-2">Statut</th>
+                <th class="px-4 py-2">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for facture in factures %}
+                <tr class="border-b">
+                    <td class="px-4 py-2">{{ facture.numeroFacture }}</td>
+                    <td class="px-4 py-2">{{ facture.dateCreation|date('d/m/Y') }}</td>
+                    <td class="px-4 py-2">{{ facture.dateEcheance ? facture.dateEcheance|date('d/m/Y') : '-' }}</td>
+                    <td class="px-4 py-2">{{ facture.montantHT }} €</td>
+                    <td class="px-4 py-2">{{ facture.montantTtc }} €</td>
+                    <td class="px-4 py-2">
+                        {% if facture.etat == 'impayee' %}
+                            <span class="bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded">Impayée</span>
+                        {% elseif facture.etat == 'payee' %}
+                            <span class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">Payée</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-2">
+                        <a href="{{ path('facture_show', {'id': facture.id}) }}" class="text-blue-600 hover:underline">Voir</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="7" class="text-center py-4">Aucune facture trouvée.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

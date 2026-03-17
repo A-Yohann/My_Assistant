@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Devis {{ numero }}</title>
+    <title>Facture {{ numero }}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; font-size: 13px; color: #1a1a1a; padding: 30px; }
@@ -25,6 +25,8 @@
         .totaux td { border: none; padding: 4px 8px; }
         .totaux .total-ttc { font-weight: bold; font-size: 15px; color: #3B0764; border-top: 2px solid #3B0764; }
         .conditions { margin-top: 40px; font-size: 12px; color: #666; }
+        .badge-impayee { color: #dc2626; font-weight: bold; }
+        .badge-payee { color: #16a34a; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -45,11 +47,12 @@
         <div class="clear"></div>
     </div>
 
-    <div class="titre">Devis</div>
+    <div class="titre">Facture</div>
 
     <div class="infos">
         <p><strong>Numéro :</strong> {{ numero }}</p>
         <p><strong>Date :</strong> {{ date }}</p>
+        <p><strong>Date d'échéance :</strong> {{ dateEcheance }}</p>
     </div>
 
     <table>
@@ -82,6 +85,6 @@
     </div>
     <div class="clear"></div>
 
-    <div class="conditions"><strong>Conditions :</strong> {{ conditions }}</div>
+    <div class="conditions"><strong>Conditions :</strong> Paiement sous 30 jours.</div>
 </body>
 </html>

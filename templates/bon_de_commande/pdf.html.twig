@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Devis {{ numero }}</title>
+    <title>Bon de commande {{ numero }}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; font-size: 13px; color: #1a1a1a; padding: 30px; }
@@ -24,7 +24,6 @@
         .totaux table { border: none; }
         .totaux td { border: none; padding: 4px 8px; }
         .totaux .total-ttc { font-weight: bold; font-size: 15px; color: #3B0764; border-top: 2px solid #3B0764; }
-        .conditions { margin-top: 40px; font-size: 12px; color: #666; }
     </style>
 </head>
 <body>
@@ -45,7 +44,7 @@
         <div class="clear"></div>
     </div>
 
-    <div class="titre">Devis</div>
+    <div class="titre">Bon de commande</div>
 
     <div class="infos">
         <p><strong>Numéro :</strong> {{ numero }}</p>
@@ -81,7 +80,5 @@
         </table>
     </div>
     <div class="clear"></div>
-
-    <div class="conditions"><strong>Conditions :</strong> {{ conditions }}</div>
 </body>
 </html>

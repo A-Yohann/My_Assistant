@@ -3,174 +3,26 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
+use App\Entity\Devis;
 use Dompdf\Dompdf;
+use Dompdf\Options;
 
-
-class DevisController extends AbstractController {
-            #[Route('/devis/{id}/envoyer', name: 'devis_envoyer', requirements: ['id' => '\\d+'])]
-            public function envoyer(EntityManagerInterface $em, MailerInterface $mailer, int $id): Response
-            {
-                $devis = $em->getRepository(\App\Entity\Devis::class)->find($id);
-                if (!$devis) {
-                    throw $this->createNotFoundException('Devis non trouvé');
-                }
-                $entreprise = $devis->getEntreprise();
-                $clientEmail = $entreprise ? $entreprise->getEmail() : 'client@email.fr';
-                $clientName = $entreprise ? $entreprise->getNomEntreprise() : 'Nom du client';
-                $html = $this->renderView('devis/pdf.html.twig', [
-                    'client' => $clientName,
-                    'date' => $devis->getDateEmission() ? $devis->getDateEmission()->format('d/m/Y') : '',
-                    'numero' => $devis->getNumeroDevis(),
-                    'articles' => [
-                        ['libelle' => $devis->getDescription(), 'qty' => 1, 'price' => $devis->getMontantHT()],
-                    ],
-                    'totalHT' => $devis->getMontantHT(),
-                    'tva' => $devis->getMontantHT() * $devis->getTauxTVA(),
-                    'totalTTC' => $devis->getMontantTtc(),
-                    'conditions' => 'Paiement sous 30 jours.',
-                    'entreprise_nom' => $entreprise ? $entreprise->getNomEntreprise() : '',
-                    'entreprise_tel' => $entreprise ? $entreprise->getTelephone() : '',
-                    'entreprise_email' => $entreprise ? $entreprise->getEmail() : '',
-                    'entreprise_adresse' => $entreprise ? ($entreprise->getNumeroRue() . ' ' . $entreprise->getNomRue() . ', ' . ($entreprise->getComplementAdresse() ? $entreprise->getComplementAdresse() . ', ' : '') . $entreprise->getCodePostal() . ' ' . $entreprise->getVille() . ', ' . $entreprise->getPays()) : '',
-                ]);
-                $options = new \Dompdf\Options();
-                $options->set('defaultFont', 'Arial');
-                $dompdf = new \Dompdf\Dompdf($options);
-                $dompdf->loadHtml($html);
-                $dompdf->setPaper('A4', 'portrait');
-                $dompdf->render();
-                $pdfOutput = $dompdf->output();
-                $signUrl = $this->generateUrl('devis_signer', ['id' => $devis->getId()], true);
-                $email = (new \Symfony\Component\Mime\Email())
-                    ->from('no-reply@monassistant.fr')
-                    ->to($clientEmail)
-                    ->subject('Votre devis')
-                    ->html('<p>Veuillez trouver votre devis en pièce jointe.<br><a href="' . $signUrl . '">Signer électroniquement le devis</a></p>')
-                    ->attach($pdfOutput, 'devis.pdf', 'application/pdf');
-                $mailer->send($email);
-                $this->addFlash('success', 'Devis envoyé par mail à ' . $clientEmail);
-                return $this->redirectToRoute('devis_show', ['id' => $id]);
-            }
-        #[Route('/devis/{id}/signer', name: 'devis_signer', requirements: ['id' => '\\d+'])]
-        public function signer(EntityManagerInterface $em, int $id): Response
-        {
-            $devis = $em->getRepository(\App\Entity\Devis::class)->find($id);
-            if (!$devis) {
-                throw $this->createNotFoundException('Devis non trouvé');
-            }
-            $devis->setSignature(true);
-            $devis->setEtat('valide');
-            $em->flush();
-            $this->addFlash('success', 'Devis signé avec succès !');
-            return $this->redirectToRoute('devis_show', ['id' => $id]);
-        }
-    #[Route('/devis/{id}/pdf', name: 'devis_pdf')]
-    public function pdf(EntityManagerInterface $em, int $id): Response
-    {
-        // Chemin absolu image test (assets/img/logo.png)
-        $devis = $em->getRepository(\App\Entity\Devis::class)->find($id);
-        if (!$devis) {
-            throw $this->createNotFoundException('Devis non trouvé');
-        }
-        // Préparation des données pour le template PDF
-        $entreprise = $devis->getEntreprise();
-        $client = $entreprise ? $entreprise->getNomEntreprise() : 'Client';
-        $articles = [
-            ['libelle' => $devis->getDescription(), 'qty' => 1, 'price' => $devis->getMontantHT()],
-        ];
-        $adresse = $entreprise ? (
-            $entreprise->getNumeroRue() . ' ' . $entreprise->getNomRue() . ', ' .
-            ($entreprise->getComplementAdresse() ? $entreprise->getComplementAdresse() . ', ' : '') .
-            $entreprise->getCodePostal() . ' ' . $entreprise->getVille() . ', ' . $entreprise->getPays()
-        ) : '';
-        $html = $this->renderView('devis/pdf.html.twig', [
-            'client' => $client,
-            'date' => $devis->getDateEmission() ? $devis->getDateEmission()->format('d/m/Y') : '',
-            'numero' => $devis->getNumeroDevis(),
-            'articles' => $articles,
-            'totalHT' => $devis->getMontantHT(),
-            'tva' => $devis->getMontantHT() * $devis->getTauxTVA(),
-            'totalTTC' => $devis->getMontantTtc(),
-            'conditions' => 'Paiement sous 30 jours.',
-            'entreprise_nom' => $entreprise ? $entreprise->getNomEntreprise() : '',
-            'entreprise_tel' => $entreprise ? $entreprise->getTelephone() : '',
-            'entreprise_email' => $entreprise ? $entreprise->getEmail() : '',
-            'entreprise_adresse' => $adresse,
-        ]);
-        $options = new \Dompdf\Options();
-        $options->set('defaultFont', 'Arial');
-        $options->set('isRemoteEnabled', true); // Autorise les images locales
-        $dompdf = new \Dompdf\Dompdf($options);
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-        return new Response(
-            $dompdf->output(),
-            200,
-            [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="devis-' . $devis->getNumeroDevis() . '.pdf"'
-            ]
-        );
-    }
-
-    #[Route('/devis/{id}', name: 'devis_show', requirements: ['id' => '\\d+'])]
-    public function show(EntityManagerInterface $em, int $id): Response
-    
-    {
-        $devis = $em->getRepository(\App\Entity\Devis::class)->find($id);
-        if (!$devis) {
-            throw $this->createNotFoundException('Devis non trouvé');
-        }
-        return $this->render('devis/show.html.twig', [
-            'devis' => $devis
-        ]);
-    }
-    #[Route('/devis/generer', name: 'devis_generer')]
-    public function generer(EntityManagerInterface $em, \Symfony\Component\HttpFoundation\Request $request): Response
-    {
-        $devis = new \App\Entity\Devis();
-        $form = $this->createForm(\App\Form\DevisType::class, $devis, [
-            'user' => $this->getUser(),
-        ]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Lier l'entreprise sélectionnée
-            /** @var \App\Entity\Entreprise|null $entreprise */
-            $entreprise = $form->get('entreprise')->getData();
-            if ($entreprise) {
-                $devis->setEntreprise($entreprise);
-                $devis->setTauxTVA($entreprise->getTva());
-                $devis->setMontantTtc($devis->getMontantHT() * (1 + $entreprise->getTva()));
-            }
-            // Statut initial
-            $devis->setEtat('en_attente');
-            $em->persist($devis);
-            $em->flush();
-            $this->addFlash('success', 'Devis enregistré avec succès !');
-            return $this->redirectToRoute('devis_index');
-        }
-        return $this->render('devis/generer.html.twig', [
-            'form' => $form->createView()
-        ]);
-    }
-    // ...existing code...
-    // ...existing code...
-    // ...existing code...
-        #[Route('/devis', name: 'devis_index')]
+class DevisController extends AbstractController
+{
+    #[Route('/devis', name: 'devis_index')]
     public function index(EntityManagerInterface $em): Response
     {
-        // Récupérer l'utilisateur connecté
         /** @var User|null $user */
         $user = $this->getUser();
         $devisList = [];
         if ($user) {
-            $devisList = $em->getRepository(\App\Entity\Devis::class)
+            $devisList = $em->getRepository(Devis::class)
                 ->createQueryBuilder('d')
                 ->join('d.entreprise', 'e')
                 ->where('e.user = :user')
@@ -178,9 +30,285 @@ class DevisController extends AbstractController {
                 ->getQuery()
                 ->getResult();
         }
-        // Affiche la liste filtrée ou vide
         return $this->render('devis/index.html.twig', [
             'devisList' => $devisList
+        ]);
+    }
+
+    #[Route('/devis/generer', name: 'devis_generer')]
+    public function generer(EntityManagerInterface $em, Request $request): Response
+    {
+        $devis = new Devis();
+        $form = $this->createForm(\App\Form\DevisType::class, $devis, [
+            'user' => $this->getUser(),
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var \App\Entity\Entreprise|null $entreprise */
+            $entreprise = $form->get('entreprise')->getData();
+            if ($entreprise) {
+                $devis->setEntreprise($entreprise);
+                $devis->setTauxTVA($entreprise->getTva());
+                $devis->setMontantTtc($devis->getMontantHT() * (1 + $entreprise->getTva()));
+            }
+
+            // ✅ Création et enregistrement du client
+            $client = new \App\Entity\Client();
+            $client->setNom($form->get('clientNom')->getData());
+            $client->setPrenom($form->get('clientPrenom')->getData());
+            $client->setEmail($form->get('clientEmail')->getData());
+            $client->setTelephone($form->get('clientTelephone')->getData());
+            $client->setNumeroRue($form->get('clientNumeroRue')->getData());
+            $client->setNomRue($form->get('clientNomRue')->getData());
+            $client->setCodePostal($form->get('clientCodePostal')->getData());
+            $client->setVille($form->get('clientVille')->getData());
+            $client->setPays($form->get('clientPays')->getData());
+            $client->setDateCreation(new \DateTime());
+            $client->setUser($this->getUser());
+
+            $em->persist($client);
+
+            // ✅ Lier le client au devis
+            $devis->setClient($client);
+            $devis->setEtat('en_attente');
+
+            $em->persist($devis);
+            $em->flush();
+
+            $this->addFlash('success', 'Devis enregistré avec succès !');
+            return $this->redirectToRoute('devis_index');
+        }
+
+        return $this->render('devis/generer.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    #[Route('/devis/{id}', name: 'devis_show', requirements: ['id' => '\\d+'])]
+    public function show(EntityManagerInterface $em, int $id): Response
+    {
+        $devis = $em->getRepository(Devis::class)->find($id);
+        if (!$devis) {
+            throw $this->createNotFoundException('Devis non trouvé');
+        }
+        return $this->render('devis/show.html.twig', [
+            'devis' => $devis
+        ]);
+    }
+
+    #[Route('/devis/{id}/pdf', name: 'devis_pdf', requirements: ['id' => '\\d+'])]
+    public function pdf(EntityManagerInterface $em, int $id): Response
+    {
+        $devis = $em->getRepository(Devis::class)->find($id);
+        if (!$devis) {
+            throw $this->createNotFoundException('Devis non trouvé');
+        }
+
+        $entreprise = $devis->getEntreprise();
+        $client = $devis->getClient();
+
+        $adresse = $entreprise ? (
+            $entreprise->getNumeroRue() . ' ' . $entreprise->getNomRue() . ', ' .
+            ($entreprise->getComplementAdresse() ? $entreprise->getComplementAdresse() . ', ' : '') .
+            $entreprise->getCodePostal() . ' ' . $entreprise->getVille() . ', ' . $entreprise->getPays()
+        ) : '';
+
+        $clientAdresse = $client ? (
+            $client->getNumeroRue() . ' ' . $client->getNomRue() . ', ' .
+            $client->getCodePostal() . ' ' . $client->getVille() . ', ' . $client->getPays()
+        ) : '';
+
+        $html = $this->renderView('devis/pdf.html.twig', [
+            'numero'             => $devis->getNumeroDevis(),
+            'date'               => $devis->getDateEmission() ? $devis->getDateEmission()->format('d/m/Y') : '',
+            'articles'           => [
+                ['libelle' => $devis->getDescription(), 'qty' => 1, 'price' => $devis->getMontantHT()],
+            ],
+            'totalHT'            => $devis->getMontantHT(),
+            'tva'                => $devis->getMontantHT() * $devis->getTauxTVA(),
+            'totalTTC'           => $devis->getMontantTtc(),
+            'conditions'         => 'Paiement sous 30 jours.',
+            'entreprise_nom'     => $entreprise ? $entreprise->getNomEntreprise() : '',
+            'entreprise_tel'     => $entreprise ? $entreprise->getTelephone() : '',
+            'entreprise_email'   => $entreprise ? $entreprise->getEmail() : '',
+            'entreprise_adresse' => $adresse,
+            'client_nom'         => $client ? $client->getNom() : '',
+            'client_prenom'      => $client ? $client->getPrenom() : '',
+            'client_email'       => $client ? $client->getEmail() : '',
+            'client_telephone'   => $client ? $client->getTelephone() : '',
+            'client_adresse'     => $clientAdresse,
+        ]);
+
+        $options = new Options();
+        $options->set('defaultFont', 'Arial');
+        $options->set('isRemoteEnabled', true);
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return new Response(
+            $dompdf->output(),
+            200,
+            [
+                'Content-Type'        => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="devis-' . $devis->getNumeroDevis() . '.pdf"',
+            ]
+        );
+    }
+
+    #[Route('/devis/{id}/envoyer', name: 'devis_envoyer', requirements: ['id' => '\\d+'])]
+    public function envoyer(EntityManagerInterface $em, MailerInterface $mailer, int $id): Response
+    {
+        $devis = $em->getRepository(Devis::class)->find($id);
+        if (!$devis) {
+            throw $this->createNotFoundException('Devis non trouvé');
+        }
+
+        // ✅ Génération du token unique
+        $token = bin2hex(random_bytes(32));
+        $devis->setSignatureToken($token);
+        $em->flush();
+
+        $entreprise = $devis->getEntreprise();
+        $client = $devis->getClient();
+        $clientEmail = $client ? $client->getEmail() : ($entreprise ? $entreprise->getEmail() : 'client@email.fr');
+        $clientName  = $client ? $client->getNom() . ' ' . $client->getPrenom() : ($entreprise ? $entreprise->getNomEntreprise() : 'Nom du client');
+
+        $adresse = $entreprise ? (
+            $entreprise->getNumeroRue() . ' ' . $entreprise->getNomRue() . ', ' .
+            ($entreprise->getComplementAdresse() ? $entreprise->getComplementAdresse() . ', ' : '') .
+            $entreprise->getCodePostal() . ' ' . $entreprise->getVille() . ', ' . $entreprise->getPays()
+        ) : '';
+
+        $clientAdresse = $client ? (
+            $client->getNumeroRue() . ' ' . $client->getNomRue() . ', ' .
+            $client->getCodePostal() . ' ' . $client->getVille() . ', ' . $client->getPays()
+        ) : '';
+
+        $html = $this->renderView('devis/pdf.html.twig', [
+            'numero'             => $devis->getNumeroDevis(),
+            'date'               => $devis->getDateEmission() ? $devis->getDateEmission()->format('d/m/Y') : '',
+            'articles'           => [
+                ['libelle' => $devis->getDescription(), 'qty' => 1, 'price' => $devis->getMontantHT()],
+            ],
+            'totalHT'            => $devis->getMontantHT(),
+            'tva'                => $devis->getMontantHT() * $devis->getTauxTVA(),
+            'totalTTC'           => $devis->getMontantTtc(),
+            'conditions'         => 'Paiement sous 30 jours.',
+            'entreprise_nom'     => $entreprise ? $entreprise->getNomEntreprise() : '',
+            'entreprise_tel'     => $entreprise ? $entreprise->getTelephone() : '',
+            'entreprise_email'   => $entreprise ? $entreprise->getEmail() : '',
+            'entreprise_adresse' => $adresse,
+            'client_nom'         => $client ? $client->getNom() : '',
+            'client_prenom'      => $client ? $client->getPrenom() : '',
+            'client_email'       => $client ? $client->getEmail() : '',
+            'client_telephone'   => $client ? $client->getTelephone() : '',
+            'client_adresse'     => $clientAdresse,
+        ]);
+
+        $options = new Options();
+        $options->set('defaultFont', 'Arial');
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $pdfOutput = $dompdf->output();
+
+        // ✅ URL avec token sécurisé
+        $signUrl = $this->generateUrl('devis_signer', [
+            'id'    => $devis->getId(),
+            'token' => $token,
+        ], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $email = (new \Symfony\Component\Mime\Email())
+            ->from('no-reply@monassistant.fr')
+            ->to($clientEmail)
+            ->subject('Votre devis ' . $devis->getNumeroDevis())
+            ->html('
+                <p>Bonjour ' . $clientName . ',</p>
+                <p>Veuillez trouver votre devis en pièce jointe.</p>
+                <p>
+                    <a href="' . $signUrl . '" style="background:#3B0764;color:white;padding:10px 20px;border-radius:5px;text-decoration:none;">
+                        Signer électroniquement le devis
+                    </a>
+                </p>
+                <p>Ce lien est personnel et sécurisé.</p>
+            ')
+            ->attach($pdfOutput, 'devis-' . $devis->getNumeroDevis() . '.pdf', 'application/pdf');
+
+        $mailer->send($email);
+        $this->addFlash('success', 'Devis envoyé par mail à ' . $clientEmail);
+        return $this->redirectToRoute('devis_show', ['id' => $id]);
+    }
+
+    #[Route('/devis/{id}/signer/{token}', name: 'devis_signer', requirements: ['id' => '\\d+'])]
+    public function signer(EntityManagerInterface $em, int $id, string $token): Response
+    {
+        $devis = $em->getRepository(Devis::class)->find($id);
+
+        if (!$devis || $devis->getSignatureToken() !== $token) {
+            throw $this->createNotFoundException('Lien de signature invalide ou expiré.');
+        }
+
+        if ($devis->isSignature()) {
+            $this->addFlash('info', 'Ce devis a déjà été signé.');
+            return $this->redirectToRoute('devis_show', ['id' => $id]);
+        }
+
+        return $this->render('devis/signer.html.twig', [
+            'devis' => $devis,
+            'token' => $token,
+        ]);
+    }
+
+    #[Route('/devis/{id}/signer/{token}/confirmer', name: 'devis_signer_confirmer', methods: ['POST'], requirements: ['id' => '\\d+'])]
+    public function signerConfirmer(EntityManagerInterface $em, Request $request, int $id, string $token): Response
+    {
+        $devis = $em->getRepository(Devis::class)->find($id);
+
+        if (!$devis || $devis->getSignatureToken() !== $token) {
+            throw $this->createNotFoundException('Lien de signature invalide ou expiré.');
+        }
+
+        if ($devis->isSignature()) {
+            $this->addFlash('info', 'Ce devis a déjà été signé.');
+            return $this->redirectToRoute('devis_show', ['id' => $id]);
+        }
+
+        $signatureImage = $request->request->get('signature_image');
+
+        if (!$signatureImage) {
+            $this->addFlash('error', 'Veuillez dessiner votre signature avant de valider.');
+            return $this->redirectToRoute('devis_signer', ['id' => $id, 'token' => $token]);
+        }
+
+        // ✅ Enregistrement de la signature
+        $devis->setSignature(true);
+        $devis->setEtat('valide');
+        $devis->setSignatureDate(new \DateTime());
+        $devis->setSignatureImage($signatureImage);
+        $devis->setSignatureToken(null);
+
+        // ✅ Génération automatique du bon de commande
+        $bon = new \App\Entity\BonDeCommande();
+        $bon->setNumeroBon('BC-' . date('Y') . '-' . str_pad($id, 4, '0', STR_PAD_LEFT));
+        $bon->setDateCreation(new \DateTime());
+        $bon->setMontantHT($devis->getMontantHT());
+        $bon->setMontantTtc($devis->getMontantTtc());
+        $bon->setTauxTVA($devis->getTauxTVA());
+        $bon->setDescription($devis->getDescription());
+        $bon->setEntreprise($devis->getEntreprise());
+        $bon->setDevis($devis);
+        $bon->setEtat('en_attente');
+
+        $em->persist($bon);
+        $em->flush();
+
+        return $this->render('devis/signature_confirmee.html.twig', [
+            'devis' => $devis,
+            'bon'   => $bon,
         ]);
     }
 }

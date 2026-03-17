@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Signature confirmée{% endblock %}
+
+{% block body %}
+<div class="container mx-auto max-w-2xl mt-10 bg-white p-8 rounded shadow text-center">
+    <div class="text-green-500 text-6xl mb-4">✓</div>
+    <h1 class="text-2xl font-bold mb-4">Devis signé avec succès !</h1>
+    <p class="text-gray-600 mb-2">Devis n° <strong>{{ devis.numeroDevis }}</strong></p>
+    <p class="text-gray-600 mb-2">Signé le <strong>{{ devis.signatureDate|date('d/m/Y à H:i') }}</strong></p>
+    <p class="text-green-600 font-semibold mb-6">Un bon de commande a été généré automatiquement : <strong>{{ bon.numeroBon }}</strong></p>
+    <p class="text-sm text-gray-400">Merci. Vous pouvez fermer cette page.</p>
+</div>
+{% endblock %}

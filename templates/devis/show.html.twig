@@ -5,26 +5,65 @@
 {% block body %}
 <div class="container mx-auto max-w-4xl mt-10 bg-white p-8 rounded shadow">
     <h1 class="text-2xl font-bold mb-6">Détail du devis</h1>
-    <table class="min-w-full bg-white">
-        <tr><th>Numéro</th><td>{{ devis.numeroDevis }}</td></tr>
-        <tr><th>Date émission</th><td>{{ devis.dateEmission|date('d/m/Y') }}</td></tr>
-        <tr><th>Date validité</th><td>{{ devis.dateValidite|date('d/m/Y') }}</td></tr>
-        <tr><th>Montant HT</th><td>{{ devis.montantHT }} €</td></tr>
-        <tr><th>Montant TTC</th><td>{{ devis.montantTtc }} €</td></tr>
-        <tr><th>Taux TVA</th><td>{{ devis.tauxTVA }}</td></tr>
-        <tr><th>Statut</th><td>
-            {% if devis.etat == 'en_attente' %}En attente{% elseif devis.etat == 'valide' %}Validé{% elseif devis.etat == 'commande' %}En attente de paiement{% elseif devis.etat == 'paye' %}Payé{% else %}{{ devis.etat }}{% endif %}
+
+    {% for message in app.flashes('success') %}
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('info') %}
+        <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-2 rounded mb-4">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">{{ message }}</div>
+    {% endfor %}
+
+    <table class="min-w-full bg-white mb-6">
+        <tr class="border-b"><th class="text-left px-4 py-2 w-40">Numéro</th><td class="px-4 py-2">{{ devis.numeroDevis }}</td></tr>
+        <tr class="border-b"><th class="text-left px-4 py-2">Date émission</th><td class="px-4 py-2">{{ devis.dateEmission|date('d/m/Y') }}</td></tr>
+        <tr class="border-b"><th class="text-left px-4 py-2">Date validité</th><td class="px-4 py-2">{{ devis.dateValidite|date('d/m/Y') }}</td></tr>
+        <tr class="border-b"><th class="text-left px-4 py-2">Montant HT</th><td class="px-4 py-2">{{ devis.montantHT }} €</td></tr>
+        <tr class="border-b"><th class="text-left px-4 py-2">Montant TTC</th><td class="px-4 py-2">{{ devis.montantTtc }} €</td></tr>
+        <tr class="border-b"><th class="text-left px-4 py-2">Taux TVA</th><td class="px-4 py-2">{{ devis.tauxTVA }}</td></tr>
+        <tr class="border-b"><th class="text-left px-4 py-2">Statut</th><td class="px-4 py-2">
+            {% if devis.etat == 'en_attente' %}
+                <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-1 rounded">En attente</span>
+            {% elseif devis.etat == 'valide' %}
+                <span class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">Validé</span>
+            {% elseif devis.etat == 'commande' %}
+                <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded">En attente de paiement</span>
+            {% elseif devis.etat == 'paye' %}
+                <span class="bg-purple-100 text-purple-800 text-xs font-semibold px-2 py-1 rounded">Payé</span>
+            {% else %}
+                <span class="bg-gray-100 text-gray-800 text-xs font-semibold px-2 py-1 rounded">{{ devis.etat }}</span>
+            {% endif %}
         </td></tr>
-        <tr><th>Description</th><td>{{ devis.description }}</td></tr>
-        <tr><th>Entreprise</th><td>{{ devis.entreprise.nomEntreprise ?? 'N/A' }}</td></tr>
+        <tr class="border-b"><th class="text-left px-4 py-2">Signature</th><td class="px-4 py-2">
+            {% if devis.isSignature %}
+                <span class="text-green-600 font-semibold">✓ Signé le {{ devis.signatureDate|date('d/m/Y à H:i') }}</span>
+            {% else %}
+                <span class="text-yellow-600">En attente de signature</span>
+            {% endif %}
+        </td></tr>
+        <tr class="border-b"><th class="text-left px-4 py-2">Description</th><td class="px-4 py-2">{{ devis.description }}</td></tr>
+        <tr class="border-b"><th class="text-left px-4 py-2">Entreprise</th><td class="px-4 py-2">{{ devis.entreprise.nomEntreprise ?? 'N/A' }}</td></tr>
     </table>
-    <a href="{{ path('devis_index') }}" class="mt-4 inline-block text-blue-600 hover:underline">Retour à la liste</a>
-        {% if not devis.signature %}
-            <a href="{{ path('devis_signer', {'id': devis.id}) }}" class="mt-4 ml-4 inline-block text-green-600 hover:underline">Signer électroniquement</a>
-        {% else %}
-            <span class="mt-4 ml-4 inline-block text-green-600">Déjà signé</span>
-        {% endif %}
-    <a href="{{ path('devis_pdf', {'id': devis.id}) }}" class="mt-4 ml-4 inline-block text-green-600 hover:underline">Télécharger PDF</a>
-    <a href="{{ path('devis_envoyer', {'id': devis.id}) }}" class="mt-4 ml-4 inline-block text-blue-600 hover:underline">Envoyer par mail</a>
+
+    {% if devis.isSignature and devis.signatureImage %}
+        <div class="mb-6">
+            <p class="text-sm font-semibold text-gray-600 mb-2">Signature électronique :</p>
+            <img src="{{ devis.signatureImage }}" alt="Signature" class="border rounded" style="max-height: 100px;">
+        </div>
+    {% endif %}
+
+    <div class="flex flex-wrap gap-3">
+        <a href="{{ path('devis_index') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">
+            ← Retour à la liste
+        </a>
+        <a href="{{ path('devis_pdf', {'id': devis.id}) }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+            Télécharger PDF
+        </a>
+        <a href="{{ path('devis_envoyer', {'id': devis.id}) }}" class="bg-[#3B0764] text-white px-4 py-2 rounded hover:opacity-90">
+            Envoyer par mail
+        </a>
+    </div>
 </div>
 {% endblock %}

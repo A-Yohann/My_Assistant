@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Facture {{ facture.numeroFacture }}{% endblock %}
+
+{% block body %}
+<div class="container mx-auto max-w-4xl mt-10 bg-white p-8 rounded shadow">
+    <h1 class="text-2xl font-bold mb-6">Facture</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('info') %}
+        <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-2 rounded mb-4">{{ message }}</div>
+    {% endfor %}
+
+    <table class="min-w-full bg-white mb-6">
+        <tr class="border-b"><th class="text-left px-4 py-2 w-40">Numéro</th><td class="px-4 py-2">{{ facture.numeroFacture }}</td></tr>
+        <tr class="border-b"><th class="text-left px-4 py-2">Date création</th><td class="px-4 py-2">{{ facture.dateCreation|date('d/m/Y') }}</td></tr>
+        <tr class="border-b"><th class="text-left px-4 py-2">Date échéance</th><td class="px-4 py-2">{{ facture.dateEcheance ? facture.dateEcheance|date('d/m/Y') : '-' }}</td></tr>
+        <tr class="border-b"><th class="text-left px-4 py-2">Montant HT</th><td class="px-4 py-2">{{ facture.montantHT }} €</td></tr>
+        <tr class="border-b"><th class="text-left px-4 py-2">Montant TTC</th><td class="px-4 py-2">{{ facture.montantTtc }} €</td></tr>
+        <tr class="border-b"><th class="text-left px-4 py-2">Taux TVA</th><td class="px-4 py-2">{{ facture.tauxTVA }}</td></tr>
+        <tr class="border-b"><th class="text-left px-4 py-2">Description</th><td class="px-4 py-2">{{ facture.description }}</td></tr>
+        <tr class="border-b"><th class="text-left px-4 py-2">Entreprise</th><td class="px-4 py-2">{{ facture.entreprise.nomEntreprise ?? 'N/A' }}</td></tr>
+        <tr class="border-b"><th class="text-left px-4 py-2">Bon de commande source</th><td class="px-4 py-2">
+            <a href="{{ path('bon_de_commande_show', {'id': facture.bonDeCommande.id}) }}" class="text-blue-600 hover:underline">
+                {{ facture.bonDeCommande.numeroBon }}
+            </a>
+        </td></tr>
+        <tr class="border-b"><th class="text-left px-4 py-2">Statut</th><td class="px-4 py-2">
+            {% if facture.etat == 'impayee' %}
+                <span class="bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded">Impayée</span>
+            {% elseif facture.etat == 'payee' %}
+                <span class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">Payée</span>
+            {% endif %}
+        </td></tr>
+    </table>
+
+    <div class="flex flex-wrap gap-3">
+        <a href="{{ path('facture_index') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">
+            ← Retour à la liste
+        </a>
+        <a href="{{ path('facture_pdf', {'id': facture.id}) }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+            Télécharger PDF
+        </a>
+        {% if facture.etat == 'impayee' %}
+            <a href="{{ path('facture_payer', {'id': facture.id}) }}"
+               class="bg-[#3B0764] text-white px-4 py-2 rounded hover:opacity-90"
+               onclick="return confirm('Confirmer le paiement de cette facture ?')">
+                Marquer comme payée
+            </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
