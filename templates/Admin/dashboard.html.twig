@@ -1,0 +1,81 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block page_title %}Tableau de bord{% endblock %}
+
+{% block main %}
+<div class="p-4">
+
+    <h1 class="text-2xl font-bold mb-6" style="color: #231F20;">
+        👋 Bienvenue sur My Assistant Admin
+    </h1>
+
+    <!-- Stats principales -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 32px;">
+
+        <div style="background: #3B0764; color: white; padding: 20px; border-radius: 8px; text-align: center;">
+            <div style="font-size: 2rem; font-weight: bold;">{{ totalUsers }}</div>
+            <div style="font-size: 0.85rem; margin-top: 4px;">👤 Utilisateurs</div>
+        </div>
+
+        <div style="background: #3B0764; color: white; padding: 20px; border-radius: 8px; text-align: center;">
+            <div style="font-size: 2rem; font-weight: bold;">{{ totalEntreprises }}</div>
+            <div style="font-size: 0.85rem; margin-top: 4px;">🏢 Entreprises</div>
+        </div>
+
+        <div style="background: #3B0764; color: white; padding: 20px; border-radius: 8px; text-align: center;">
+            <div style="font-size: 2rem; font-weight: bold;">{{ totalClients }}</div>
+            <div style="font-size: 0.85rem; margin-top: 4px;">👥 Clients</div>
+        </div>
+
+        <div style="background: #3B0764; color: white; padding: 20px; border-radius: 8px; text-align: center;">
+            <div style="font-size: 2rem; font-weight: bold;">{{ totalDevis }}</div>
+            <div style="font-size: 0.85rem; margin-top: 4px;">📄 Devis</div>
+        </div>
+
+        <div style="background: #3B0764; color: white; padding: 20px; border-radius: 8px; text-align: center;">
+            <div style="font-size: 2rem; font-weight: bold;">{{ totalBons }}</div>
+            <div style="font-size: 0.85rem; margin-top: 4px;">📋 Bons de commande</div>
+        </div>
+
+        <div style="background: #3B0764; color: white; padding: 20px; border-radius: 8px; text-align: center;">
+            <div style="font-size: 2rem; font-weight: bold;">{{ totalFactures }}</div>
+            <div style="font-size: 0.85rem; margin-top: 4px;">🧾 Factures</div>
+        </div>
+
+        <div style="background: #3B0764; color: white; padding: 20px; border-radius: 8px; text-align: center;">
+            <div style="font-size: 2rem; font-weight: bold;">{{ totalNotes }}</div>
+            <div style="font-size: 0.85rem; margin-top: 4px;">📝 Notes</div>
+        </div>
+
+    </div>
+
+    <!-- Alertes -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px;">
+
+        <div style="background: #fef3c7; border-left: 4px solid #d97706; padding: 16px; border-radius: 8px;">
+            <div style="font-weight: bold; color: #92400e; margin-bottom: 4px;">⏳ Devis en attente</div>
+            <div style="font-size: 2rem; font-weight: bold; color: #d97706;">{{ devisEnAttente }}</div>
+            <a href="{{ path('admin_devis_index') }}" style="font-size: 0.8rem; color: #d97706;">Voir les devis →</a>
+        </div>
+
+        <div style="background: #fee2e2; border-left: 4px solid #dc2626; padding: 16px; border-radius: 8px;">
+            <div style="font-weight: bold; color: #991b1b; margin-bottom: 4px;">🔴 Factures impayées</div>
+            <div style="font-size: 2rem; font-weight: bold; color: #dc2626;">{{ facturesImpayees }}</div>
+            <a href="{{ path('admin_facture_index') }}" style="font-size: 0.8rem; color: #dc2626;">Voir les factures →</a>
+        </div>
+
+    </div>
+
+    <!-- Raccourcis -->
+    <h2 style="font-size: 1.1rem; font-weight: bold; margin-bottom: 12px; color: #231F20;">Accès rapide</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+        <a href="{{ path('admin_user_index') }}" style="background: #231F20; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">👤 Utilisateurs</a>
+        <a href="{{ path('admin_entreprise_index') }}" style="background: #231F20; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">🏢 Entreprises</a>
+        <a href="{{ path('admin_client_index') }}" style="background: #231F20; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">👥 Clients</a>
+        <a href="{{ path('admin_devis_index') }}" style="background: #231F20; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">📄 Devis</a>
+        <a href="{{ path('admin_facture_index') }}" style="background: #231F20; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">🧾 Factures</a>
+        <a href="{{ path('admin_note_index') }}" style="background: #231F20; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">📝 Notes</a>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+/* Couleurs principales */
+:root {
+    --color-primary: #3B0764;
+    --color-primary-dark: #231F20;
+}
+
+/* Sidebar */
+.sidebar {
+    background-color: #231F20 !important;
+}
+
+.sidebar .menu-item a,
+.sidebar .menu-item span {
+    color: #fff !important;
+}
+
+.sidebar .menu-item.active a,
+.sidebar .menu-item a:hover {
+    background-color: #3B0764 !important;
+    color: #fff !important;
+}
+
+.sidebar-section-title {
+    color: #9ca3af !important;
+    font-size: 0.7rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* Header */
+.main-header {
+    background-color: #231F20 !important;
+    border-bottom: 2px solid #3B0764 !important;
+}
+
+.main-header .logo {
+    color: #fff !important;
+}
+
+/* Boutons */
+.btn-primary,
+.action-new .btn {
+    background-color: #3B0764 !important;
+    border-color: #3B0764 !important;
+    color: #fff !important;
+}
+
+.btn-primary:hover,
+.action-new .btn:hover {
+    background-color: #231F20 !important;
+    border-color: #231F20 !important;
+}
+
+/* Table headers */
+.datagrid thead th {
+    background-color: #3B0764 !important;
+    color: #fff !important;
+}
+
+/* Badges statut */
+.badge-success { background-color: #16a34a !important; }
+.badge-warning { background-color: #d97706 !important; }
+.badge-danger  { background-color: #dc2626 !important; }

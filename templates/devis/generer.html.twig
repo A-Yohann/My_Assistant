@@ -3,18 +3,125 @@
 {% block title %}Générer un devis{% endblock %}
 
 {% block body %}
-{% for message in app.flashes('success') %}
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4">
-        {{ message }}
+<div class="container mx-auto max-w-2xl mt-6 lg:mt-10 px-4 mb-10">
+
+    {% for message in app.flashes('success') %}
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="bg-white rounded-xl shadow p-6 lg:p-8">
+        <h1 class="text-2xl font-bold mb-8 text-[#231F20]">Générer un devis</h1>
+
+        {{ form_start(form, {'attr': {'class': 'space-y-5'}}) }}
+
+            <!-- Infos devis -->
+            <div class="border-b pb-4 mb-2">
+                <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4">Informations du devis</h2>
+
+                <div>
+                    {{ form_label(form.numeroDevis, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.numeroDevis, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'Ex: DEV-2026-001'}}) }}
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        {{ form_label(form.dateEmission, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.dateEmission, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+                    </div>
+                    <div>
+                        {{ form_label(form.dateValidite, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.dateValidite, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        {{ form_label(form.montantHT, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.montantHT, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': '0.00'}}) }}
+                    </div>
+                    <div>
+                        {{ form_label(form.dateCreation, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.dateCreation, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    {{ form_label(form.description, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764] resize-none', 'rows': '3', 'placeholder': 'Description du devis...'}}) }}
+                </div>
+
+                <div class="mt-4">
+                    {{ form_label(form.entreprise, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.entreprise, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764] bg-white'}}) }}
+                </div>
+            </div>
+
+            <!-- Infos client -->
+            <div>
+                <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4">Informations du client</h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        {{ form_label(form.clientNom, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.clientNom, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'Dupond'}}) }}
+                    </div>
+                    <div>
+                        {{ form_label(form.clientPrenom, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.clientPrenom, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'Jean'}}) }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        {{ form_label(form.clientEmail, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.clientEmail, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'jean@email.fr'}}) }}
+                    </div>
+                    <div>
+                        {{ form_label(form.clientTelephone, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.clientTelephone, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': '06 00 00 00 00'}}) }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 mt-4">
+                    <div>
+                        {{ form_label(form.clientNumeroRue, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.clientNumeroRue, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': '12'}}) }}
+                    </div>
+                    <div class="col-span-2">
+                        {{ form_label(form.clientNomRue, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.clientNomRue, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'Rue de la Paix'}}) }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+                    <div>
+                        {{ form_label(form.clientCodePostal, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.clientCodePostal, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': '75000'}}) }}
+                    </div>
+                    <div>
+                        {{ form_label(form.clientVille, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.clientVille, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'Paris'}}) }}
+                    </div>
+                    <div>
+                        {{ form_label(form.clientPays, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.clientPays, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boutons -->
+            <div class="grid grid-cols-2 gap-3 pt-4 border-t">
+                <a href="{{ path('devis_index') }}" class="text-center bg-gray-200 text-gray-700 px-5 py-3 rounded-lg hover:bg-gray-300 text-sm font-medium">
+                    Annuler
+                </a>
+                <button type="submit" class="text-center bg-[#3B0764] text-white px-5 py-3 rounded-lg hover:opacity-90 font-semibold text-sm">
+                    Générer le devis
+                </button>
+            </div>
+
+        {{ form_end(form) }}
     </div>
-{% endfor %}
-<div class="container mx-auto max-w-2xl mt-10 bg-white p-8 rounded shadow">
-    <h1 class="text-2xl font-bold mb-6">Générer un devis</h1>
-    {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <div class="flex justify-end space-x-2 mt-4">
-        <button type="submit" class="bg-[#3B0764] text-white px-6 py-2 rounded">Générer le devis</button>
-    </div>
-    {{ form_end(form) }}
 </div>
 {% endblock %}
