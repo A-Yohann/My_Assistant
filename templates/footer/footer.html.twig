@@ -1,23 +1,36 @@
 <footer class="bg-[#231F20] text-white py-10 mt-auto">
-    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-3 gap-8">
+    <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 sm:grid-cols-4 gap-8">
 
         <!-- Colonne 1 -->
-        <div class="space-y-2">
-            <a href="/" class="block hover:text-gray-400 transition">Accueil</a>
-            <a href="/dashboard" class="block hover:text-gray-400 transition">Tableau de bord</a>
+        <div class="space-y-2 text-center">
+            <h3 class="font-semibold text-gray-400 text-xs uppercase tracking-wide mb-3">Navigation</h3>
+            <a href="/" class="block hover:text-gray-400 transition text-sm">Accueil</a>
+            <a href="/dashboard" class="block hover:text-gray-400 transition text-sm">Tableau de bord</a>
         </div>
 
         <!-- Colonne 2 -->
-        <div class="space-y-2">
-            <a href="/contact" class="block hover:text-gray-400 transition">Contact</a>
-            <a href="/register" class="block hover:text-gray-400 transition">Inscription</a>
+        <div class="space-y-2 text-center">
+            <h3 class="font-semibold text-gray-400 text-xs uppercase tracking-wide mb-3">Support</h3>
+            <a href="/contact" class="block hover:text-gray-400 transition text-sm">Contact</a>
         </div>
 
         <!-- Colonne 3 -->
-        <div class="space-y-2">
-            <a href="/login" class="block hover:text-gray-400 transition">Connexion</a>
-            <a href="/about" class="block hover:text-gray-400 transition">À propos</a>
+        <div class="space-y-2 text-center">
+            <h3 class="font-semibold text-gray-400 text-xs uppercase tracking-wide mb-3">Compte</h3>
+            <a href="/login" class="block hover:text-gray-400 transition text-sm">Connexion</a>
+            <a href="/register" class="block hover:text-gray-400 transition text-sm">Inscription</a>
         </div>
 
+        <!-- Colonne 4 -->
+        <div class="space-y-2 text-center">
+            <h3 class="font-semibold text-gray-400 text-xs uppercase tracking-wide mb-3">Légal</h3>
+            <a href="{{ path('app_mention') }}" class="block hover:text-gray-400 transition text-sm">Mentions légales</a>
+            <a href="/about" class="block hover:text-gray-400 transition text-sm">À propos</a>
+        </div>
+
+    </div>
+
+    <div class="border-t border-gray-700 mt-8 pt-6 text-center">
+        <p class="text-sm text-gray-400">&copy; {{ "now"|date("Y") }} My Assistant. Tous droits réservés.</p>
     </div>
 </footer>
