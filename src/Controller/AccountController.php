@@ -35,7 +35,7 @@ class AccountController extends AbstractController
         }
 
         // ----------------------------
-        // SUPPRESSION DU COMPTE
+        // SUPPRESSION DU COMPTE.
         // ----------------------------
         if ($request->request->get('action') === 'delete') {
 
