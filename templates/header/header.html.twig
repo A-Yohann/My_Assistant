@@ -14,15 +14,15 @@
                 <a href="{{ path('app_entreprise') }}" class="hover:text-gray-400 transition">Mes entreprises</a>
                 <a href="{{ path('app_contact') }}" class="hover:text-gray-400 transition">Contact</a>
                 <a href="{{ path('notes') }}" class="hover:text-gray-400 transition">Notes</a>
+
                 {% if app.user %}
-                    <!-- ✅ Lien admin uniquement pour ROLE_ADMIN -->
+                    <!-- Lien admin uniquement pour ROLE_ADMIN -->
                     {% if is_granted('ROLE_ADMIN') %}
                         <a href="{{ path('admin') }}" class="hover:text-gray-400 transition">Admin</a>
                     {% endif %}
 
-                {% if app.user %}
-                    <!-- ✅ Sélecteur d'entreprise active -->
-                    {% set entreprises = app.user ? entreprisesHeader ?? [] : [] %}
+                    <!-- Sélecteur d'entreprise active -->
+                    {% set entreprises = entreprisesHeader ?? [] %}
                     {% if entreprises|length > 1 %}
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open"
