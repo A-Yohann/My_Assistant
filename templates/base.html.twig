@@ -12,13 +12,14 @@
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
     </head>
-    <body>
+    <body class="min-h-screen flex flex-col">
+        {% include 'header/header.html.twig' %}
 
-            {% include 'header/header.html.twig' %}
-
-        {% block body %}
-            <h1 class="text-3xl font-bold "> ceci est mon titre tailwind</h1>
-        {% endblock %}
-            {% include 'footer/footer.html.twig' %}
+        <main class="flex-1">
+            {% block body %}
+                <h1 class="text-3xl font-bold "> ceci est mon titre tailwind</h1>
+            {% endblock %}
+        </main>
+        {% include 'footer/footer.html.twig' %}
     </body>
 </html>

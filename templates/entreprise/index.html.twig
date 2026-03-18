@@ -1,22 +1,30 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1 class="mb-6">Mes entreprises</h1>
-    <a href="{{ path('entreprise_new') }}" class="bg-blue-500 text-white px-4 py-2 rounded mb-6 block">Créer une entreprise</a>
-    <ul class="mt-6">
+<div class="max-w-2xl mx-auto mt-10 px-4">
+    <h1 class="mb-6 text-center font-bold text-3xl">Mes entreprises</h1>
+
+    <div class="flex justify-center mb-6">
+        <a href="{{ path('entreprise_new') }}" class="bg-[#3B0764] text-white px-4 py-2 rounded text-sm font-semibold hover:bg-[#4C0D8A] transition">
+            Créer une entreprise
+        </a>
+    </div>
+
+    <div class="space-y-4">
         {% for entreprise in entreprises %}
-            <li class="mb-6 p-4 border rounded bg-gray-50">
+            <div class="p-4 border rounded bg-gray-50">
                 <a href="{{ path('entreprise_show', {'id': entreprise.id}) }}" class="text-lg font-bold text-blue-700 hover:underline">
                     {{ entreprise.nomEntreprise }}
                 </a>
-                <span class="text-gray-600">({{ entreprise.siret }})</span><br>
-                <div class="mt-2">
-                    <a href="{{ path('entreprise_edit', {'id': entreprise.id}) }}" class="text-blue-600 mr-4">Modifier</a>
-                    <a href="{{ path('entreprise_delete', {'id': entreprise.id}) }}" class="text-red-600">Supprimer</a>
+                <span class="text-gray-600 ml-2">({{ entreprise.siret }})</span>
+                <div class="mt-2 flex gap-4">
+                    <a href="{{ path('entreprise_edit', {'id': entreprise.id}) }}" class="text-blue-600 hover:underline text-sm">Modifier</a>
+                    <a href="{{ path('entreprise_delete', {'id': entreprise.id}) }}" class="text-red-600 hover:underline text-sm">Supprimer</a>
                 </div>
-            </li>
+            </div>
         {% else %}
-            <li>Aucune entreprise créée.</li>
+            <p class="text-center text-gray-500">Aucune entreprise créée.</p>
         {% endfor %}
-    </ul>
+    </div>
+</div>
 {% endblock %}
