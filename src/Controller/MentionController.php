@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class MentionController extends AbstractController
 {
-    #[Route('/mention', name: 'mention')]
+    #[Route('/mention', name: 'app_mention')]
     public function mentions(Request $request): Response
     {
         return $this->render('mention/mention.html.twig');
