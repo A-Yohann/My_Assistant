@@ -54,6 +54,16 @@
             <a href="{{ path('dashboard') }}" class="bg-black text-white px-6 py-2 rounded">Annuler</a>
             <button type="submit" class="bg-black text-white px-6 py-2 rounded">Modifier</button>
         </div>
+
+    <div class="flex justify-center mt-5">
+    <button type="submit" name="action" value="delete"
+            class="bg-red-500 text-white px-6 py-2 rounded"
+            onclick="return confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.')">
+        Supprimer
+    </button>
+</div>
+
+        
     </form>
 </div>
 {% endblock %}
