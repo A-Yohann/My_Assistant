@@ -6,9 +6,7 @@
 <div class="flex justify-center py-12 px-4">
     <div class="bg-[#3B0764] text-[#f2F2F2] rounded-xl shadow-xl max-w-md w-full p-10 space-y-6">
 
-        <section>
-            <h1 class="text-3xl font-bold mb-4 text-center">Créer un compte</h1>
-        </section>
+        <h1 class="text-3xl font-bold text-center">Créer un compte</h1>
 
         {% for flash_error in app.flashes('verify_email_error') %}
             <div class="bg-red-500 text-white p-3 rounded">
@@ -16,24 +14,19 @@
             </div>
         {% endfor %}
 
-        {{ form_errors(registrationForm) }}
-
         {{ form_start(registrationForm) }}
 
+        {# EMAIL #}
         <div>
             {{ form_label(registrationForm.email, null, {'label_attr': {'class': 'block mb-1 font-semibold'}}) }}
             {{ form_widget(registrationForm.email, {'attr': {'class': 'w-full border border-gray-300 text-white p-2 rounded'}}) }}
             {{ form_errors(registrationForm.email) }}
         </div>
 
+        {# PASSWORD #}
         <div>
-            {{ form_label(registrationForm.plainPassword, 'Mot de passe', {'label_attr': {'class': 'block mb-1 font-semibold'}}) }}
-            {{ form_widget(registrationForm.plainPassword, {
-                'attr': {
-                    'class': 'w-full border border-gray-300 text-black p-2 rounded',
-                    'id': 'password-field'
-                }
-            }) }}
+            {{ form_label(registrationForm.plainPassword.first, 'Mot de passe', {'label_attr': {'class': 'block mb-1 font-semibold'}}) }}
+            {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'w-full border border-gray-300 text-black p-2 rounded','id':'password-field'}}) }}
 
             <div id="password-rules" class="text-sm mt-2 space-y-1">
                 <p id="rule-length" class="text-red-300">✗ Au moins 8 caractères</p>
@@ -41,12 +34,21 @@
                 <p id="rule-lowercase" class="text-red-300">✗ Une minuscule</p>
                 <p id="rule-number" class="text-red-300">✗ Un chiffre</p>
                 <p id="rule-special" class="text-red-300">✗ Un caractère spécial</p>
+                <p id="rule-match" class="text-red-300">✗ Les mots de passe correspondent</p>
             </div>
 
-            {{ form_errors(registrationForm.plainPassword) }}
+            {{ form_errors(registrationForm.plainPassword.first) }}
         </div>
 
-        <div class="flex items-center gap-2 mt-3 mb-3">
+        {# CONFIRM PASSWORD #}
+        <div>
+            {{ form_label(registrationForm.plainPassword.second, 'Confirmer le mot de passe', {'label_attr': {'class': 'block mb-1 font-semibold'}}) }}
+            {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'w-full border border-gray-300 text-black p-2 rounded','id':'confirm-password-field'}}) }}
+            {{ form_errors(registrationForm.plainPassword.second) }}
+        </div>
+
+        {# TERMS #}
+        <div class="flex items-center gap-2">
             {{ form_widget(registrationForm.agreeTerms) }}
             {{ form_label(registrationForm.agreeTerms, null, {'label_attr': {'class': 'text-sm'}}) }}
             {{ form_errors(registrationForm.agreeTerms) }}
@@ -56,7 +58,7 @@
             S'inscrire
         </button>
 
-        <div class="text-center text-sm mt-2">
+        <div class="text-center text-sm">
             <span>Déjà inscrit ?</span>
             <a href="{{ path('app_login') }}" class="underline font-semibold hover:text-gray-200">
                 Cliquez ici
@@ -68,47 +70,6 @@
     </div>
 </div>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
 
-const password = document.querySelector('input[type="password"]');
 
-if (!password) return;
-
-const ruleLength = document.getElementById('rule-length');
-const ruleUpper = document.getElementById('rule-uppercase');
-const ruleLower = document.getElementById('rule-lowercase');
-const ruleNumber = document.getElementById('rule-number');
-const ruleSpecial = document.getElementById('rule-special');
-
-password.addEventListener("input", function () {
-
-    const value = password.value;
-
-    checkRule(ruleLength, value.length >= 8);
-    checkRule(ruleUpper, /[A-Z]/.test(value));
-    checkRule(ruleLower, /[a-z]/.test(value));
-    checkRule(ruleNumber, /[0-9]/.test(value));
-    checkRule(ruleSpecial, /[^A-Za-z0-9]/.test(value));
-
-});
-
-function checkRule(element, valid) {
-
-    const text = element.textContent.slice(2);
-
-    if (valid) {
-        element.classList.remove("text-red-300");
-        element.classList.add("text-green-300");
-        element.textContent = "✓ " + text;
-    } else {
-        element.classList.remove("text-green-300");
-        element.classList.add("text-red-300");
-        element.textContent = "✗ " + text;
-    }
-
-}
-
-});
-</script>
 {% endblock %}
