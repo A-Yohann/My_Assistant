@@ -3,8 +3,8 @@
 {% block title %}Bon de commande {{ bon.numeroBon }}{% endblock %}
 
 {% block body %}
-<div class="container mx-auto max-w-4xl mt-10 bg-white p-8 rounded shadow">
-    <h1 class="text-2xl font-bold mb-6">Bon de commande</h1>
+<div class="container mx-auto max-w-4xl mt-6 lg:mt-10 bg-white p-4 lg:p-8 rounded shadow mx-4 lg:mx-auto">
+    <h1 class="text-xl lg:text-2xl font-bold mb-6">Bon de commande</h1>
 
     {% for message in app.flashes('success') %}
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4">{{ message }}</div>
@@ -13,7 +13,52 @@
         <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-2 rounded mb-4">{{ message }}</div>
     {% endfor %}
 
-    <table class="min-w-full bg-white mb-6">
+    <!-- Mobile -->
+    <div class="md:hidden space-y-2 mb-6">
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-sm font-semibold text-gray-600">Numéro</span>
+            <span class="text-sm">{{ bon.numeroBon }}</span>
+        </div>
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-sm font-semibold text-gray-600">Date création</span>
+            <span class="text-sm">{{ bon.dateCreation|date('d/m/Y') }}</span>
+        </div>
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-sm font-semibold text-gray-600">Montant HT</span>
+            <span class="text-sm">{{ bon.montantHT }} €</span>
+        </div>
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-sm font-semibold text-gray-600">Montant TTC</span>
+            <span class="text-sm font-bold">{{ bon.montantTtc }} €</span>
+        </div>
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-sm font-semibold text-gray-600">Taux TVA</span>
+            <span class="text-sm">{{ bon.tauxTVA }}</span>
+        </div>
+        <div class="py-2 border-b">
+            <span class="text-sm font-semibold text-gray-600 block mb-1">Description</span>
+            <span class="text-sm text-gray-700">{{ bon.description }}</span>
+        </div>
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-sm font-semibold text-gray-600">Entreprise</span>
+            <span class="text-sm">{{ bon.entreprise.nomEntreprise ?? 'N/A' }}</span>
+        </div>
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-sm font-semibold text-gray-600">Devis source</span>
+            <a href="{{ path('devis_show', {'id': bon.devis.id}) }}" class="text-blue-600 hover:underline text-sm">{{ bon.devis.numeroDevis }}</a>
+        </div>
+        <div class="flex justify-between py-2 border-b items-center">
+            <span class="text-sm font-semibold text-gray-600">Statut</span>
+            {% if bon.etat == 'en_attente' %}
+                <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-1 rounded">En attente</span>
+            {% elseif bon.etat == 'paye' %}
+                <span class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">Payé</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Desktop -->
+    <table class="hidden md:table min-w-full bg-white mb-6">
         <tr class="border-b"><th class="text-left px-4 py-2 w-40">Numéro</th><td class="px-4 py-2">{{ bon.numeroBon }}</td></tr>
         <tr class="border-b"><th class="text-left px-4 py-2">Date création</th><td class="px-4 py-2">{{ bon.dateCreation|date('d/m/Y') }}</td></tr>
         <tr class="border-b"><th class="text-left px-4 py-2">Montant HT</th><td class="px-4 py-2">{{ bon.montantHT }} €</td></tr>
@@ -34,15 +79,15 @@
     </table>
 
     <div class="flex flex-wrap gap-3">
-        <a href="{{ path('bon_de_commande_index') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">
-            ← Retour à la liste
+        <a href="{{ path('bon_de_commande_index') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 text-sm">
+            ← Retour
         </a>
-        <a href="{{ path('bon_de_commande_pdf', {'id': bon.id}) }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+        <a href="{{ path('bon_de_commande_pdf', {'id': bon.id}) }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm">
             Télécharger PDF
         </a>
         {% if bon.etat == 'en_attente' %}
             <a href="{{ path('bon_de_commande_payer', {'id': bon.id}) }}"
-               class="bg-[#3B0764] text-white px-4 py-2 rounded hover:opacity-90"
+               class="bg-[#3B0764] text-white px-4 py-2 rounded hover:opacity-90 text-sm"
                onclick="return confirm('Confirmer le paiement ? Une facture sera générée automatiquement.')">
                 Marquer comme payé → Générer facture
             </a>

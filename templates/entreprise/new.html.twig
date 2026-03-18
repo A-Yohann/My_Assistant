@@ -1,8 +1,98 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Créer une entreprise</h1>
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-    {{ form_end(form) }}
+<div class="max-w-2xl mx-auto mt-10 px-4 mb-10">
+    <h1 class="text-3xl font-bold text-center mb-8 text-[#231F20]">Créer une entreprise</h1>
+
+    <div class="bg-white rounded-xl shadow p-8">
+        {{ form_start(form, {'attr': {'class': 'space-y-4'}}) }}
+
+            <div>
+                {{ form_label(form.nomEntreprise, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                {{ form_widget(form.nomEntreprise, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+            </div>
+
+            <div>
+                {{ form_label(form.siret, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                {{ form_widget(form.siret, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+            </div>
+
+            <div>
+                {{ form_label(form.email, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                {{ form_widget(form.email, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+            </div>
+
+            <div>
+                {{ form_label(form.dateCreation, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                {{ form_widget(form.dateCreation, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+            </div>
+
+            <div>
+                {{ form_label(form.logo, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition cursor-pointer">
+                    {{ form_widget(form.logo) }}
+                    <p class="text-xs text-gray-400 mt-1 text-center">PNG, JPG acceptés</p>
+                </div>
+            </div>
+
+            <div>
+                {{ form_label(form.formeJuridique, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                {{ form_widget(form.formeJuridique, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+            </div>
+
+            <div>
+                {{ form_label(form.status, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                {{ form_widget(form.status, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    {{ form_label(form.numeroRue, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.numeroRue, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+                </div>
+                <div>
+                    {{ form_label(form.nomRue, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.nomRue, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+                </div>
+            </div>
+
+            <div>
+                {{ form_label(form.complementAdresse, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                {{ form_widget(form.complementAdresse, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    {{ form_label(form.codePostal, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.codePostal, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+                </div>
+                <div>
+                    {{ form_label(form.ville, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.ville, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    {{ form_label(form.pays, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.pays, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+                </div>
+                <div>
+                    {{ form_label(form.telephone, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.telephone, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6">
+                <a href="{{ path('app_entreprise') }}" class="bg-gray-200 text-gray-700 px-6 py-2 rounded hover:bg-gray-300">
+                    Annuler
+                </a>
+                <button type="submit" class="bg-[#3B0764] text-white px-6 py-2 rounded hover:opacity-90">
+                    Valider
+                </button>
+            </div>
+
+        {{ form_end(form) }}
+    </div>
+</div>
 {% endblock %}

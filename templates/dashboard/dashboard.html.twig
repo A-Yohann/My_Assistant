@@ -3,48 +3,79 @@
 {% block title %}Tableau de bord{% endblock %}
 
 {% block body %}
-<div class="flex min-h-screen bg-[#f2f2f2]">
-    <!-- Sidebar -->
-<aside class="w-48 bg-[#231F20] text-white flex flex-col py-8 rounded-r-lg rounded-br-lg shadow-lg h-[90vh] mt-8 ml-0">
-    <nav class="flex-1 space-y-4 px-4">
-        <a href="/dashboard" class="block py-2 px-4 rounded hover:bg-gray-700">Tableau de bord</a>
-        <a href="{{ path('devis_index') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Devis</a>
-        <a href="{{ path('bon_de_commande_index') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Bons de commande</a>
-        <a href="{{ path('facture_index') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Factures</a>
-        <a href="{{ path('client_index') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Clients</a>
-        <a href="{{ path('depense_index') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Dépenses</a>
-        <a href="{{ path('notes') }}" class="block py-2 px-4 rounded hover:bg-gray-700">Notes</a>
-    </nav>
+<div class="flex min-h-screen bg-[#f2f2f2]" x-data="{ sidebarOpen: false }">
 
-    <!-- ✅ Sélecteur d'entreprise active -->
-    {% if entreprises|length > 1 %}
-        <div class="px-4 pb-4">
-            <div class="text-xs text-gray-400 mb-2">Entreprise active :</div>
-            <div class="text-xs font-semibold text-white mb-2 truncate">
-                {{ entreprise ? entreprise.nomEntreprise : 'Aucune' }}
+    <!-- Overlay sombre quand sidebar ouverte sur mobile -->
+    <div x-show="sidebarOpen"
+         @click="sidebarOpen = false"
+         class="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="fixed lg:sticky top-0 lg:top-8 left-0 h-full lg:h-[90vh] w-64 lg:w-48 bg-[#231F20] text-white flex flex-col py-8 rounded-r-lg shadow-lg z-30 transition-transform duration-300 lg:translate-x-0 lg:mt-8"
+           :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
+
+        <button @click="sidebarOpen = false"
+                class="lg:hidden absolute top-4 right-4 text-white hover:text-gray-400">
+            ✕
+        </button>
+
+        <nav class="flex-1 space-y-4 px-4 mt-4 lg:mt-0">
+            <a href="/dashboard" class="block py-2 px-4 rounded hover:bg-gray-700 text-sm">Tableau de bord</a>
+            <a href="{{ path('devis_index') }}" class="block py-2 px-4 rounded hover:bg-gray-700 text-sm">Devis</a>
+            <a href="{{ path('bon_de_commande_index') }}" class="block py-2 px-4 rounded hover:bg-gray-700 text-sm">Bons de commande</a>
+            <a href="{{ path('facture_index') }}" class="block py-2 px-4 rounded hover:bg-gray-700 text-sm">Factures</a>
+            <a href="{{ path('client_index') }}" class="block py-2 px-4 rounded hover:bg-gray-700 text-sm">Clients</a>
+            <a href="{{ path('depense_index') }}" class="block py-2 px-4 rounded hover:bg-gray-700 text-sm">Dépenses</a>
+            <a href="{{ path('notes') }}" class="block py-2 px-4 rounded hover:bg-gray-700 text-sm">Notes</a>
+        </nav>
+
+        {% if entreprises|length > 1 %}
+            <div class="px-4 pb-4">
+                <div class="text-xs text-gray-400 mb-2">Entreprise active :</div>
+                <div class="text-xs font-semibold text-white mb-2 truncate">
+                    {{ entreprise ? entreprise.nomEntreprise : 'Aucune' }}
+                </div>
+                <div class="space-y-1">
+                    {% for e in entreprises %}
+                        {% if e.id != (entreprise ? entreprise.id : 0) %}
+                            <a href="{{ path('entreprise_switcher', {'id': e.id}) }}"
+                               class="block text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded truncate">
+                                → {{ e.nomEntreprise }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             </div>
-            <div class="space-y-1">
-                {% for e in entreprises %}
-                    {% if e.id != (entreprise ? entreprise.id : 0) %}
-                        <a href="{{ path('entreprise_switcher', {'id': e.id}) }}"
-                           class="block text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded truncate">
-                            → {{ e.nomEntreprise }}
-                        </a>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </div>
-    {% endif %}
-</aside>
+        {% endif %}
+    </aside>
 
     <!-- Main content -->
-    <main class="flex-1 p-8">
+    <main class="flex-1 p-4 lg:p-8 min-w-0">
+
+        <!-- Bouton burger mobile -->
+        <div class="lg:hidden flex items-center mb-4">
+            <button @click="sidebarOpen = true"
+                    class="bg-[#231F20] text-white p-2 rounded-lg flex flex-col justify-center items-center space-y-1">
+                <span class="block w-5 h-0.5 bg-white"></span>
+                <span class="block w-5 h-0.5 bg-white"></span>
+                <span class="block w-5 h-0.5 bg-white"></span>
+            </button>
+            <span class="ml-3 font-bold text-[#231F20]">Menu</span>
+        </div>
+
         <!-- Profil -->
         <div class="flex justify-center mb-6">
-            <div class="flex items-center bg-[#231F20] text-white rounded-lg px-8 py-4">
-                <img src="{{ user and user.avatar ? user.avatar : '/assets/img/logo.png' }}" alt="Avatar" class="h-16 w-16 rounded-full mr-4">
+            <div class="flex items-center bg-[#231F20] text-white rounded-lg px-6 py-4 w-full max-w-md">
+                <img src="{{ user and user.avatar ? user.avatar : '/assets/img/logo.png' }}" alt="Avatar" class="h-12 w-12 lg:h-16 lg:w-16 rounded-full mr-4">
                 <div>
-                    <div class="font-bold text-lg">
+                    <div class="font-bold text-base lg:text-lg">
                         {% if user and user.nom is defined and user.prenom is defined %}
                             {{ user.nom }} {{ user.prenom }}
                         {% elseif user %}
@@ -62,77 +93,103 @@
         </div>
 
         <!-- Cards -->
-        <div class="grid grid-cols-3 gap-6 mb-6">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             <a href="{{ path('devis_index') }}" class="bg-[#3B0764] text-white rounded p-6 text-center hover:opacity-90">
-                <div class="font-bold mb-2">Devis en attente</div>
+                <div class="font-bold mb-2 text-sm">Devis en attente</div>
                 <div class="text-3xl">{{ devisEnAttente }}</div>
             </a>
             <a href="{{ path('facture_index') }}" class="bg-[#3B0764] text-white rounded p-6 text-center hover:opacity-90">
-                <div class="font-bold mb-2">Factures</div>
+                <div class="font-bold mb-2 text-sm">Factures</div>
                 <div class="text-3xl">{{ totalFactures }}</div>
             </a>
             <a href="{{ path('bon_de_commande_index') }}" class="bg-[#3B0764] text-white rounded p-6 text-center hover:opacity-90">
-                <div class="font-bold mb-2">Bons de commande</div>
+                <div class="font-bold mb-2 text-sm">Bons de commande</div>
                 <div class="text-3xl">→</div>
             </a>
         </div>
 
-        <div class="flex justify-center mb-8">
-            <a href="{{ path('devis_generer') }}" class="bg-[#231F20] text-white px-6 py-2 rounded block text-center">Générer le devis</a>
+        <div class="flex justify-center mb-6">
+            <a href="{{ path('devis_generer') }}" class="bg-[#231F20] text-white px-6 py-2 rounded block text-center text-sm">Générer le devis</a>
         </div>
 
         <!-- Devis récent & Notes -->
-        <div class="grid grid-cols-3 gap-6 mb-8">
-            <div class="col-span-2">
-                <div class="font-bold text-lg mb-2">Devis récent</div>
-                <div class="bg-[#3B0764] text-white rounded p-6 mb-6">
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr>
-                                <th>Client</th>
-                                <th>Montant</th>
-                                <th>Statut</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% if lastDevis is not empty %}
-                            {% for devis in lastDevis %}
-                                <tr>
-                                    <td>{{ devis.client ? devis.client.nom ~ ' ' ~ devis.client.prenom : (devis.entreprise ? devis.entreprise.nomEntreprise : '') }}</td>
-                                    <td>{{ devis.montantTtc|number_format(2, ',', ' ') }}€</td>
-                                    <td>
-                                        {% if devis.etat == 'valide' %}
-                                            Validé
-                                        {% elseif devis.etat == 'en_attente' %}
-                                            En attente
-                                        {% elseif devis.etat == 'paye' %}
-                                            Payé
-                                        {% else %}
-                                            {{ devis.etat }}
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ devis.dateCreation ? devis.dateCreation|date('d/m/y') : '' }}</td>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="4" class="text-center">Aucun devis récent.</td>
-                            </tr>
-                        {% endif %}
-                        </tbody>
-                    </table>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="lg:col-span-2 space-y-6">
+
+                <!-- Devis récents -->
+                <div>
+                    <div class="font-bold text-lg mb-2">Devis récent</div>
+                    <div class="bg-[#3B0764] text-white rounded p-4">
+
+                        <!-- Table desktop -->
+                        <div class="hidden md:block overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr class="border-b border-white/20">
+                                        <th class="pb-2 pr-4">Client</th>
+                                        <th class="pb-2 pr-4">Montant</th>
+                                        <th class="pb-2 pr-4">Statut</th>
+                                        <th class="pb-2">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% if lastDevis is not empty %}
+                                    {% for devis in lastDevis %}
+                                        <tr class="border-t border-white/20">
+                                            <td class="py-2 pr-4">{{ devis.client ? devis.client.nom ~ ' ' ~ devis.client.prenom : (devis.entreprise ? devis.entreprise.nomEntreprise : '') }}</td>
+                                            <td class="py-2 pr-4">{{ devis.montantTtc|number_format(2, ',', ' ') }}€</td>
+                                            <td class="py-2 pr-4">
+                                                {% if devis.etat == 'valide' %}Validé
+                                                {% elseif devis.etat == 'en_attente' %}En attente
+                                                {% elseif devis.etat == 'paye' %}Payé
+                                                {% else %}{{ devis.etat }}{% endif %}
+                                            </td>
+                                            <td class="py-2">{{ devis.dateCreation ? devis.dateCreation|date('d/m/y') : '' }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr><td colspan="4" class="text-center py-4">Aucun devis récent.</td></tr>
+                                {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Cards mobile -->
+                        <div class="md:hidden space-y-3">
+                            {% if lastDevis is not empty %}
+                                {% for devis in lastDevis %}
+                                    <div class="bg-white/10 rounded-lg p-3">
+                                        <div class="flex justify-between items-start mb-1">
+                                            <span class="font-semibold text-sm">{{ devis.client ? devis.client.nom ~ ' ' ~ devis.client.prenom : (devis.entreprise ? devis.entreprise.nomEntreprise : '') }}</span>
+                                            <span class="text-xs bg-white/20 px-2 py-1 rounded ml-2 shrink-0">
+                                                {% if devis.etat == 'valide' %}✓ Validé
+                                                {% elseif devis.etat == 'en_attente' %}⏳ En attente
+                                                {% elseif devis.etat == 'paye' %}💰 Payé
+                                                {% else %}{{ devis.etat }}{% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-bold text-base">{{ devis.montantTtc|number_format(2, ',', ' ') }}€</span>
+                                            <span class="text-xs text-white/70">{{ devis.dateCreation ? devis.dateCreation|date('d/m/y') : '' }}</span>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-center text-sm py-2">Aucun devis récent.</p>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Activité récente = dernières dépenses -->
+                <!-- Activité récente -->
                 <div>
                     <div class="font-bold mb-2">Activité récente</div>
                     <div class="space-y-2">
                         {% if lastDepenses is not empty %}
                             {% for depense in lastDepenses %}
-                                <div class="bg-[#3B0764] text-white rounded p-3 flex justify-between">
+                                <div class="bg-[#3B0764] text-white rounded p-3 flex justify-between text-sm">
                                     <span>{{ depense.libelle }}</span>
-                                    <span>{{ depense.dateDepense|date('d/m/y') }}</span>
+                                    <span class="shrink-0 ml-2">{{ depense.dateDepense|date('d/m/y') }}</span>
                                 </div>
                             {% endfor %}
                         {% else %}
@@ -147,9 +204,10 @@
                 </div>
             </div>
 
-            <div>
-                <div class="bg-[#3B0764] text-white rounded p-6 mb-6">
-                    <div class="flex justify-between items-center mb-2">
+            <!-- Notes & Clients -->
+            <div class="space-y-6">
+                <div class="bg-[#3B0764] text-white rounded p-4 lg:p-6">
+                    <div class="flex justify-between items-center mb-3">
                         <span class="font-bold">Vos notes</span>
                         <a href="{{ path('notes') }}" class="bg-black text-white px-2 py-1 rounded text-xs">Voir toutes</a>
                     </div>
@@ -157,8 +215,8 @@
                         {% for note in lastNotes %}
                             <div class="mb-2 bg-white text-black rounded p-2">
                                 <div class="font-bold text-xs">{{ note.titre }}</div>
-                                <div>{{ note.contenu|u.truncate(40) }}</div>
-                                <div class="text-xs text-right">Note mise le {{ note.dateCreation ? note.dateCreation|date('d/m/y') : '' }}</div>
+                                <div class="text-sm">{{ note.contenu|u.truncate(40) }}</div>
+                                <div class="text-xs text-right text-gray-500">{{ note.dateCreation ? note.dateCreation|date('d/m/y') : '' }}</div>
                             </div>
                         {% endfor %}
                     {% else %}
@@ -166,16 +224,16 @@
                     {% endif %}
                 </div>
 
-                <div class="bg-[#3B0764] text-white rounded p-6">
-                    <div class="flex justify-between items-center mb-2">
+                <div class="bg-[#3B0764] text-white rounded p-4 lg:p-6">
+                    <div class="flex justify-between items-center mb-3">
                         <span class="font-bold">Clients récents</span>
                         <a href="{{ path('client_index') }}" class="text-xs underline">voir plus</a>
                     </div>
-                    <ul class="space-y-1">
+                    <ul class="space-y-2">
                         {% if lastClients is not empty %}
                             {% for client in lastClients %}
                                 <li>
-                                    <a href="{{ path('client_show', {'id': client.idClient}) }}" class="hover:underline">
+                                    <a href="{{ path('client_show', {'id': client.idClient}) }}" class="hover:underline text-sm">
                                         {{ client.nom }} {{ client.prenom }}
                                     </a>
                                 </li>

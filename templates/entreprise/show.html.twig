@@ -1,33 +1,86 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Informations de l'entreprise{% endblock %}
+
 {% block body %}
-    <h1 class="mb-6">Informations de l'entreprise</h1>
-    <div class="p-6 border rounded bg-gray-50 mb-6">
-        <strong class="text-lg">Nom :</strong> {{ entreprise.nomEntreprise }}<br>
-        <strong>SIRET :</strong> {{ entreprise.siret }}<br>
-        <strong>Forme juridique :</strong> {{ entreprise.formeJuridique }}<br>
-        <strong>Statut :</strong> {{ entreprise.status }}<br>
-        <strong>Date de création :</strong> {{ entreprise.dateCreation|date('d/m/Y') }}<br>
-        <strong>Téléphone :</strong> {{ entreprise.telephone }}<br>
-        <strong>Email :</strong> {{ entreprise.email }}<br>
-        <strong>Logo :</strong> <br>
-        {% if entreprise.logo %}
-            <img src="{{ entreprise.logo }}" alt="Logo" class="w-32 h-32 object-contain mb-4">
-        {% else %}
-            <span>Aucun logo</span>
-        {% endif %}
-        <hr class="my-4">
-        <strong>Adresse :</strong><br>
-        {{ entreprise.numeroRue }} {{ entreprise.nomRue }}<br>
-        {% if entreprise.complementAdresse %}
-            {{ entreprise.complementAdresse }}<br>
-        {% endif %}
-        {{ entreprise.codePostal }} {{ entreprise.ville }}<br>
-        {{ entreprise.pays }}
+<div class="container mx-auto max-w-2xl mt-6 lg:mt-10 px-4 mb-10">
+
+    <h1 class="text-xl lg:text-2xl font-bold mb-6 text-[#231F20]">Informations de l'entreprise</h1>
+
+    <div class="bg-white rounded-xl shadow p-4 lg:p-6 mb-6">
+
+        <!-- Logo -->
+        <div class="flex justify-center mb-6">
+            {% if entreprise.logo %}
+                <img src="{{ entreprise.logo }}" alt="Logo" class="w-24 h-24 lg:w-32 lg:h-32 object-contain rounded-lg border">
+            {% else %}
+                <div class="w-24 h-24 bg-gray-100 rounded-lg border flex items-center justify-center text-gray-400 text-sm">
+                    Aucun logo
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Infos -->
+        <div class="space-y-3">
+            <div class="flex flex-col sm:flex-row sm:justify-between py-2 border-b">
+                <span class="text-sm font-semibold text-gray-600">Nom</span>
+                <span class="text-sm font-bold text-[#231F20]">{{ entreprise.nomEntreprise }}</span>
+            </div>
+            <div class="flex flex-col sm:flex-row sm:justify-between py-2 border-b">
+                <span class="text-sm font-semibold text-gray-600">SIRET</span>
+                <span class="text-sm">{{ entreprise.siret }}</span>
+            </div>
+            <div class="flex flex-col sm:flex-row sm:justify-between py-2 border-b">
+                <span class="text-sm font-semibold text-gray-600">Forme juridique</span>
+                <span class="text-sm">{{ entreprise.formeJuridique }}</span>
+            </div>
+            <div class="flex flex-col sm:flex-row sm:justify-between py-2 border-b">
+                <span class="text-sm font-semibold text-gray-600">Statut</span>
+                <span class="text-sm">{{ entreprise.status }}</span>
+            </div>
+            <div class="flex flex-col sm:flex-row sm:justify-between py-2 border-b">
+                <span class="text-sm font-semibold text-gray-600">Date de création</span>
+                <span class="text-sm">{{ entreprise.dateCreation|date('d/m/Y') }}</span>
+            </div>
+            <div class="flex flex-col sm:flex-row sm:justify-between py-2 border-b">
+                <span class="text-sm font-semibold text-gray-600">Téléphone</span>
+                <span class="text-sm">{{ entreprise.telephone }}</span>
+            </div>
+            <div class="flex flex-col sm:flex-row sm:justify-between py-2 border-b">
+                <span class="text-sm font-semibold text-gray-600">Email</span>
+                <span class="text-sm">{{ entreprise.email }}</span>
+            </div>
+
+            <!-- Adresse -->
+            <div class="py-2 border-b">
+                <span class="text-sm font-semibold text-gray-600 block mb-2">Adresse</span>
+                <div class="text-sm text-gray-700 space-y-1">
+                    <div>{{ entreprise.numeroRue }} {{ entreprise.nomRue }}</div>
+                    {% if entreprise.complementAdresse %}
+                        <div>{{ entreprise.complementAdresse }}</div>
+                    {% endif %}
+                    <div>{{ entreprise.codePostal }} {{ entreprise.ville }}</div>
+                    <div>{{ entreprise.pays }}</div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="flex gap-4 mt-4">
-        <a href="{{ path('entreprise_edit', {'id': entreprise.id}) }}" class="bg-blue-600 text-white px-4 py-2 rounded">Modifier</a>
-        <a href="{{ path('entreprise_delete', {'id': entreprise.id}) }}" class="bg-red-600 text-white px-4 py-2 rounded">Supprimer</a>
-        <a href="{{ path('app_entreprise') }}" class="bg-gray-600 text-white px-4 py-2 rounded">Retour</a>
+
+    <!-- Boutons -->
+    <div class="flex flex-wrap gap-3">
+        <a href="{{ path('app_entreprise') }}"
+           class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 text-sm">
+            ← Retour
+        </a>
+        <a href="{{ path('entreprise_edit', {'id': entreprise.id}) }}"
+           class="bg-[#3B0764] text-white px-4 py-2 rounded hover:opacity-90 text-sm">
+            Modifier
+        </a>
+        <a href="{{ path('entreprise_delete', {'id': entreprise.id}) }}"
+           class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm"
+           onclick="return confirm('Supprimer cette entreprise ?')">
+            Supprimer
+        </a>
     </div>
+</div>
 {% endblock %}

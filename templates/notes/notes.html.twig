@@ -3,94 +3,84 @@
 {% block title %}Notes — Calendrier{% endblock %}
 
 {% block body %}
-<div class="min-h-screen bg-[#f2f2f2] p-6">
+<div class="min-h-screen bg-[#f2f2f2] p-4 lg:p-6">
 
     <!-- Header -->
     <div class="flex items-center justify-between mb-6 max-w-6xl mx-auto">
-        <h1 class="text-3xl font-bold text-[#231F20]">Agenda des notes</h1>
-        <a href="{{ path('note_new') }}" class="bg-[#3B0764] text-white px-5 py-2 rounded-lg hover:opacity-90 font-semibold">
-            + Ajouter une note
+        <h1 class="text-2xl lg:text-3xl font-bold text-[#231F20]">Agenda des notes</h1>
+        <a href="{{ path('note_new') }}" class="bg-[#3B0764] text-white px-3 py-2 lg:px-5 lg:py-2 rounded-lg hover:opacity-90 font-semibold text-sm lg:text-base">
+            + Ajouter
         </a>
     </div>
 
     <!-- Navigation mois -->
     <div class="flex items-center justify-between max-w-6xl mx-auto mb-4">
         <a href="{{ path('notes', {'month': prevMonth, 'year': prevYear}) }}"
-           class="bg-white border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-100 font-bold text-lg">
+           class="bg-white border border-gray-300 px-3 py-2 rounded-lg hover:bg-gray-100 font-bold text-lg">
             ‹
         </a>
-        <h2 class="text-xl font-bold text-[#3B0764] capitalize">
+        <h2 class="text-lg lg:text-xl font-bold text-[#3B0764] capitalize">
             {{ monthName }} {{ year }}
         </h2>
         <a href="{{ path('notes', {'month': nextMonth, 'year': nextYear}) }}"
-           class="bg-white border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-100 font-bold text-lg">
+           class="bg-white border border-gray-300 px-3 py-2 rounded-lg hover:bg-gray-100 font-bold text-lg">
             ›
         </a>
     </div>
 
-    <!-- Calendrier -->
-    <div class="max-w-6xl mx-auto bg-white rounded-xl shadow overflow-hidden">
+    <!-- Calendrier (masqué sur mobile) -->
+    <div class="hidden md:block max-w-6xl mx-auto bg-white rounded-xl shadow overflow-hidden">
 
         <!-- Jours de la semaine -->
         <div class="grid grid-cols-7 bg-[#3B0764] text-white text-center">
             {% for jour in ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'] %}
-                <div class="py-3 font-semibold text-sm">{{ jour }}</div>
+                <div class="py-3 font-semibold text-xs lg:text-sm">{{ jour }}</div>
             {% endfor %}
         </div>
 
         <!-- Cases du calendrier -->
         <div class="grid grid-cols-7 border-l border-t">
-            {# Cases vides avant le 1er jour #}
             {% for i in 1..(firstDay - 1) %}
-                <div class="border-r border-b min-h-[110px] bg-gray-50"></div>
+                <div class="border-r border-b min-h-[80px] lg:min-h-[110px] bg-gray-50"></div>
             {% endfor %}
 
-            {# Jours du mois #}
             {% for day in 1..daysInMonth %}
                 {% set isToday = (day == today and month == currentMonth and year == currentYear) %}
                 {% set dateStr = year ~ '-' ~ (month < 10 ? '0' ~ month : month) ~ '-' ~ (day < 10 ? '0' ~ day : day) %}
                 {% set dayNotes = notesByDay[day] is defined ? notesByDay[day] : [] %}
 
-                <div class="border-r border-b min-h-[110px] p-1 {% if isToday %}bg-purple-50{% endif %} drop-zone"
+                <div class="border-r border-b min-h-[80px] lg:min-h-[110px] p-1 {% if isToday %}bg-purple-50{% endif %} drop-zone"
                      data-date="{{ dateStr }}"
                      ondragover="event.preventDefault(); this.classList.add('bg-purple-100')"
                      ondragleave="this.classList.remove('bg-purple-100')"
                      ondrop="handleDrop(event, this)">
 
-                    <!-- Numéro du jour -->
                     <div class="flex justify-between items-center mb-1">
-                        <span class="text-sm font-bold {% if isToday %}bg-[#3B0764] text-white w-7 h-7 rounded-full flex items-center justify-center{% else %}text-gray-600{% endif %}">
+                        <span class="text-xs lg:text-sm font-bold {% if isToday %}bg-[#3B0764] text-white w-6 h-6 lg:w-7 lg:h-7 rounded-full flex items-center justify-center{% else %}text-gray-600{% endif %}">
                             {{ day }}
                         </span>
                     </div>
 
-                    <!-- Max 2 notes visibles -->
                     {% for note in dayNotes|slice(0, 2) %}
-                        <div class="note-item text-xs px-2 py-1 rounded mb-1 font-medium cursor-grab
-                            {% if note.priorite %}
-                                bg-red-100 text-red-800 border-l-2 border-red-500
-                            {% else %}
-                                bg-purple-100 text-purple-800 border-l-2 border-purple-500
-                            {% endif %}"
+                        <div class="note-item text-xs px-1 lg:px-2 py-1 rounded mb-1 font-medium cursor-grab
+                            {% if note.priorite %}bg-red-100 text-red-800 border-l-2 border-red-500
+                            {% else %}bg-purple-100 text-purple-800 border-l-2 border-purple-500{% endif %}"
                             draggable="true"
                             data-id="{{ note.idNote }}"
                             ondragstart="handleDragStart(event, {{ note.idNote }})"
                             ondragend="handleDragEnd(event)">
-                            <span class="text-gray-400 mr-1">{{ note.dateCreation|date('H:i') }}</span>
+                            <span class="text-gray-400 mr-1 hidden lg:inline">{{ note.dateCreation|date('H:i') }}</span>
                             <a href="{{ path('note_show', {'idNote': note.idNote}) }}" class="hover:opacity-80 truncate block">
                                 {{ note.titre }}
                             </a>
                         </div>
                     {% endfor %}
 
-                    <!-- Bouton +X autres si plus de 2 notes -->
                     {% if dayNotes|length > 2 %}
                         <button onclick="openPopup({{ day }})"
                                 class="text-xs text-[#3B0764] font-semibold hover:underline mt-1 block">
-                            +{{ dayNotes|length - 2 }} autres
+                            +{{ dayNotes|length - 2 }}
                         </button>
-
-                        <!-- Données cachées pour la popup -->
                         <div id="popup-data-{{ day }}" class="hidden">
                             {% for note in dayNotes %}
                                 <div data-id="{{ note.idNote }}"
@@ -105,18 +95,42 @@
                 </div>
             {% endfor %}
 
-            {# Cases vides après le dernier jour #}
             {% set lastDay = (firstDay + daysInMonth - 1) % 7 %}
             {% if lastDay != 0 %}
                 {% for i in lastDay..6 %}
-                    <div class="border-r border-b min-h-[110px] bg-gray-50"></div>
+                    <div class="border-r border-b min-h-[80px] lg:min-h-[110px] bg-gray-50"></div>
                 {% endfor %}
             {% endif %}
         </div>
     </div>
 
-    <!-- Légende -->
-    <div class="max-w-6xl mx-auto mt-4 flex gap-4">
+    <!-- Vue mobile : liste du mois en cours -->
+    <div class="md:hidden max-w-6xl mx-auto bg-white rounded-xl shadow p-4">
+        <h2 class="text-base font-bold mb-4 text-[#231F20]">Notes de {{ monthName }} {{ year }}</h2>
+        {% set notesduMois = [] %}
+        {% for day, dayNotes in notesByDay %}
+            {% for note in dayNotes %}
+                <div class="mb-3 p-3 rounded-lg border-l-4 {% if note.priorite %}border-red-500 bg-red-50{% else %}border-purple-500 bg-purple-50{% endif %}">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <a href="{{ path('note_show', {'idNote': note.idNote}) }}" class="font-semibold text-sm text-[#231F20] hover:underline">
+                                {{ note.titre }}
+                            </a>
+                            <div class="text-xs text-gray-500 mt-1">{{ note.dateCreation|date('d/m/Y H:i') }}</div>
+                        </div>
+                        {% if note.priorite %}
+                            <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded ml-2">Urgent</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center text-gray-400 text-sm">Aucune note ce mois-ci.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Légende (masquée sur mobile) -->
+    <div class="hidden md:flex max-w-6xl mx-auto mt-4 gap-4">
         <div class="flex items-center gap-2">
             <span class="w-4 h-4 rounded bg-red-100 border-l-2 border-red-500 inline-block"></span>
             <span class="text-sm text-gray-600">Priorité haute</span>
@@ -128,53 +142,83 @@
     </div>
 
     <!-- Liste complète -->
-    <div class="max-w-6xl mx-auto mt-8 bg-white rounded-xl shadow p-6">
+    <div class="max-w-6xl mx-auto mt-8 bg-white rounded-xl shadow p-4 lg:p-6">
         <h2 class="text-lg font-bold mb-4 text-[#231F20]">Toutes les notes</h2>
-        <table class="min-w-full">
-            <thead>
-                <tr class="bg-[#3B0764] text-white">
-                    <th class="px-4 py-2 text-left">Titre</th>
-                    <th class="px-4 py-2 text-left">Contenu</th>
-                    <th class="px-4 py-2 text-left">Priorité</th>
-                    <th class="px-4 py-2 text-left">Date</th>
-                    <th class="px-4 py-2 text-left">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for note in notes %}
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="px-4 py-2 font-medium">{{ note.titre }}</td>
-                        <td class="px-4 py-2 text-gray-600">{{ note.contenu|u.truncate(50) }}</td>
-                        <td class="px-4 py-2">
-                            {% if note.priorite %}
-                                <span class="bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded">Urgent</span>
-                            {% else %}
-                                <span class="bg-gray-100 text-gray-600 text-xs font-semibold px-2 py-1 rounded">Normal</span>
-                            {% endif %}
-                        </td>
-                        <td class="px-4 py-2 text-sm text-gray-500">{{ note.dateCreation ? note.dateCreation|date('d/m/Y H:i') : '' }}</td>
-                        <td class="px-4 py-2 flex gap-2">
+
+        <!-- Table (masquée sur mobile) -->
+        <div class="hidden md:block overflow-x-auto">
+            <table class="min-w-full">
+                <thead>
+                    <tr class="bg-[#3B0764] text-white">
+                        <th class="px-4 py-2 text-left">Titre</th>
+                        <th class="px-4 py-2 text-left">Contenu</th>
+                        <th class="px-4 py-2 text-left">Priorité</th>
+                        <th class="px-4 py-2 text-left">Date</th>
+                        <th class="px-4 py-2 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for note in notes %}
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="px-4 py-2 font-medium">{{ note.titre }}</td>
+                            <td class="px-4 py-2 text-gray-600">{{ note.contenu|u.truncate(50) }}</td>
+                            <td class="px-4 py-2">
+                                {% if note.priorite %}
+                                    <span class="bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded">Urgent</span>
+                                {% else %}
+                                    <span class="bg-gray-100 text-gray-600 text-xs font-semibold px-2 py-1 rounded">Normal</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-2 text-sm text-gray-500">{{ note.dateCreation ? note.dateCreation|date('d/m/Y H:i') : '' }}</td>
+                            <td class="px-4 py-2 flex gap-2">
+                                <a href="{{ path('note_edit', {'idNote': note.idNote}) }}"
+                                   class="bg-[#3B0764] text-white text-xs px-3 py-1 rounded hover:opacity-90">Modifier</a>
+                                <form method="post" action="{{ path('note_delete', {'idNote': note.idNote}) }}"
+                                      onsubmit="return confirm('Supprimer cette note ?');" style="display:inline;">
+                                    <button type="submit" class="bg-red-600 text-white text-xs px-3 py-1 rounded hover:opacity-90">Supprimer</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="5" class="text-center py-4 text-gray-400">Aucune note trouvée.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Liste mobile -->
+        <div class="md:hidden space-y-3">
+            {% for note in notes %}
+                <div class="p-3 rounded-lg border border-gray-200 bg-gray-50">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="font-semibold text-sm text-[#231F20]">{{ note.titre }}</span>
+                        {% if note.priorite %}
+                            <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded ml-2">Urgent</span>
+                        {% else %}
+                            <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded ml-2">Normal</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2">{{ note.contenu|u.truncate(60) }}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-400">{{ note.dateCreation ? note.dateCreation|date('d/m/Y H:i') : '' }}</span>
+                        <div class="flex gap-2">
                             <a href="{{ path('note_edit', {'idNote': note.idNote}) }}"
-                               class="bg-[#3B0764] text-white text-xs px-3 py-1 rounded hover:opacity-90">
-                                Modifier
-                            </a>
+                               class="bg-[#3B0764] text-white text-xs px-2 py-1 rounded hover:opacity-90">Modifier</a>
                             <form method="post" action="{{ path('note_delete', {'idNote': note.idNote}) }}"
                                   onsubmit="return confirm('Supprimer cette note ?');" style="display:inline;">
-                                <button type="submit" class="bg-red-600 text-white text-xs px-3 py-1 rounded hover:opacity-90">
-                                    Supprimer
-                                </button>
+                                <button type="submit" class="bg-red-600 text-white text-xs px-2 py-1 rounded hover:opacity-90">Supprimer</button>
                             </form>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr><td colspan="5" class="text-center py-4 text-gray-400">Aucune note trouvée.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <p class="text-center text-gray-400 text-sm py-4">Aucune note trouvée.</p>
+            {% endfor %}
+        </div>
     </div>
 </div>
 
-<!-- Popup toutes les notes du jour -->
+<!-- Popup -->
 <div id="popup-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
      onclick="closePopup()">
     <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full mx-4" onclick="event.stopPropagation()">
@@ -187,31 +231,22 @@
 </div>
 
 <script>
-// --- Popup ---
 function openPopup(day) {
     const data = document.getElementById('popup-data-' + day);
     if (!data) return;
-
     const notes = data.querySelectorAll('div[data-id]');
     const container = document.getElementById('popup-notes');
     const title = document.getElementById('popup-title');
-
     title.textContent = 'Notes du ' + day;
     container.innerHTML = '';
-
     notes.forEach(note => {
         const priorite = note.dataset.priorite === '1';
         const div = document.createElement('a');
         div.href = note.dataset.url;
-        div.className = `block text-sm px-3 py-2 rounded font-medium ${
-            priorite
-                ? 'bg-red-100 text-red-800 border-l-2 border-red-500'
-                : 'bg-purple-100 text-purple-800 border-l-2 border-purple-500'
-        }`;
+        div.className = `block text-sm px-3 py-2 rounded font-medium ${priorite ? 'bg-red-100 text-red-800 border-l-2 border-red-500' : 'bg-purple-100 text-purple-800 border-l-2 border-purple-500'}`;
         div.innerHTML = `<span class="text-gray-400 mr-2">${note.dataset.heure}</span>${note.dataset.titre}`;
         container.appendChild(div);
     });
-
     document.getElementById('popup-overlay').classList.remove('hidden');
 }
 
@@ -219,7 +254,6 @@ function closePopup() {
     document.getElementById('popup-overlay').classList.add('hidden');
 }
 
-// --- Drag & Drop ---
 let draggedNoteId = null;
 let draggedElement = null;
 
@@ -237,11 +271,8 @@ function handleDragEnd(event) {
 function handleDrop(event, dropZone) {
     event.preventDefault();
     dropZone.classList.remove('bg-purple-100');
-
     if (!draggedNoteId) return;
-
     const newDate = dropZone.dataset.date;
-
     fetch(`/notes/${draggedNoteId}/deplacer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

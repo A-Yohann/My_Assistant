@@ -3,8 +3,8 @@
 {% block title %}Facture {{ facture.numeroFacture }}{% endblock %}
 
 {% block body %}
-<div class="container mx-auto max-w-4xl mt-10 bg-white p-8 rounded shadow">
-    <h1 class="text-2xl font-bold mb-6">Facture</h1>
+<div class="container mx-auto max-w-4xl mt-6 lg:mt-10 bg-white p-4 lg:p-8 rounded shadow mx-4 lg:mx-auto">
+    <h1 class="text-xl lg:text-2xl font-bold mb-6">Facture</h1>
 
     {% for message in app.flashes('success') %}
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4">{{ message }}</div>
@@ -13,7 +13,58 @@
         <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-2 rounded mb-4">{{ message }}</div>
     {% endfor %}
 
-    <table class="min-w-full bg-white mb-6">
+    <!-- Mobile -->
+    <div class="md:hidden space-y-2 mb-6">
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-sm font-semibold text-gray-600">Numéro</span>
+            <span class="text-sm">{{ facture.numeroFacture }}</span>
+        </div>
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-sm font-semibold text-gray-600">Date création</span>
+            <span class="text-sm">{{ facture.dateCreation|date('d/m/Y') }}</span>
+        </div>
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-sm font-semibold text-gray-600">Date échéance</span>
+            <span class="text-sm">{{ facture.dateEcheance ? facture.dateEcheance|date('d/m/Y') : '-' }}</span>
+        </div>
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-sm font-semibold text-gray-600">Montant HT</span>
+            <span class="text-sm">{{ facture.montantHT }} €</span>
+        </div>
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-sm font-semibold text-gray-600">Montant TTC</span>
+            <span class="text-sm font-bold">{{ facture.montantTtc }} €</span>
+        </div>
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-sm font-semibold text-gray-600">Taux TVA</span>
+            <span class="text-sm">{{ facture.tauxTVA }}</span>
+        </div>
+        <div class="py-2 border-b">
+            <span class="text-sm font-semibold text-gray-600 block mb-1">Description</span>
+            <span class="text-sm text-gray-700">{{ facture.description }}</span>
+        </div>
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-sm font-semibold text-gray-600">Entreprise</span>
+            <span class="text-sm">{{ facture.entreprise.nomEntreprise ?? 'N/A' }}</span>
+        </div>
+        <div class="flex justify-between py-2 border-b">
+            <span class="text-sm font-semibold text-gray-600">Bon de commande</span>
+            <a href="{{ path('bon_de_commande_show', {'id': facture.bonDeCommande.id}) }}" class="text-blue-600 hover:underline text-sm">
+                {{ facture.bonDeCommande.numeroBon }}
+            </a>
+        </div>
+        <div class="flex justify-between py-2 border-b items-center">
+            <span class="text-sm font-semibold text-gray-600">Statut</span>
+            {% if facture.etat == 'impayee' %}
+                <span class="bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded">Impayée</span>
+            {% elseif facture.etat == 'payee' %}
+                <span class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">Payée</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Desktop -->
+    <table class="hidden md:table min-w-full bg-white mb-6">
         <tr class="border-b"><th class="text-left px-4 py-2 w-40">Numéro</th><td class="px-4 py-2">{{ facture.numeroFacture }}</td></tr>
         <tr class="border-b"><th class="text-left px-4 py-2">Date création</th><td class="px-4 py-2">{{ facture.dateCreation|date('d/m/Y') }}</td></tr>
         <tr class="border-b"><th class="text-left px-4 py-2">Date échéance</th><td class="px-4 py-2">{{ facture.dateEcheance ? facture.dateEcheance|date('d/m/Y') : '-' }}</td></tr>
@@ -37,15 +88,15 @@
     </table>
 
     <div class="flex flex-wrap gap-3">
-        <a href="{{ path('facture_index') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">
-            ← Retour à la liste
+        <a href="{{ path('facture_index') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 text-sm">
+            ← Retour
         </a>
-        <a href="{{ path('facture_pdf', {'id': facture.id}) }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+        <a href="{{ path('facture_pdf', {'id': facture.id}) }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm">
             Télécharger PDF
         </a>
         {% if facture.etat == 'impayee' %}
             <a href="{{ path('facture_payer', {'id': facture.id}) }}"
-               class="bg-[#3B0764] text-white px-4 py-2 rounded hover:opacity-90"
+               class="bg-[#3B0764] text-white px-4 py-2 rounded hover:opacity-90 text-sm"
                onclick="return confirm('Confirmer le paiement de cette facture ?')">
                 Marquer comme payée
             </a>
