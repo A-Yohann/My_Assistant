@@ -8,15 +8,17 @@ use App\Entity\Entreprise;
 use App\Entity\Note;
 use App\Entity\Facture;
 use App\Entity\Client;
+use App\Service\EntrepriseActiveService;
 use Doctrine\ORM\EntityManagerInterface;
 
 class DashboardController extends AbstractController
 {
     #[Route('/dashboard', name: 'dashboard')]
-    public function index(EntityManagerInterface $em): Response
+    public function index(EntityManagerInterface $em, EntrepriseActiveService $entrepriseService): Response
     {
         $user = $this->getUser();
-        $entreprise = $em->getRepository(Entreprise::class)->findOneBy(['user' => $user]);
+        $entrepriseActive = $entrepriseService->getEntrepriseActive();
+        $entreprises = $entrepriseService->getEntreprises();
         $notes = [];
         $lastDevis = [];
         $lastDepenses = [];
@@ -24,39 +26,33 @@ class DashboardController extends AbstractController
         $devisEnAttente = 0;
         $totalFactures = 0;
 
-        if ($user) {
+        if ($user && $entrepriseActive) {
             $notes = $em->getRepository(Note::class)->findBy(['user' => $user], ['dateCreation' => 'DESC'], 3);
 
             $lastDevis = $em->getRepository(\App\Entity\Devis::class)->createQueryBuilder('d')
-                ->join('d.entreprise', 'e')
-                ->where('e.user = :user')
-                ->setParameter('user', $user)
+                ->where('d.entreprise = :entreprise')
+                ->setParameter('entreprise', $entrepriseActive)
                 ->orderBy('d.dateCreation', 'DESC')
                 ->setMaxResults(3)
                 ->getQuery()
                 ->getResult();
 
-            // ✅ Comptage des devis en attente
             $devisEnAttente = $em->getRepository(\App\Entity\Devis::class)->createQueryBuilder('d')
                 ->select('COUNT(d.id)')
-                ->join('d.entreprise', 'e')
-                ->where('e.user = :user')
+                ->where('d.entreprise = :entreprise')
                 ->andWhere('d.etat = :etat')
-                ->setParameter('user', $user)
+                ->setParameter('entreprise', $entrepriseActive)
                 ->setParameter('etat', 'en_attente')
                 ->getQuery()
                 ->getSingleScalarResult();
 
-            // ✅ Comptage total des factures
             $totalFactures = $em->getRepository(Facture::class)->createQueryBuilder('f')
                 ->select('COUNT(f.id)')
-                ->join('f.entreprise', 'e')
-                ->where('e.user = :user')
-                ->setParameter('user', $user)
+                ->where('f.entreprise = :entreprise')
+                ->setParameter('entreprise', $entrepriseActive)
                 ->getQuery()
                 ->getSingleScalarResult();
 
-            // ✅ 3 dernières dépenses
             $lastDepenses = $em->getRepository(\App\Entity\DepenseBudgetaire::class)
                 ->createQueryBuilder('d')
                 ->where('d.user = :user')
@@ -66,7 +62,6 @@ class DashboardController extends AbstractController
                 ->getQuery()
                 ->getResult();
 
-            // ✅ 3 derniers clients
             $lastClients = $em->getRepository(Client::class)
                 ->createQueryBuilder('c')
                 ->where('c.user = :user')
@@ -78,14 +73,15 @@ class DashboardController extends AbstractController
         }
 
         return $this->render('dashboard/dashboard.html.twig', [
-            'user'           => $user,
-            'entreprise'     => $entreprise,
-            'lastNotes'      => $notes,
-            'lastDevis'      => $lastDevis,
-            'lastDepenses'   => $lastDepenses,
-            'lastClients'    => $lastClients,
-            'devisEnAttente' => $devisEnAttente,
-            'totalFactures'  => $totalFactures,
+            'user'             => $user,
+            'entreprise'       => $entrepriseActive,
+            'entreprises'      => $entreprises,
+            'lastNotes'        => $notes,
+            'lastDevis'        => $lastDevis,
+            'lastDepenses'     => $lastDepenses,
+            'lastClients'      => $lastClients,
+            'devisEnAttente'   => $devisEnAttente,
+            'totalFactures'    => $totalFactures,
         ]);
     }
 }

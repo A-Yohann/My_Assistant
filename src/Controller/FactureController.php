@@ -6,26 +6,28 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Facture;
+use App\Service\EntrepriseActiveService;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
 class FactureController extends AbstractController
 {
     #[Route('/facture', name: 'facture_index')]
-    public function index(EntityManagerInterface $em): Response
+    public function index(EntityManagerInterface $em, EntrepriseActiveService $entrepriseService): Response
     {
-        $user = $this->getUser();
+        $entrepriseActive = $entrepriseService->getEntrepriseActive();
         $factures = [];
-        if ($user) {
+
+        if ($entrepriseActive) {
             $factures = $em->getRepository(Facture::class)
                 ->createQueryBuilder('f')
-                ->join('f.entreprise', 'e')
-                ->where('e.user = :user')
-                ->setParameter('user', $user)
+                ->where('f.entreprise = :entreprise')
+                ->setParameter('entreprise', $entrepriseActive)
                 ->orderBy('f.dateCreation', 'DESC')
                 ->getQuery()
                 ->getResult();
         }
+
         return $this->render('facture/index.html.twig', [
             'factures' => $factures,
         ]);

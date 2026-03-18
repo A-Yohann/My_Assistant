@@ -29,14 +29,17 @@ class DepenseBudgetaire
     #[ORM\Column(type: 'integer')]
     private $quantite;
 
-    // ✅ Nouveau champ catégorie
     #[ORM\Column(type: 'string', length: 50)]
     private $categorie = 'Autre';
 
-    // ✅ Lien avec l'utilisateur
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     private $user;
+
+    // ✅ Nouveau champ entreprise
+    #[ORM\ManyToOne(targetEntity: Entreprise::class)]
+    #[ORM\JoinColumn(name: 'entreprise_id', referencedColumnName: 'id', nullable: true)]
+    private $entreprise;
 
     // --- Getters & Setters ---
 
@@ -130,6 +133,17 @@ class DepenseBudgetaire
     public function setUser(?User $user): self
     {
         $this->user = $user;
+        return $this;
+    }
+
+    public function getEntreprise(): ?Entreprise
+    {
+        return $this->entreprise;
+    }
+
+    public function setEntreprise(?Entreprise $entreprise): self
+    {
+        $this->entreprise = $entreprise;
         return $this;
     }
 }

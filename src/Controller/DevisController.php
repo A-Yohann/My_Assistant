@@ -8,38 +8,40 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\User;
 use App\Entity\Devis;
+use App\Form\DevisType;
+use App\Service\EntrepriseActiveService;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
 class DevisController extends AbstractController
 {
     #[Route('/devis', name: 'devis_index')]
-    public function index(EntityManagerInterface $em): Response
+    public function index(EntityManagerInterface $em, EntrepriseActiveService $entrepriseService): Response
     {
-        /** @var User|null $user */
-        $user = $this->getUser();
+        $entrepriseActive = $entrepriseService->getEntrepriseActive();
         $devisList = [];
-        if ($user) {
+
+        if ($entrepriseActive) {
             $devisList = $em->getRepository(Devis::class)
                 ->createQueryBuilder('d')
-                ->join('d.entreprise', 'e')
-                ->where('e.user = :user')
-                ->setParameter('user', $user)
+                ->where('d.entreprise = :entreprise')
+                ->setParameter('entreprise', $entrepriseActive)
+                ->orderBy('d.dateCreation', 'DESC')
                 ->getQuery()
                 ->getResult();
         }
+
         return $this->render('devis/index.html.twig', [
             'devisList' => $devisList
         ]);
     }
 
     #[Route('/devis/generer', name: 'devis_generer')]
-    public function generer(EntityManagerInterface $em, Request $request): Response
+        public function generer(EntityManagerInterface $em, Request $request): Response
     {
         $devis = new Devis();
-        $form = $this->createForm(\App\Form\DevisType::class, $devis, [
+        $form = $this->createForm(DevisType::class, $devis, [
             'user' => $this->getUser(),
         ]);
         $form->handleRequest($request);
@@ -69,7 +71,6 @@ class DevisController extends AbstractController
 
             $em->persist($client);
 
-            // ✅ Lier le client au devis
             $devis->setClient($client);
             $devis->setEtat('en_attente');
 
@@ -166,7 +167,6 @@ class DevisController extends AbstractController
             throw $this->createNotFoundException('Devis non trouvé');
         }
 
-        // ✅ Génération du token unique
         $token = bin2hex(random_bytes(32));
         $devis->setSignatureToken($token);
         $em->flush();
@@ -216,7 +216,6 @@ class DevisController extends AbstractController
         $dompdf->render();
         $pdfOutput = $dompdf->output();
 
-        // ✅ URL avec token sécurisé
         $signUrl = $this->generateUrl('devis_signer', [
             'id'    => $devis->getId(),
             'token' => $token,
@@ -284,14 +283,12 @@ class DevisController extends AbstractController
             return $this->redirectToRoute('devis_signer', ['id' => $id, 'token' => $token]);
         }
 
-        // ✅ Enregistrement de la signature
         $devis->setSignature(true);
         $devis->setEtat('valide');
         $devis->setSignatureDate(new \DateTime());
         $devis->setSignatureImage($signatureImage);
         $devis->setSignatureToken(null);
 
-        // ✅ Génération automatique du bon de commande
         $bon = new \App\Entity\BonDeCommande();
         $bon->setNumeroBon('BC-' . date('Y') . '-' . str_pad($id, 4, '0', STR_PAD_LEFT));
         $bon->setDateCreation(new \DateTime());

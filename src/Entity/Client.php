@@ -2,6 +2,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity]
 class Client
@@ -44,6 +46,15 @@ class Client
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     private $user;
+
+    // ✅ Relation avec les devis
+    #[ORM\OneToMany(targetEntity: Devis::class, mappedBy: 'client')]
+    private Collection $devis;
+
+    public function __construct()
+    {
+        $this->devis = new ArrayCollection();
+    }
 
     // --- Getters & Setters ---
 
@@ -171,5 +182,10 @@ class Client
     {
         $this->user = $user;
         return $this;
+    }
+
+    public function getDevis(): Collection
+    {
+        return $this->devis;
     }
 }

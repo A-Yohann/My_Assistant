@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\DepenseBudgetaire;
+use App\Service\EntrepriseActiveService;
 
 class DepenseBudgetaireController extends AbstractController
 {
@@ -21,17 +22,20 @@ class DepenseBudgetaireController extends AbstractController
     ];
 
     #[Route('/depense', name: 'depense_index')]
-    public function index(EntityManagerInterface $em, Request $request): Response
+    public function index(EntityManagerInterface $em, Request $request, EntrepriseActiveService $entrepriseService): Response
     {
         $user = $this->getUser();
+        $entrepriseActive = $entrepriseService->getEntrepriseActive();
         $depenses = [];
         $dataParCategorie = [];
 
-        if ($user) {
+        if ($entrepriseActive) {
             $depenses = $em->getRepository(DepenseBudgetaire::class)
                 ->createQueryBuilder('d')
                 ->where('d.user = :user')
+                ->andWhere('d.entreprise = :entreprise')
                 ->setParameter('user', $user)
+                ->setParameter('entreprise', $entrepriseActive)
                 ->orderBy('d.dateDepense', 'DESC')
                 ->getQuery()
                 ->getResult();
@@ -41,7 +45,9 @@ class DepenseBudgetaireController extends AbstractController
                 ->createQueryBuilder('d')
                 ->select('d.categorie, SUM(d.montant * d.quantite) as total')
                 ->where('d.user = :user')
+                ->andWhere('d.entreprise = :entreprise')
                 ->setParameter('user', $user)
+                ->setParameter('entreprise', $entrepriseActive)
                 ->groupBy('d.categorie')
                 ->getQuery()
                 ->getResult();
@@ -56,13 +62,15 @@ class DepenseBudgetaireController extends AbstractController
             }
         }
 
-        // ✅ Gestion du formulaire d'ajout
+        // ✅ Formulaire d'ajout
         $depense = new DepenseBudgetaire();
         $form = $this->createForm(\App\Form\DepenseBudgetaireType::class, $depense);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $depense->setUser($user);
+            // ✅ Lier à l'entreprise active
+            $depense->setEntreprise($entrepriseActive);
             $em->persist($depense);
             $em->flush();
             $this->addFlash('success', 'Dépense ajoutée avec succès !');

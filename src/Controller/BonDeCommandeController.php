@@ -7,26 +7,28 @@ use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\BonDeCommande;
 use App\Entity\Facture;
+use App\Service\EntrepriseActiveService;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
 class BonDeCommandeController extends AbstractController
 {
     #[Route('/bon-de-commande', name: 'bon_de_commande_index')]
-    public function index(EntityManagerInterface $em): Response
+    public function index(EntityManagerInterface $em, EntrepriseActiveService $entrepriseService): Response
     {
-        $user = $this->getUser();
+        $entrepriseActive = $entrepriseService->getEntrepriseActive();
         $bons = [];
-        if ($user) {
+
+        if ($entrepriseActive) {
             $bons = $em->getRepository(BonDeCommande::class)
                 ->createQueryBuilder('b')
-                ->join('b.entreprise', 'e')
-                ->where('e.user = :user')
-                ->setParameter('user', $user)
+                ->where('b.entreprise = :entreprise')
+                ->setParameter('entreprise', $entrepriseActive)
                 ->orderBy('b.dateCreation', 'DESC')
                 ->getQuery()
                 ->getResult();
         }
+
         return $this->render('bon_de_commande/index.html.twig', [
             'bons' => $bons,
         ]);
@@ -118,7 +120,6 @@ class BonDeCommandeController extends AbstractController
 
         $bon->setEtat('paye');
 
-        // ✅ Génération automatique de la facture
         $facture = new Facture();
         $facture->setNumeroFacture('FAC-' . date('Y') . '-' . str_pad($id, 4, '0', STR_PAD_LEFT));
         $facture->setDateCreation(new \DateTime());

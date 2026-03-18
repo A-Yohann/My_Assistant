@@ -8,21 +8,47 @@
             </div>
 
             <!-- Liens -->
-            <div class="space-x-6">
-                    <a href="{{ path('app_home') }}" class="hover:text-gray-400 transition">Accueil</a>
-                    <a href="{{ path('dashboard') }}" class="hover:text-gray-400 transition">Tableau de bord</a>
-                    <a href="{{ path('app_entreprise') }}" class="hover:text-gray-400 transition">Mes entreprises</a>
-                    <a href="{{ path('app_contact') }}" class="hover:text-gray-400 transition">Contact</a>
-                    <a href="{{ path('notes') }}" class="hover:text-gray-400 transition">Notes</a>
-                    {% if app.user %}
-                        <a href="{{ path('account_manage') }}" class="hover:text-gray-400 transition">Mon compte</a>
-                        <a href="{{ logout_path() }}" class="hover:text-gray-400 transition">Déconnexion</a>
-                    {% else %}
-                        <a href="{{ path('app_register') }}" class="hover:text-gray-400 transition">Inscription</a>
-                        <a href="{{ path('app_login') }}" class="hover:text-gray-400 transition">Connexion</a>
-                    {% endif %}
-            </div>
+            <div class="flex items-center space-x-6">
+                <a href="{{ path('app_home') }}" class="hover:text-gray-400 transition">Accueil</a>
+                <a href="{{ path('dashboard') }}" class="hover:text-gray-400 transition">Tableau de bord</a>
+                <a href="{{ path('app_entreprise') }}" class="hover:text-gray-400 transition">Mes entreprises</a>
+                <a href="{{ path('app_contact') }}" class="hover:text-gray-400 transition">Contact</a>
+                <a href="{{ path('notes') }}" class="hover:text-gray-400 transition">Notes</a>
 
+                {% if app.user %}
+                    <!-- ✅ Sélecteur d'entreprise active -->
+                    {% set entreprises = app.user ? entreprisesHeader ?? [] : [] %}
+                    {% if entreprises|length > 1 %}
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open"
+                                    class="flex items-center gap-2 bg-[#3B0764] px-3 py-1 rounded hover:opacity-90 text-sm">
+                                🏢 {{ entrepriseActiveHeader ? entrepriseActiveHeader.nomEntreprise : 'Entreprise' }}
+                                <span>▾</span>
+                            </button>
+                            <div x-show="open" @click.away="open = false"
+                                 class="absolute right-0 mt-2 bg-white text-black rounded shadow-lg z-50 min-w-[180px]">
+                                {% for e in entreprises %}
+                                    <a href="{{ path('entreprise_switcher', {'id': e.id}) }}"
+                                       class="block px-4 py-2 hover:bg-gray-100 text-sm
+                                       {% if entrepriseActiveHeader and e.id == entrepriseActiveHeader.id %}font-bold text-[#3B0764]{% endif %}">
+                                        {{ e.nomEntreprise }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% elseif entreprises|length == 1 %}
+                        <span class="text-xs bg-[#3B0764] px-3 py-1 rounded">
+                            🏢 {{ entreprises[0].nomEntreprise }}
+                        </span>
+                    {% endif %}
+
+                    <a href="{{ path('account_manage') }}" class="hover:text-gray-400 transition">Mon compte</a>
+                    <a href="{{ logout_path() }}" class="hover:text-gray-400 transition">Déconnexion</a>
+                {% else %}
+                    <a href="{{ path('app_register') }}" class="hover:text-gray-400 transition">Inscription</a>
+                    <a href="{{ path('app_login') }}" class="hover:text-gray-400 transition">Connexion</a>
+                {% endif %}
+            </div>
         </div>
     </div>
 </nav>

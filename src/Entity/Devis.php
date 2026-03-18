@@ -57,7 +57,8 @@ class Devis
     #[ORM\JoinColumn(name: 'entreprise_id', referencedColumnName: 'id')]
     private $entreprise;
 
-    #[ORM\ManyToOne(targetEntity: Client::class)]
+    // ✅ Relation avec Client mise à jour
+    #[ORM\ManyToOne(targetEntity: Client::class, inversedBy: 'devis')]
     #[ORM\JoinColumn(name: 'client_id', referencedColumnName: 'id_client', nullable: true)]
     private $client;
 

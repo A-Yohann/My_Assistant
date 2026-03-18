@@ -1,16 +1,35 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Note{% endblock %}
+{% block title %}{{ edit ? 'Modifier la note' : 'Ajouter une note' }}{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <h1 class="mb-4">{{ edit ? 'Modifier la note' : 'Ajouter une note' }}</h1>
-    {{ form_start(form) }}
-        {{ form_row(form.titre) }}
-        {{ form_row(form.contenu) }}
-        {{ form_row(form.priorite) }}
-        <button class="btn btn-primary" type="submit">{{ edit ? 'Mettre à jour' : 'Ajouter' }}</button>
-        <a href="{{ path('notes') }}" class="btn btn-secondary">Annuler</a>
-    {{ form_end(form) }}
+<div class="min-h-screen bg-[#f2f2f2] flex items-center justify-center p-6">
+    <div class="max-w-xl w-full bg-white rounded-xl shadow p-8">
+        <h1 class="text-2xl font-bold mb-6 text-[#231F20]">
+            {{ edit ? 'Modifier la note' : 'Ajouter une note' }}
+        </h1>
+        {{ form_start(form) }}
+            <div class="mb-4">
+                {{ form_label(form.titre, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                {{ form_widget(form.titre, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+            </div>
+            <div class="mb-4">
+                {{ form_label(form.contenu, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                {{ form_widget(form.contenu, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 h-32 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+            </div>
+            <div class="mb-6">
+                {{ form_label(form.priorite, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                {{ form_widget(form.priorite) }}
+            </div>
+            <div class="flex gap-3 justify-end">
+                <a href="{{ path('notes') }}" class="bg-gray-200 text-gray-700 px-5 py-2 rounded hover:bg-gray-300">
+                    Annuler
+                </a>
+                <button type="submit" class="bg-[#3B0764] text-white px-5 py-2 rounded hover:opacity-90">
+                    {{ edit ? 'Mettre à jour' : 'Ajouter' }}
+                </button>
+            </div>
+        {{ form_end(form) }}
+    </div>
 </div>
 {% endblock %}
