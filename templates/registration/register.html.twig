@@ -71,5 +71,53 @@
 </div>
 
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Sélection par name (fiable pour RepeatedType)
+    const password = document.querySelector('input[name$="[first]"]');
+    const confirm = document.querySelector('input[name$="[second]"]');
+
+    const rules = {
+        length: document.getElementById('rule-length'),
+        upper: document.getElementById('rule-uppercase'),
+        lower: document.getElementById('rule-lowercase'),
+        number: document.getElementById('rule-number'),
+        special: document.getElementById('rule-special'),
+        match: document.getElementById('rule-match')
+    };
+
+    function updateRules() {
+        const value = password.value;
+        const confirmValue = confirm.value;
+
+        const lengthValid = value.length >= 8;
+        const upperValid = /[A-Z]/.test(value);
+        const lowerValid = /[a-z]/.test(value);
+        const numberValid = /[0-9]/.test(value);
+        const specialValid = /[^A-Za-z0-9]/.test(value);
+        const matchValid = value.length > 0 && value === confirmValue;
+
+        updateRule(rules.length, lengthValid);
+        updateRule(rules.upper, upperValid);
+        updateRule(rules.lower, lowerValid);
+        updateRule(rules.number, numberValid);
+        updateRule(rules.special, specialValid);
+        updateRule(rules.match, matchValid);
+    }
+
+    function updateRule(element, isValid) {
+        if (!element) return;
+        const text = element.textContent.slice(2);
+        element.classList.remove('text-red-300','text-green-300');
+        element.classList.add(isValid ? 'text-green-300' : 'text-red-300');
+        element.textContent = (isValid ? '✓ ' : '✗ ') + text;
+    }
+
+    password.addEventListener('input', updateRules);
+    confirm.addEventListener('input', updateRules);
+});
+</script>
+ 
 
 {% endblock %}
+
