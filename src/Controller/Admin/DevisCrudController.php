@@ -19,7 +19,7 @@ class DevisCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        yield IdField::new('id')->hideOnForm();
+        yield IdField::new('id')->hideOnIndex()->hideOnForm();
         yield TextField::new('numeroDevis', 'Numéro');
         yield DateField::new('dateEmission', 'Date émission');
         yield DateField::new('dateValidite', 'Date validité');

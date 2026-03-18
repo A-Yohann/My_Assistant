@@ -19,9 +19,9 @@ class NoteCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        yield IdField::new('idNote')->hideOnForm();
+        yield IdField::new('idNote')->hideOnIndex()->hideOnForm();
         yield TextField::new('titre');
-        yield TextareaField::new('contenu');
+        yield TextareaField::new('contenu')->hideOnIndex();
         yield BooleanField::new('priorite', 'Prioritaire');
         yield DateTimeField::new('dateCreation', 'Créée le')->hideOnForm();
         yield AssociationField::new('entreprise', 'Entreprise');

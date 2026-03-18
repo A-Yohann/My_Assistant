@@ -17,7 +17,7 @@ class UserCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        yield IdField::new('id')->hideOnForm();
+        yield IdField::new('id')->hideOnIndex()->hideOnForm();
         yield EmailField::new('email');
         yield TextField::new('nom');
         yield TextField::new('prenom');

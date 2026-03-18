@@ -18,7 +18,7 @@ class ClientCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        yield IdField::new('idClient')->hideOnForm();
+        yield IdField::new('idClient')->hideOnIndex()->hideOnForm();
         yield TextField::new('nom');
         yield TextField::new('prenom');
         yield EmailField::new('email');

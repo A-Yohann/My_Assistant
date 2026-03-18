@@ -19,7 +19,7 @@ class BonDeCommandeCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        yield IdField::new('id')->hideOnForm();
+        yield IdField::new('id')->hideOnIndex()->hideOnForm();
         yield TextField::new('numeroBon', 'Numéro');
         yield DateField::new('dateCreation', 'Date création');
         yield NumberField::new('montantHT', 'Montant HT');

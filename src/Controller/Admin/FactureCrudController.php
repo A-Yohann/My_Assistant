@@ -19,7 +19,7 @@ class FactureCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        yield IdField::new('id')->hideOnForm();
+        yield IdField::new('id')->hideOnIndex()->hideOnForm();
         yield TextField::new('numeroFacture', 'Numéro');
         yield DateField::new('dateCreation', 'Date création');
         yield DateField::new('dateEcheance', 'Date échéance');
