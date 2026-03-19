@@ -20,10 +20,8 @@
             <!-- Liens desktop (masqués sur mobile/tablet) -->
             <div class="hidden lg:flex items-center space-x-6">
                 <a href="{{ path('app_home') }}" class="hover:text-gray-400 transition">Accueil</a>
-                <a href="{{ path('dashboard') }}" class="hover:text-gray-400 transition">Tableau de bord</a>
-                <a href="{{ path('app_entreprise') }}" class="hover:text-gray-400 transition">Mes entreprises</a>
+
                 <a href="{{ path('app_contact') }}" class="hover:text-gray-400 transition">Contact</a>
-                <a href="{{ path('notes') }}" class="hover:text-gray-400 transition">Notes</a>
 
                 {% if app.user %}
                     {% if is_granted('ROLE_ADMIN') %}
@@ -53,8 +51,11 @@
                             🏢 {{ entreprises[0].nomEntreprise }}
                         </span>
                     {% endif %}
-
+                    <a href="{{ path('dashboard') }}" class="hover:text-gray-400 transition">Tableau de bord</a>
+                    <a href="{{ path('app_entreprise') }}" class="hover:text-gray-400 transition">Mes entreprises</a>
                     <a href="{{ path('account_manage') }}" class="hover:text-gray-400 transition">Mon compte</a>
+                                    <a href="{{ path('notes') }}" class="hover:text-gray-400 transition">Notes</a>
+
                     <a href="{{ logout_path() }}" class="hover:text-gray-400 transition">Déconnexion</a>
                 {% else %}
                     <a href="{{ path('app_register') }}" class="hover:text-gray-400 transition">Inscription</a>
