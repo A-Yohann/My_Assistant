@@ -3,8 +3,17 @@
 {% block body %}
 <div class="max-w-2xl mx-auto mt-10 px-4 mb-10">
     <h1 class="text-3xl font-bold text-center mb-8 text-[#231F20]">Créer une entreprise</h1>
-
-    <div class="bg-white rounded-xl shadow p-8">
+{% if not form.vars.valid %}
+    <div class="bg-red-100 text-red-800 p-4 rounded mb-6">
+        <ul class="list-disc pl-5 space-y-1">
+            {% for field in form %}
+                {% for error in field.vars.errors %}
+                    <li>{{ error.message }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}    <div class="bg-white rounded-xl shadow p-8">
         {{ form_start(form, {'attr': {'class': 'space-y-4'}}) }}
 
             <div>
