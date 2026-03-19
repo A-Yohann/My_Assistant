@@ -10,7 +10,7 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
-use Symfony\Component\Mime\Email;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
 class ForgotPasswordController extends AbstractController
 {
@@ -35,11 +35,15 @@ class ForgotPasswordController extends AbstractController
                     $em->flush();
                     // Envoyer l'email
                     $resetUrl = $this->generateUrl('app_reset_password', ['token' => $token], true);
-                    $mail = (new Email())
+                    $mail = (new TemplatedEmail())
                         ->from('no-reply@myassistant.com')
                         ->to($email)
                         ->subject('Réinitialisation de votre mot de passe')
-                        ->html('<p>Pour réinitialiser votre mot de passe, cliquez sur le lien suivant :</p><p><a href="'.$resetUrl.'">Réinitialiser mon mot de passe</a></p>');
+                        ->htmlTemplate('security/reset_password_email.html.twig')
+                        ->context([
+                            'user' => $user,
+                            'resetUrl' => $resetUrl,
+                        ]);
                     try {
                         $mailer->send($mail);
                         $emailSent = true;
