@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Form;
 
 use App\Entity\Entreprise;
@@ -7,9 +8,9 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class EntrepriseType extends AbstractType
 {
@@ -17,7 +18,14 @@ class EntrepriseType extends AbstractType
     {
         $builder
             ->add('nomEntreprise', TextType::class)
-            ->add('siret', TextType::class)
+            ->add('siret', TextType::class,[
+                'constraints' => [
+                    new Regex([
+                        'pattern' => '/^\d{14}$/',
+                        'message' => 'Le SIRET doit contenir exactement 14 chiffres.',
+                    ])
+                ],
+            ])
             ->add('email', EmailType::class)
             ->add('dateCreation', DateType::class, [
                 'widget' => 'single_text',
@@ -33,12 +41,17 @@ class EntrepriseType extends AbstractType
             ->add('complementAdresse', TextType::class, [
                 'required' => false,
             ])
-            ->add('codePostal', TextType::class)
+            ->add('codePostal', TextType::class, [
+                'constraints' => [
+                    new Regex([
+                        'pattern' => '/^\d{5}$/',
+                        'message' => 'Le code postal doit contenir exactement 5 chiffres.',
+                    ])
+                ],
+            ])
             ->add('ville', TextType::class)
             ->add('pays', TextType::class)
-            ->add('telephone', TextType::class)
-           
-        ;
+            ->add('telephone', TextType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)
