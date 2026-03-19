@@ -62,6 +62,12 @@ class Devis
     #[ORM\JoinColumn(name: 'client_id', referencedColumnName: 'id_client', nullable: true)]
     private $client;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $signatureEmetteur = null;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $signatureEmetteurDate = null;
+
     // --- Getters & Setters ---
 
     public function getId(): ?int
@@ -242,6 +248,28 @@ class Devis
     public function setClient(?Client $client): self
     {
         $this->client = $client;
+        return $this;
+    }
+
+    public function getSignatureEmetteur(): ?string
+    {
+        return $this->signatureEmetteur;
+    }
+
+    public function setSignatureEmetteur(?string $signatureEmetteur): self
+    {
+        $this->signatureEmetteur = $signatureEmetteur;
+        return $this;
+    }
+
+    public function getSignatureEmetteurDate(): ?\DateTimeInterface
+    {
+        return $this->signatureEmetteurDate;
+    }
+
+    public function setSignatureEmetteurDate(?\DateTimeInterface $signatureEmetteurDate): self
+    {
+        $this->signatureEmetteurDate = $signatureEmetteurDate;
         return $this;
     }
 }

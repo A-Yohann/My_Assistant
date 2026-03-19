@@ -55,7 +55,8 @@ class BonDeCommandeController extends AbstractController
         }
 
         $entreprise = $bon->getEntreprise();
-        $client = $bon->getDevis() ? $bon->getDevis()->getClient() : null;
+        $devis      = $bon->getDevis();
+        $client     = $devis ? $devis->getClient() : null;
 
         $adresse = $entreprise ? (
             $entreprise->getNumeroRue() . ' ' . $entreprise->getNomRue() . ', ' .
@@ -69,23 +70,28 @@ class BonDeCommandeController extends AbstractController
         ) : '';
 
         $html = $this->renderView('bon_de_commande/pdf.html.twig', [
-            'numero'             => $bon->getNumeroBon(),
-            'date'               => $bon->getDateCreation()->format('d/m/Y'),
-            'articles'           => [
+            'numero'                  => $bon->getNumeroBon(),
+            'date'                    => $bon->getDateCreation()->format('d/m/Y'),
+            'articles'                => [
                 ['libelle' => $bon->getDescription(), 'qty' => 1, 'price' => $bon->getMontantHT()],
             ],
-            'totalHT'            => $bon->getMontantHT(),
-            'tva'                => $bon->getMontantHT() * $bon->getTauxTVA(),
-            'totalTTC'           => $bon->getMontantTtc(),
-            'entreprise_nom'     => $entreprise ? $entreprise->getNomEntreprise() : '',
-            'entreprise_tel'     => $entreprise ? $entreprise->getTelephone() : '',
-            'entreprise_email'   => $entreprise ? $entreprise->getEmail() : '',
-            'entreprise_adresse' => $adresse,
-            'client_nom'         => $client ? $client->getNom() : '',
-            'client_prenom'      => $client ? $client->getPrenom() : '',
-            'client_email'       => $client ? $client->getEmail() : '',
-            'client_telephone'   => $client ? $client->getTelephone() : '',
-            'client_adresse'     => $clientAdresse,
+            'totalHT'                 => $bon->getMontantHT(),
+            'tva'                     => $bon->getMontantHT() * $bon->getTauxTVA(),
+            'totalTTC'                => $bon->getMontantTtc(),
+            'entreprise_nom'          => $entreprise ? $entreprise->getNomEntreprise() : '',
+            'entreprise_tel'          => $entreprise ? $entreprise->getTelephone() : '',
+            'entreprise_email'        => $entreprise ? $entreprise->getEmail() : '',
+            'entreprise_adresse'      => $adresse,
+            'client_nom'              => $client ? $client->getNom() : '',
+            'client_prenom'           => $client ? $client->getPrenom() : '',
+            'client_email'            => $client ? $client->getEmail() : '',
+            'client_telephone'        => $client ? $client->getTelephone() : '',
+            'client_adresse'          => $clientAdresse,
+            // ✅ Signatures héritées du devis
+            'signature_emetteur'      => $devis ? $devis->getSignatureEmetteur() : null,
+            'signature_emetteur_date' => $devis && $devis->getSignatureEmetteurDate() ? $devis->getSignatureEmetteurDate()->format('d/m/Y à H:i') : null,
+            'signature_client'        => $devis ? $devis->getSignatureImage() : null,
+            'signature_client_date'   => $devis && $devis->getSignatureDate() ? $devis->getSignatureDate()->format('d/m/Y à H:i') : null,
         ]);
 
         $options = new Options();
