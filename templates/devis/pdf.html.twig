@@ -25,6 +25,15 @@
         .totaux td { border: none; padding: 4px 8px; }
         .totaux .total-ttc { font-weight: bold; font-size: 15px; color: #3B0764; border-top: 2px solid #3B0764; }
         .conditions { margin-top: 40px; font-size: 12px; color: #666; }
+
+        /* Signatures */
+        .signatures { width: 100%; margin-top: 50px; }
+        .signature-left { float: left; width: 45%; }
+        .signature-right { float: right; width: 45%; text-align: right; }
+        .signature-title { font-weight: bold; font-size: 12px; color: #3B0764; margin-bottom: 8px; border-bottom: 1px solid #3B0764; padding-bottom: 4px; }
+        .signature-img { max-height: 80px; max-width: 200px; border: 1px solid #ddd; border-radius: 4px; }
+        .signature-date { font-size: 10px; color: #666; margin-top: 5px; }
+        .signature-empty { height: 80px; border: 1px dashed #ccc; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -83,5 +92,31 @@
     <div class="clear"></div>
 
     <div class="conditions"><strong>Conditions :</strong> {{ conditions }}</div>
+
+    <!-- Signatures -->
+    <div class="signatures">
+        <!-- Signature émetteur -->
+        <div class="signature-left">
+            <div class="signature-title">Signature émetteur</div>
+            {% if signature_emetteur %}
+                <img src="{{ signature_emetteur }}" alt="Signature émetteur" class="signature-img">
+                <div class="signature-date">Signé le {{ signature_emetteur_date }}</div>
+            {% else %}
+                <div class="signature-empty">En attente de signature</div>
+            {% endif %}
+        </div>
+
+        <!-- Signature client -->
+        <div class="signature-right">
+            <div class="signature-title">Signature client</div>
+            {% if signature_client %}
+                <img src="{{ signature_client }}" alt="Signature client" class="signature-img">
+                <div class="signature-date">Signé le {{ signature_client_date }}</div>
+            {% else %}
+                <div class="signature-empty">En attente de signature</div>
+            {% endif %}
+        </div>
+        <div class="clear"></div>
+    </div>
 </body>
 </html>

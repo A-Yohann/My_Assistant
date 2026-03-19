@@ -38,7 +38,7 @@ class DevisController extends AbstractController
     }
 
     #[Route('/devis/generer', name: 'devis_generer')]
-        public function generer(EntityManagerInterface $em, Request $request): Response
+    public function generer(EntityManagerInterface $em, Request $request): Response
     {
         $devis = new Devis();
         $form = $this->createForm(DevisType::class, $devis, [
@@ -70,6 +70,13 @@ class DevisController extends AbstractController
             $client->setUser($this->getUser());
 
             $em->persist($client);
+
+            // ✅ Signature émetteur
+            $signatureEmetteur = $request->request->get('signature_emetteur');
+            if ($signatureEmetteur) {
+                $devis->setSignatureEmetteur($signatureEmetteur);
+                $devis->setSignatureEmetteurDate(new \DateTime());
+            }
 
             $devis->setClient($client);
             $devis->setEtat('en_attente');
@@ -121,24 +128,29 @@ class DevisController extends AbstractController
         ) : '';
 
         $html = $this->renderView('devis/pdf.html.twig', [
-            'numero'             => $devis->getNumeroDevis(),
-            'date'               => $devis->getDateEmission() ? $devis->getDateEmission()->format('d/m/Y') : '',
-            'articles'           => [
+            'numero'                  => $devis->getNumeroDevis(),
+            'date'                    => $devis->getDateEmission() ? $devis->getDateEmission()->format('d/m/Y') : '',
+            'articles'                => [
                 ['libelle' => $devis->getDescription(), 'qty' => 1, 'price' => $devis->getMontantHT()],
             ],
-            'totalHT'            => $devis->getMontantHT(),
-            'tva'                => $devis->getMontantHT() * $devis->getTauxTVA(),
-            'totalTTC'           => $devis->getMontantTtc(),
-            'conditions'         => 'Paiement sous 30 jours.',
-            'entreprise_nom'     => $entreprise ? $entreprise->getNomEntreprise() : '',
-            'entreprise_tel'     => $entreprise ? $entreprise->getTelephone() : '',
-            'entreprise_email'   => $entreprise ? $entreprise->getEmail() : '',
-            'entreprise_adresse' => $adresse,
-            'client_nom'         => $client ? $client->getNom() : '',
-            'client_prenom'      => $client ? $client->getPrenom() : '',
-            'client_email'       => $client ? $client->getEmail() : '',
-            'client_telephone'   => $client ? $client->getTelephone() : '',
-            'client_adresse'     => $clientAdresse,
+            'totalHT'                 => $devis->getMontantHT(),
+            'tva'                     => $devis->getMontantHT() * $devis->getTauxTVA(),
+            'totalTTC'                => $devis->getMontantTtc(),
+            'conditions'              => 'Paiement sous 30 jours.',
+            'entreprise_nom'          => $entreprise ? $entreprise->getNomEntreprise() : '',
+            'entreprise_tel'          => $entreprise ? $entreprise->getTelephone() : '',
+            'entreprise_email'        => $entreprise ? $entreprise->getEmail() : '',
+            'entreprise_adresse'      => $adresse,
+            'client_nom'              => $client ? $client->getNom() : '',
+            'client_prenom'           => $client ? $client->getPrenom() : '',
+            'client_email'            => $client ? $client->getEmail() : '',
+            'client_telephone'        => $client ? $client->getTelephone() : '',
+            'client_adresse'          => $clientAdresse,
+            // ✅ Signatures
+            'signature_emetteur'      => $devis->getSignatureEmetteur(),
+            'signature_emetteur_date' => $devis->getSignatureEmetteurDate() ? $devis->getSignatureEmetteurDate()->format('d/m/Y à H:i') : null,
+            'signature_client'        => $devis->getSignatureImage(),
+            'signature_client_date'   => $devis->getSignatureDate() ? $devis->getSignatureDate()->format('d/m/Y à H:i') : null,
         ]);
 
         $options = new Options();
@@ -188,24 +200,29 @@ class DevisController extends AbstractController
         ) : '';
 
         $html = $this->renderView('devis/pdf.html.twig', [
-            'numero'             => $devis->getNumeroDevis(),
-            'date'               => $devis->getDateEmission() ? $devis->getDateEmission()->format('d/m/Y') : '',
-            'articles'           => [
+            'numero'                  => $devis->getNumeroDevis(),
+            'date'                    => $devis->getDateEmission() ? $devis->getDateEmission()->format('d/m/Y') : '',
+            'articles'                => [
                 ['libelle' => $devis->getDescription(), 'qty' => 1, 'price' => $devis->getMontantHT()],
             ],
-            'totalHT'            => $devis->getMontantHT(),
-            'tva'                => $devis->getMontantHT() * $devis->getTauxTVA(),
-            'totalTTC'           => $devis->getMontantTtc(),
-            'conditions'         => 'Paiement sous 30 jours.',
-            'entreprise_nom'     => $entreprise ? $entreprise->getNomEntreprise() : '',
-            'entreprise_tel'     => $entreprise ? $entreprise->getTelephone() : '',
-            'entreprise_email'   => $entreprise ? $entreprise->getEmail() : '',
-            'entreprise_adresse' => $adresse,
-            'client_nom'         => $client ? $client->getNom() : '',
-            'client_prenom'      => $client ? $client->getPrenom() : '',
-            'client_email'       => $client ? $client->getEmail() : '',
-            'client_telephone'   => $client ? $client->getTelephone() : '',
-            'client_adresse'     => $clientAdresse,
+            'totalHT'                 => $devis->getMontantHT(),
+            'tva'                     => $devis->getMontantHT() * $devis->getTauxTVA(),
+            'totalTTC'                => $devis->getMontantTtc(),
+            'conditions'              => 'Paiement sous 30 jours.',
+            'entreprise_nom'          => $entreprise ? $entreprise->getNomEntreprise() : '',
+            'entreprise_tel'          => $entreprise ? $entreprise->getTelephone() : '',
+            'entreprise_email'        => $entreprise ? $entreprise->getEmail() : '',
+            'entreprise_adresse'      => $adresse,
+            'client_nom'              => $client ? $client->getNom() : '',
+            'client_prenom'           => $client ? $client->getPrenom() : '',
+            'client_email'            => $client ? $client->getEmail() : '',
+            'client_telephone'        => $client ? $client->getTelephone() : '',
+            'client_adresse'          => $clientAdresse,
+            // ✅ Signatures
+            'signature_emetteur'      => $devis->getSignatureEmetteur(),
+            'signature_emetteur_date' => $devis->getSignatureEmetteurDate() ? $devis->getSignatureEmetteurDate()->format('d/m/Y à H:i') : null,
+            'signature_client'        => $devis->getSignatureImage(),
+            'signature_client_date'   => $devis->getSignatureDate() ? $devis->getSignatureDate()->format('d/m/Y à H:i') : null,
         ]);
 
         $options = new Options();
