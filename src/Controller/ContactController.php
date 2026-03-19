@@ -13,34 +13,50 @@ class ContactController extends AbstractController
     #[Route('/contact', name: 'app_contact')]
     public function contact(Request $request, MailerInterface $mailer): Response
     {
-        $data = [];
-        $success = null;
         if ($request->isMethod('POST')) {
-            $data = $request->request->all();
-            if (!empty($data['message'])) {
-                try {
-                    $email = (new Email())
-                        ->from('no-reply@myassistant.fr')
-                        ->to('contact@myassistant.fr')
-                        ->subject('Nouveau message de contact')
-                        ->html('<p><strong>Email:</strong> '.htmlspecialchars($data['nom']).'</p>' .
-                               '<p><strong>Sujet:</strong> '.htmlspecialchars($data['email']).'</p>' .
-                               '<p><strong>Message:</strong><br>'.nl2br(htmlspecialchars($data['message'])).'</p>');
-                    $mailer->send($email);
-                    $success = true;
-                    $this->addFlash('success', 'Votre message a bien été envoyé !');
-                } catch (\Exception $e) {
-                    $success = false;
-                    $this->addFlash('error', 'Erreur lors de l\'envoi du message.');
-                }
+            $email   = $request->request->get('nom'); // champ email dans le form
+            $subject = $request->request->get('email'); // champ sujet dans le form
+            $message = $request->request->get('message');
+
+            if (!$email || !$subject || !$message) {
+                $this->addFlash('error', 'Tous les champs sont obligatoires.');
+            } elseif (!preg_match('/^[^@\s]+@[^@\s]+\.[^@\s]+$/', $email)) {
+                $this->addFlash('error', 'Veuillez entrer une adresse email valide.');
             } else {
-                $success = false;
-                $this->addFlash('error', 'Erreur : le message n\'a pas été envoyé.');
+                // ✅ Anti-spam : max 3 messages par heure
+                $session = $request->getSession();
+                $now     = time();
+                $history = $session->get('contact_history', []);
+                $history = array_filter($history, function($item) use ($now, $email) {
+                    return $item['email'] === $email && ($now - $item['time']) < 3600;
+                });
+
+                if (count($history) >= 3) {
+                    $this->addFlash('error', 'Vous avez atteint la limite de 3 messages par heure.');
+                } else {
+                    $to   = $_ENV['MAILER_TO'] ?? 'contact@yohanndufresne.fr';
+                    $mail = (new Email())
+                        ->from($email)
+                        ->to($to)
+                        ->subject('[My Assistant] ' . $subject)
+                        ->html(
+                            '<p><strong>De :</strong> ' . htmlspecialchars($email) . '</p>' .
+                            '<p><strong>Sujet :</strong> ' . htmlspecialchars($subject) . '</p>' .
+                            '<p><strong>Message :</strong><br>' . nl2br(htmlspecialchars($message)) . '</p>'
+                        );
+
+                    try {
+                        $mailer->send($mail);
+                        $this->addFlash('success', 'Votre message a bien été envoyé !');
+                        $history[] = ['email' => $email, 'time' => $now];
+                        $session->set('contact_history', $history);
+                    } catch (\Exception $e) {
+                        $this->addFlash('error', 'Erreur lors de l\'envoi : ' . $e->getMessage());
+                    }
+                }
             }
         }
-        return $this->render('contact/contact.html.twig', [
-            'data' => $data,
-            'success' => $success,
-        ]);
+
+        return $this->render('contact/contact.html.twig');
     }
 }
