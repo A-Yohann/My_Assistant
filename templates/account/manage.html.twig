@@ -39,11 +39,17 @@
 
         <!-- Mot de passe -->
         <label for="password" class="block text-white mb-1">
-            Nouveau mot de passe
-            <span class="text-xs text-gray-300">(laisser vide pour ne pas changer)</span>
+            Nouveau mot de passe <span class="text-xs text-gray-300">(laisser vide pour ne pas changer)</span>
         </label>
-        <input type="password" id="password" name="password"
-               placeholder="Nouveau mot de passe" class="block w-full mb-4 p-2 rounded bg-gray-100">
+        <div class="relative">
+            <input type="password" id="password" name="password"
+                placeholder="Nouveau mot de passe"
+                class="block w-full mb-4 p-2 rounded bg-gray-100 pr-10">
+            <button type="button" onclick="togglePassword('password', this)"
+                    class="absolute right-2 top-2 text-gray-500 hover:text-gray-700">
+                👁
+            </button>
+        </div>
 
         <!-- Téléphone -->
         <label for="telephone" class="block text-white mb-1">Téléphone</label>
@@ -66,4 +72,16 @@
         
     </form>
 </div>
+<script>
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        btn.textContent = '👁';
+    }
+}
+</script>
 {% endblock %}
