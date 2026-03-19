@@ -26,7 +26,13 @@
         {# PASSWORD #}
         <div>
             {{ form_label(registrationForm.plainPassword.first, 'Mot de passe', {'label_attr': {'class': 'block mb-1 font-semibold'}}) }}
-            {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'w-full border border-gray-300 text-black p-2 rounded','id':'password-field'}}) }}
+            <div class="relative">
+                {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'w-full border border-gray-300 text-white p-2 rounded pr-10'}}) }}
+                <button type="button" onclick="togglePassword(this)"
+                        class="absolute right-2 top-2 text-gray-300 hover:text-white">
+                    👁
+                </button>
+            </div>
 
             <div id="password-rules" class="text-sm mt-2 space-y-1">
                 <p id="rule-length" class="text-red-300">✗ Au moins 8 caractères</p>
@@ -43,7 +49,13 @@
         {# CONFIRM PASSWORD #}
         <div>
             {{ form_label(registrationForm.plainPassword.second, 'Confirmer le mot de passe', {'label_attr': {'class': 'block mb-1 font-semibold'}}) }}
-            {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'w-full border border-gray-300 text-black p-2 rounded','id':'confirm-password-field'}}) }}
+            <div class="relative">
+                {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'w-full border border-gray-300 text-white p-2 rounded pr-10'}}) }}
+                <button type="button" onclick="togglePassword(this)"
+                        class="absolute right-2 top-2 text-gray-300 hover:text-white">
+                    👁
+                </button>
+            </div>
             {{ form_errors(registrationForm.plainPassword.second) }}
         </div>
 
@@ -70,45 +82,47 @@
     </div>
 </div>
 
-
 <script>
+function togglePassword(btn) {
+    const input = btn.previousElementSibling;
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        btn.textContent = '👁';
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
-    // Sélection par name (fiable pour RepeatedType)
     const password = document.querySelector('input[name$="[first]"]');
-    const confirm = document.querySelector('input[name$="[second]"]');
+    const confirm  = document.querySelector('input[name$="[second]"]');
 
     const rules = {
-        length: document.getElementById('rule-length'),
-        upper: document.getElementById('rule-uppercase'),
-        lower: document.getElementById('rule-lowercase'),
-        number: document.getElementById('rule-number'),
+        length:  document.getElementById('rule-length'),
+        upper:   document.getElementById('rule-uppercase'),
+        lower:   document.getElementById('rule-lowercase'),
+        number:  document.getElementById('rule-number'),
         special: document.getElementById('rule-special'),
-        match: document.getElementById('rule-match')
+        match:   document.getElementById('rule-match')
     };
 
     function updateRules() {
-        const value = password.value;
+        const value        = password.value;
         const confirmValue = confirm.value;
 
-        const lengthValid = value.length >= 8;
-        const upperValid = /[A-Z]/.test(value);
-        const lowerValid = /[a-z]/.test(value);
-        const numberValid = /[0-9]/.test(value);
-        const specialValid = /[^A-Za-z0-9]/.test(value);
-        const matchValid = value.length > 0 && value === confirmValue;
-
-        updateRule(rules.length, lengthValid);
-        updateRule(rules.upper, upperValid);
-        updateRule(rules.lower, lowerValid);
-        updateRule(rules.number, numberValid);
-        updateRule(rules.special, specialValid);
-        updateRule(rules.match, matchValid);
+        updateRule(rules.length,  value.length >= 8);
+        updateRule(rules.upper,   /[A-Z]/.test(value));
+        updateRule(rules.lower,   /[a-z]/.test(value));
+        updateRule(rules.number,  /[0-9]/.test(value));
+        updateRule(rules.special, /[^A-Za-z0-9]/.test(value));
+        updateRule(rules.match,   value.length > 0 && value === confirmValue);
     }
 
     function updateRule(element, isValid) {
         if (!element) return;
         const text = element.textContent.slice(2);
-        element.classList.remove('text-red-300','text-green-300');
+        element.classList.remove('text-red-300', 'text-green-300');
         element.classList.add(isValid ? 'text-green-300' : 'text-red-300');
         element.textContent = (isValid ? '✓ ' : '✗ ') + text;
     }
@@ -121,3 +135,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
 {% endblock %}
 
+ 

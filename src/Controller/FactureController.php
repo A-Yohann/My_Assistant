@@ -54,7 +54,9 @@ class FactureController extends AbstractController
         }
 
         $entreprise = $facture->getEntreprise();
-        $client = $facture->getBonDeCommande() ? $facture->getBonDeCommande()->getDevis()->getClient() : null;
+        $bon        = $facture->getBonDeCommande();
+        $devis      = $bon ? $bon->getDevis() : null;
+        $client     = $devis ? $devis->getClient() : null;
 
         $adresse = $entreprise ? (
             $entreprise->getNumeroRue() . ' ' . $entreprise->getNomRue() . ', ' .
@@ -68,24 +70,29 @@ class FactureController extends AbstractController
         ) : '';
 
         $html = $this->renderView('facture/pdf.html.twig', [
-            'numero'             => $facture->getNumeroFacture(),
-            'date'               => $facture->getDateCreation()->format('d/m/Y'),
-            'dateEcheance'       => $facture->getDateEcheance() ? $facture->getDateEcheance()->format('d/m/Y') : '',
-            'articles'           => [
+            'numero'                  => $facture->getNumeroFacture(),
+            'date'                    => $facture->getDateCreation()->format('d/m/Y'),
+            'dateEcheance'            => $facture->getDateEcheance() ? $facture->getDateEcheance()->format('d/m/Y') : '',
+            'articles'                => [
                 ['libelle' => $facture->getDescription(), 'qty' => 1, 'price' => $facture->getMontantHT()],
             ],
-            'totalHT'            => $facture->getMontantHT(),
-            'tva'                => $facture->getMontantHT() * $facture->getTauxTVA(),
-            'totalTTC'           => $facture->getMontantTtc(),
-            'entreprise_nom'     => $entreprise ? $entreprise->getNomEntreprise() : '',
-            'entreprise_tel'     => $entreprise ? $entreprise->getTelephone() : '',
-            'entreprise_email'   => $entreprise ? $entreprise->getEmail() : '',
-            'entreprise_adresse' => $adresse,
-            'client_nom'         => $client ? $client->getNom() : '',
-            'client_prenom'      => $client ? $client->getPrenom() : '',
-            'client_email'       => $client ? $client->getEmail() : '',
-            'client_telephone'   => $client ? $client->getTelephone() : '',
-            'client_adresse'     => $clientAdresse,
+            'totalHT'                 => $facture->getMontantHT(),
+            'tva'                     => $facture->getMontantHT() * $facture->getTauxTVA(),
+            'totalTTC'                => $facture->getMontantTtc(),
+            'entreprise_nom'          => $entreprise ? $entreprise->getNomEntreprise() : '',
+            'entreprise_tel'          => $entreprise ? $entreprise->getTelephone() : '',
+            'entreprise_email'        => $entreprise ? $entreprise->getEmail() : '',
+            'entreprise_adresse'      => $adresse,
+            'client_nom'              => $client ? $client->getNom() : '',
+            'client_prenom'           => $client ? $client->getPrenom() : '',
+            'client_email'            => $client ? $client->getEmail() : '',
+            'client_telephone'        => $client ? $client->getTelephone() : '',
+            'client_adresse'          => $clientAdresse,
+            // ✅ Signatures héritées du devis
+            'signature_emetteur'      => $devis ? $devis->getSignatureEmetteur() : null,
+            'signature_emetteur_date' => $devis && $devis->getSignatureEmetteurDate() ? $devis->getSignatureEmetteurDate()->format('d/m/Y à H:i') : null,
+            'signature_client'        => $devis ? $devis->getSignatureImage() : null,
+            'signature_client_date'   => $devis && $devis->getSignatureDate() ? $devis->getSignatureDate()->format('d/m/Y à H:i') : null,
         ]);
 
         $options = new Options();

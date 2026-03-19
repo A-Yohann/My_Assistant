@@ -59,7 +59,7 @@
             </div>
 
             <!-- Infos client -->
-            <div>
+            <div class="border-b pb-4 mb-2">
                 <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4">Informations du client</h2>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -111,12 +111,32 @@
                 </div>
             </div>
 
+            <!-- Signature émetteur -->
+            <div class="border-b pb-4 mb-2">
+                <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4">Votre signature</h2>
+                <p class="text-sm text-gray-500 mb-3">Dessinez votre signature dans le cadre ci-dessous :</p>
+
+                <canvas id="signatureCanvas"
+                        class="border-2 border-gray-300 rounded-lg w-full cursor-crosshair bg-white"
+                        style="height: 150px; touch-action: none;">
+                </canvas>
+
+                <div class="flex gap-3 mt-3">
+                    <button type="button" id="clearBtn"
+                            class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 text-sm">
+                        Effacer
+                    </button>
+                </div>
+
+                <input type="hidden" name="signature_emetteur" id="signatureEmetteurInput">
+            </div>
+
             <!-- Boutons -->
             <div class="grid grid-cols-2 gap-3 pt-4 border-t">
                 <a href="{{ path('devis_index') }}" class="text-center bg-gray-200 text-gray-700 px-5 py-3 rounded-lg hover:bg-gray-300 text-sm font-medium">
                     Annuler
                 </a>
-                <button type="submit" class="text-center bg-[#3B0764] text-white px-5 py-3 rounded-lg hover:opacity-90 font-semibold text-sm">
+                <button type="submit" id="submitBtn" class="text-center bg-[#3B0764] text-white px-5 py-3 rounded-lg hover:opacity-90 font-semibold text-sm">
                     Générer le devis
                 </button>
             </div>
@@ -124,4 +144,51 @@
         {{ form_end(form) }}
     </div>
 </div>
+
+<script>
+const canvas = document.getElementById('signatureCanvas');
+const ctx = canvas.getContext('2d');
+let drawing = false;
+
+function resizeCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+}
+resizeCanvas();
+
+function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    if (e.touches) {
+        return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+    }
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+}
+
+canvas.addEventListener('mousedown', (e) => { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); });
+canvas.addEventListener('mousemove', (e) => { if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
+canvas.addEventListener('mouseup', () => { drawing = false; });
+canvas.addEventListener('mouseleave', () => { drawing = false; });
+canvas.addEventListener('touchstart', (e) => { e.preventDefault(); drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); });
+canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
+canvas.addEventListener('touchend', () => { drawing = false; });
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+document.getElementById('submitBtn').addEventListener('click', function() {
+    const blank = document.createElement('canvas');
+    blank.width = canvas.width;
+    blank.height = canvas.height;
+    const data = canvas.toDataURL('image/png');
+    if (data !== blank.toDataURL('image/png')) {
+        document.getElementById('signatureEmetteurInput').value = data;
+    }
+});
+</script>
 {% endblock %}
