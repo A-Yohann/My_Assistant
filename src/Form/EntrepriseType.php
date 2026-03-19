@@ -37,9 +37,8 @@ class EntrepriseType extends AbstractType
             ->add('ville', TextType::class)
             ->add('pays', TextType::class)
             ->add('telephone', TextType::class)
-            ->add('save', SubmitType::class, [
-                'label' => 'Valider',
-            ]);
+           
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
