@@ -34,7 +34,7 @@ class ForgotPasswordController extends AbstractController
                     $em->persist($resetToken);
                     $em->flush();
                     // Envoyer l'email
-                    $resetUrl = $this->generateUrl('app_reset_password', ['token' => $token], true);
+                    $resetUrl = $this->generateUrl('app_reset_password', ['token' => $token], 0);
                     $mail = (new TemplatedEmail())
                         ->from('no-reply@myassistant.com')
                         ->to($email)
