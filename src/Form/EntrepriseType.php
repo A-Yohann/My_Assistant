@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -24,7 +25,7 @@ class EntrepriseType extends AbstractType
             ])
             ->add('logo', FileType::class, [
                 'required' => false,
-                'mapped' => false,
+                'mapped'   => false,
             ])
             ->add('formeJuridique', TextType::class)
             ->add('status', TextType::class)
@@ -35,7 +36,11 @@ class EntrepriseType extends AbstractType
             ])
             ->add('codePostal', TextType::class)
             ->add('ville', TextType::class)
-            ->add('pays', TextType::class)
+            ->add('pays', CountryType::class, [
+                'label'             => 'Pays',
+                'preferred_choices' => ['FR', 'BE', 'CH', 'CA'],
+                'placeholder'       => 'Sélectionnez un pays',
+            ])
             ->add('telephone', TextType::class)
             ->add('save', SubmitType::class, [
                 'label' => 'Valider',

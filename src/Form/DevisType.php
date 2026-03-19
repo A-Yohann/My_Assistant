@@ -9,13 +9,13 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\CountryType;
 
 class DevisType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            // --- Infos devis ---
             ->add('numeroDevis', TextType::class, [
                 'label' => 'Numéro du devis',
             ])
@@ -50,8 +50,6 @@ class DevisType extends AbstractType
                 'label'  => 'Date de création',
                 'widget' => 'single_text',
             ])
-
-            // --- Infos client ---
             ->add('clientNom', TextType::class, [
                 'label'    => 'Nom du client',
                 'mapped'   => false,
@@ -92,11 +90,12 @@ class DevisType extends AbstractType
                 'mapped'   => false,
                 'required' => false,
             ])
-            ->add('clientPays', TextType::class, [
-                'label'    => 'Pays',
-                'mapped'   => false,
-                'required' => false,
-                'data'     => 'France',
+            ->add('clientPays', CountryType::class, [
+                'label'             => 'Pays',
+                'mapped'            => false,
+                'required'          => false,
+                'preferred_choices' => ['FR', 'BE', 'CH', 'CA'],
+                'placeholder'       => 'Sélectionnez un pays',
             ]);
     }
 
