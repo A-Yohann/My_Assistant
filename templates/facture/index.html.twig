@@ -7,7 +7,30 @@
 
     <h1 class="text-xl lg:text-2xl font-bold mb-6">Liste des factures</h1>
 
-    <!-- Table (masquée sur mobile) -->
+    <!-- Filtres -->
+    <form method="GET" action="{{ path('facture_index') }}" class="flex flex-col sm:flex-row gap-3 mb-6">
+        <input type="text" name="search" value="{{ search }}"
+               placeholder="🔍 Rechercher par numéro..."
+               class="flex-1 border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]">
+
+        <select name="statut" class="border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764] bg-white">
+            <option value="">Tous les statuts</option>
+            <option value="impayee" {% if statut == 'impayee' %}selected{% endif %}>Impayée</option>
+            <option value="payee" {% if statut == 'payee' %}selected{% endif %}>Payée</option>
+        </select>
+
+        <button type="submit" class="bg-[#3B0764] text-white px-4 py-2 rounded-lg text-sm hover:opacity-90">
+            Filtrer
+        </button>
+
+        {% if search or statut %}
+            <a href="{{ path('facture_index') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-300">
+                Réinitialiser
+            </a>
+        {% endif %}
+    </form>
+
+    <!-- Table desktop -->
     <div class="hidden md:block overflow-x-auto">
         <table class="min-w-full bg-white">
             <thead>
@@ -15,7 +38,6 @@
                     <th class="px-4 py-2 text-left">Numéro</th>
                     <th class="px-4 py-2 text-left">Date création</th>
                     <th class="px-4 py-2 text-left">Date échéance</th>
-                    <th class="px-4 py-2 text-left">Montant HT</th>
                     <th class="px-4 py-2 text-left">Montant TTC</th>
                     <th class="px-4 py-2 text-left">Statut</th>
                     <th class="px-4 py-2 text-left">Actions</th>
@@ -27,7 +49,6 @@
                         <td class="px-4 py-2 font-medium">{{ facture.numeroFacture }}</td>
                         <td class="px-4 py-2">{{ facture.dateCreation|date('d/m/Y') }}</td>
                         <td class="px-4 py-2">{{ facture.dateEcheance ? facture.dateEcheance|date('d/m/Y') : '-' }}</td>
-                        <td class="px-4 py-2">{{ facture.montantHT }} €</td>
                         <td class="px-4 py-2">{{ facture.montantTtc }} €</td>
                         <td class="px-4 py-2">
                             {% if facture.etat == 'impayee' %}
@@ -41,7 +62,7 @@
                         </td>
                     </tr>
                 {% else %}
-                    <tr><td colspan="7" class="text-center py-4 text-gray-400">Aucune facture trouvée.</td></tr>
+                    <tr><td colspan="6" class="text-center py-4 text-gray-400">Aucune facture trouvée.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -61,8 +82,7 @@
                 </div>
                 <div class="text-sm text-gray-600 mb-1">📅 Créée le : <span class="font-medium">{{ facture.dateCreation|date('d/m/Y') }}</span></div>
                 <div class="text-sm text-gray-600 mb-1">⏰ Échéance : <span class="font-medium">{{ facture.dateEcheance ? facture.dateEcheance|date('d/m/Y') : '-' }}</span></div>
-                <div class="text-sm text-gray-600 mb-1">HT : <span class="font-medium">{{ facture.montantHT }} €</span></div>
-                <div class="text-sm text-gray-600 mb-3">TTC : <span class="font-medium">{{ facture.montantTtc }} €</span></div>
+                <div class="text-sm text-gray-600 mb-3">💰 TTC : <span class="font-medium">{{ facture.montantTtc }} €</span></div>
                 <a href="{{ path('facture_show', {'id': facture.id}) }}"
                    class="block text-center bg-[#3B0764] text-white text-sm px-4 py-2 rounded hover:opacity-90">
                     Voir la facture

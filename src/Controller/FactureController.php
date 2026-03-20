@@ -7,29 +7,45 @@ use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Facture;
 use App\Service\EntrepriseActiveService;
+use Symfony\Component\HttpFoundation\Request;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
 class FactureController extends AbstractController
 {
     #[Route('/facture', name: 'facture_index')]
-    public function index(EntityManagerInterface $em, EntrepriseActiveService $entrepriseService): Response
+    public function index(EntityManagerInterface $em, EntrepriseActiveService $entrepriseService, Request $request): Response
     {
         $entrepriseActive = $entrepriseService->getEntrepriseActive();
         $factures = [];
 
+        $search = $request->query->get('search', '');
+        $statut = $request->query->get('statut', '');
+
         if ($entrepriseActive) {
-            $factures = $em->getRepository(Facture::class)
+            $qb = $em->getRepository(Facture::class)
                 ->createQueryBuilder('f')
                 ->where('f.entreprise = :entreprise')
                 ->setParameter('entreprise', $entrepriseActive)
-                ->orderBy('f.dateCreation', 'DESC')
-                ->getQuery()
-                ->getResult();
+                ->orderBy('f.dateCreation', 'DESC');
+
+            if ($search) {
+                $qb->andWhere('f.numeroFacture LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+            }
+
+            if ($statut) {
+                $qb->andWhere('f.etat = :statut')
+                ->setParameter('statut', $statut);
+            }
+
+            $factures = $qb->getQuery()->getResult();
         }
 
         return $this->render('facture/index.html.twig', [
             'factures' => $factures,
+            'search'   => $search,
+            'statut'   => $statut,
         ]);
     }
 

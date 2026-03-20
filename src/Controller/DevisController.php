@@ -16,27 +16,42 @@ use Dompdf\Options;
 
 class DevisController extends AbstractController
 {
-    #[Route('/devis', name: 'devis_index')]
-    public function index(EntityManagerInterface $em, EntrepriseActiveService $entrepriseService): Response
-    {
-        $entrepriseActive = $entrepriseService->getEntrepriseActive();
-        $devisList = [];
+#[Route('/devis', name: 'devis_index')]
+public function index(EntityManagerInterface $em, EntrepriseActiveService $entrepriseService, Request $request): Response
+{
+    $entrepriseActive = $entrepriseService->getEntrepriseActive();
+    $devisList = [];
 
-        if ($entrepriseActive) {
-            $devisList = $em->getRepository(Devis::class)
-                ->createQueryBuilder('d')
-                ->where('d.entreprise = :entreprise')
-                ->setParameter('entreprise', $entrepriseActive)
-                ->orderBy('d.dateCreation', 'DESC')
-                ->getQuery()
-                ->getResult();
+    $search = $request->query->get('search', '');
+    $statut = $request->query->get('statut', '');
+
+    if ($entrepriseActive) {
+        $qb = $em->getRepository(Devis::class)
+            ->createQueryBuilder('d')
+            ->leftJoin('d.client', 'c')
+            ->where('d.entreprise = :entreprise')
+            ->setParameter('entreprise', $entrepriseActive)
+            ->orderBy('d.dateCreation', 'DESC');
+
+        if ($search) {
+            $qb->andWhere('d.numeroDevis LIKE :search OR c.nom LIKE :search OR c.prenom LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
         }
 
-        return $this->render('devis/index.html.twig', [
-            'devisList' => $devisList
-        ]);
+        if ($statut) {
+            $qb->andWhere('d.etat = :statut')
+               ->setParameter('statut', $statut);
+        }
+
+        $devisList = $qb->getQuery()->getResult();
     }
 
+    return $this->render('devis/index.html.twig', [
+        'devisList' => $devisList,
+        'search'    => $search,
+        'statut'    => $statut,
+    ]);
+}
     #[Route('/devis/generer', name: 'devis_generer')]
     public function generer(EntityManagerInterface $em, Request $request): Response
     {
