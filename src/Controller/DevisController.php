@@ -41,6 +41,23 @@ class DevisController extends AbstractController
     public function generer(EntityManagerInterface $em, Request $request): Response
     {
         $devis = new Devis();
+
+        // ✅ Numérotation automatique
+        $lastDevis = $em->getRepository(Devis::class)
+            ->createQueryBuilder('d')
+            ->orderBy('d.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        $nextNumber = 1;
+        if ($lastDevis) {
+            $parts = explode('-', $lastDevis->getNumeroDevis());
+            $nextNumber = ((int) end($parts)) + 1;
+        }
+        $numeroAuto = 'DEV-' . date('Y') . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        $devis->setNumeroDevis($numeroAuto);
+
         $form = $this->createForm(DevisType::class, $devis, [
             'user' => $this->getUser(),
         ]);
@@ -146,7 +163,6 @@ class DevisController extends AbstractController
             'client_email'            => $client ? $client->getEmail() : '',
             'client_telephone'        => $client ? $client->getTelephone() : '',
             'client_adresse'          => $clientAdresse,
-            // ✅ Signatures
             'signature_emetteur'      => $devis->getSignatureEmetteur(),
             'signature_emetteur_date' => $devis->getSignatureEmetteurDate() ? $devis->getSignatureEmetteurDate()->format('d/m/Y à H:i') : null,
             'signature_client'        => $devis->getSignatureImage(),
@@ -218,7 +234,6 @@ class DevisController extends AbstractController
             'client_email'            => $client ? $client->getEmail() : '',
             'client_telephone'        => $client ? $client->getTelephone() : '',
             'client_adresse'          => $clientAdresse,
-            // ✅ Signatures
             'signature_emetteur'      => $devis->getSignatureEmetteur(),
             'signature_emetteur_date' => $devis->getSignatureEmetteurDate() ? $devis->getSignatureEmetteurDate()->format('d/m/Y à H:i') : null,
             'signature_client'        => $devis->getSignatureImage(),

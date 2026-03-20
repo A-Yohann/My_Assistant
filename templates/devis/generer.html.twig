@@ -16,13 +16,28 @@
 
         {{ form_start(form, {'attr': {'class': 'space-y-5'}}) }}
 
+            <!-- Sélection client existant -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h2 class="text-sm font-semibold text-blue-700 uppercase tracking-wide mb-3">
+                    Sélectionner un client existant
+                </h2>
+                {{ form_widget(form.clientExistant, {
+                    'attr': {
+                        'class': 'block w-full border border-blue-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764] bg-white',
+                        'id': 'client-select'
+                    }
+                }) }}
+                <p class="text-xs text-blue-500 mt-2">Les champs client seront remplis automatiquement.</p>
+            </div>
+
             <!-- Infos devis -->
             <div class="border-b pb-4 mb-2">
                 <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4">Informations du devis</h2>
 
                 <div>
                     {{ form_label(form.numeroDevis, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                    {{ form_widget(form.numeroDevis, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'Ex: DEV-2026-001'}}) }}
+                    {{ form_widget(form.numeroDevis, {'attr': {'class': 'block w-full border border-gray-200 rounded-lg p-2 text-sm bg-gray-50 text-gray-500 cursor-not-allowed', 'readonly': 'readonly'}}) }}
+                    <p class="text-xs text-gray-400 mt-1">Numéro généré automatiquement</p>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
@@ -65,48 +80,48 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         {{ form_label(form.clientNom, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.clientNom, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'Dupond'}}) }}
+                        {{ form_widget(form.clientNom, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'Dupond', 'id': 'field-nom'}}) }}
                     </div>
                     <div>
                         {{ form_label(form.clientPrenom, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.clientPrenom, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'Jean'}}) }}
+                        {{ form_widget(form.clientPrenom, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'Jean', 'id': 'field-prenom'}}) }}
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                     <div>
                         {{ form_label(form.clientEmail, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.clientEmail, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'jean@email.fr'}}) }}
+                        {{ form_widget(form.clientEmail, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'jean@email.fr', 'id': 'field-email'}}) }}
                     </div>
                     <div>
                         {{ form_label(form.clientTelephone, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.clientTelephone, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': '06 00 00 00 00'}}) }}
+                        {{ form_widget(form.clientTelephone, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': '06 00 00 00 00', 'id': 'field-telephone'}}) }}
                     </div>
                 </div>
 
                 <div class="grid grid-cols-3 gap-4 mt-4">
                     <div>
                         {{ form_label(form.clientNumeroRue, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.clientNumeroRue, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': '12'}}) }}
+                        {{ form_widget(form.clientNumeroRue, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': '12', 'id': 'field-numeroRue'}}) }}
                     </div>
                     <div class="col-span-2">
                         {{ form_label(form.clientNomRue, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.clientNomRue, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'Rue de la Paix'}}) }}
+                        {{ form_widget(form.clientNomRue, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'Rue de la Paix', 'id': 'field-nomRue'}}) }}
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
                     <div>
                         {{ form_label(form.clientCodePostal, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.clientCodePostal, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': '75000'}}) }}
+                        {{ form_widget(form.clientCodePostal, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': '75000', 'id': 'field-codePostal'}}) }}
                     </div>
                     <div>
                         {{ form_label(form.clientVille, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.clientVille, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'Paris'}}) }}
+                        {{ form_widget(form.clientVille, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'Paris', 'id': 'field-ville'}}) }}
                     </div>
                     <div>
                         {{ form_label(form.clientPays, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.clientPays, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+                        {{ form_widget(form.clientPays, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'id': 'field-pays'}}) }}
                     </div>
                 </div>
             </div>
@@ -146,6 +161,35 @@
 </div>
 
 <script>
+// ✅ Auto-remplissage client existant
+const clientSelect = document.querySelector('select[name*="clientExistant"]');
+if (clientSelect) {
+    clientSelect.addEventListener('change', function () {
+        const clientId = this.value;
+        if (!clientId) return;
+
+        fetch('/client/' + clientId + '/json')
+            .then(res => res.json())
+            .then(data => {
+                document.querySelector('input[name*="clientNom"]').value        = data.nom        ?? '';
+                document.querySelector('input[name*="clientPrenom"]').value     = data.prenom     ?? '';
+                document.querySelector('input[name*="clientEmail"]').value      = data.email      ?? '';
+                document.querySelector('input[name*="clientTelephone"]').value  = data.telephone  ?? '';
+                document.querySelector('input[name*="clientNumeroRue"]').value  = data.numeroRue  ?? '';
+                document.querySelector('input[name*="clientNomRue"]').value     = data.nomRue     ?? '';
+                document.querySelector('input[name*="clientCodePostal"]').value = data.codePostal ?? '';
+                document.querySelector('input[name*="clientVille"]').value      = data.ville      ?? '';
+
+                const paysSelect = document.querySelector('select[name*="clientPays"]');
+                if (paysSelect && data.pays) {
+                    paysSelect.value = data.pays;
+                }
+            })
+            .catch(err => console.error('Erreur fetch client:', err));
+    });
+}
+
+// ✅ Canvas signature
 const canvas = document.getElementById('signatureCanvas');
 const ctx = canvas.getContext('2d');
 let drawing = false;

@@ -2,6 +2,8 @@
 namespace App\Form;
 
 use App\Entity\Devis;
+use App\Entity\Client;
+use App\Entity\Entreprise;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -10,12 +12,30 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Doctrine\ORM\EntityRepository;
 
 class DevisType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('clientExistant', EntityType::class, [
+                'class'         => Client::class,
+                'choice_label'  => function(Client $client) {
+                    return $client->getNom() . ' ' . $client->getPrenom() . ' — ' . $client->getEmail();
+                },
+                'label'         => 'Sélectionner un client existant',
+                'mapped'        => false,
+                'required'      => false,
+                'placeholder'   => '-- Nouveau client --',
+                'query_builder' => function (EntityRepository $er) use ($options) {
+                    return $er->createQueryBuilder('c')
+                        ->where('c.user = :user')
+                        ->setParameter('user', $options['user'])
+                        ->orderBy('c.nom', 'ASC');
+                },
+            ])
             ->add('numeroDevis', TextType::class, [
                 'label' => 'Numéro du devis',
             ])
@@ -33,17 +53,16 @@ class DevisType extends AbstractType
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
             ])
-            ->add('entreprise', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
-                'class'         => \App\Entity\Entreprise::class,
+            ->add('entreprise', EntityType::class, [
+                'class'         => Entreprise::class,
                 'choice_label'  => 'nomEntreprise',
                 'label'         => 'Entreprise',
                 'placeholder'   => 'Sélectionnez votre entreprise',
                 'required'      => true,
-                'query_builder' => function (\Doctrine\ORM\EntityRepository $er) use ($options) {
-                    $user = $options['user'];
+                'query_builder' => function (EntityRepository $er) use ($options) {
                     return $er->createQueryBuilder('e')
                         ->where('e.user = :user')
-                        ->setParameter('user', $user);
+                        ->setParameter('user', $options['user']);
                 },
             ])
             ->add('dateCreation', DateType::class, [

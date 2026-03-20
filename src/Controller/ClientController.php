@@ -3,9 +3,11 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Client;
+use App\Entity\Devis;
 use App\Service\EntrepriseActiveService;
 
 class ClientController extends AbstractController
@@ -43,8 +45,7 @@ class ClientController extends AbstractController
 
         $entrepriseActive = $entrepriseService->getEntrepriseActive();
 
-        // ✅ Récupérer uniquement les devis de l'entreprise active
-        $devis = $em->getRepository(\App\Entity\Devis::class)
+        $devis = $em->getRepository(Devis::class)
             ->createQueryBuilder('d')
             ->where('d.client = :client')
             ->andWhere('d.entreprise = :entreprise')
@@ -59,4 +60,25 @@ class ClientController extends AbstractController
             'devis'  => $devis,
         ]);
     }
+
+        #[Route('/client/{id}/json', name: 'client_json', requirements: ['id' => '\\d+'])]
+        public function clientJson(EntityManagerInterface $em, int $id): JsonResponse
+        {
+            $client = $em->getRepository(Client::class)->find($id);
+            if (!$client) {
+                return $this->json(['error' => 'Client non trouvé'], 404);
+            }
+
+            return $this->json([
+                'nom'        => $client->getNom(),
+                'prenom'     => $client->getPrenom(),
+                'email'      => $client->getEmail(),
+                'telephone'  => $client->getTelephone(),
+                'numeroRue'  => $client->getNumeroRue(),
+                'nomRue'     => $client->getNomRue(),
+                'codePostal' => $client->getCodePostal(),
+                'ville'      => $client->getVille(),
+                'pays'       => $client->getPays(),
+            ]);
+        }
 }
