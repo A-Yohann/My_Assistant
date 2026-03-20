@@ -8,26 +8,30 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\BonDeCommande;
 use App\Entity\Facture;
 use App\Service\EntrepriseActiveService;
+use Symfony\Component\HttpFoundation\Request;
+use Knp\Component\Pager\PaginatorInterface;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
 class BonDeCommandeController extends AbstractController
 {
+
     #[Route('/bon-de-commande', name: 'bon_de_commande_index')]
-    public function index(EntityManagerInterface $em, EntrepriseActiveService $entrepriseService): Response
+    public function index(EntityManagerInterface $em, EntrepriseActiveService $entrepriseService, Request $request, PaginatorInterface $paginator): Response
     {
         $entrepriseActive = $entrepriseService->getEntrepriseActive();
-        $bons = [];
 
-        if ($entrepriseActive) {
-            $bons = $em->getRepository(BonDeCommande::class)
-                ->createQueryBuilder('b')
-                ->where('b.entreprise = :entreprise')
-                ->setParameter('entreprise', $entrepriseActive)
-                ->orderBy('b.dateCreation', 'DESC')
-                ->getQuery()
-                ->getResult();
-        }
+        $qb = $em->getRepository(BonDeCommande::class)
+            ->createQueryBuilder('b')
+            ->where('b.entreprise = :entreprise')
+            ->setParameter('entreprise', $entrepriseActive ?? 0)
+            ->orderBy('b.dateCreation', 'DESC');
+
+        $bons = $paginator->paginate(
+            $qb->getQuery(),
+            $request->query->getInt('page', 1),
+            10
+        );
 
         return $this->render('bon_de_commande/index.html.twig', [
             'bons' => $bons,

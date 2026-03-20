@@ -6,29 +6,33 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Client;
 use App\Entity\Devis;
 use App\Service\EntrepriseActiveService;
 
 class ClientController extends AbstractController
 {
+
     #[Route('/clients', name: 'client_index')]
-    public function index(EntityManagerInterface $em, EntrepriseActiveService $entrepriseService): Response
+    public function index(EntityManagerInterface $em, EntrepriseActiveService $entrepriseService, Request $request, PaginatorInterface $paginator): Response
     {
         $entrepriseActive = $entrepriseService->getEntrepriseActive();
-        $clients = [];
 
-        if ($entrepriseActive) {
-            $clients = $em->getRepository(Client::class)
-                ->createQueryBuilder('c')
-                ->join('c.devis', 'd')
-                ->where('d.entreprise = :entreprise')
-                ->setParameter('entreprise', $entrepriseActive)
-                ->orderBy('c.dateCreation', 'DESC')
-                ->distinct()
-                ->getQuery()
-                ->getResult();
-        }
+        $qb = $em->getRepository(Client::class)
+            ->createQueryBuilder('c')
+            ->join('c.devis', 'd')
+            ->where('d.entreprise = :entreprise')
+            ->setParameter('entreprise', $entrepriseActive ?? 0)
+            ->orderBy('c.dateCreation', 'DESC')
+            ->distinct();
+
+        $clients = $paginator->paginate(
+            $qb->getQuery(),
+            $request->query->getInt('page', 1),
+            10
+        );
 
         return $this->render('client/index.html.twig', [
             'clients' => $clients,

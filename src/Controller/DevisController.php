@@ -11,47 +11,49 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Devis;
 use App\Form\DevisType;
 use App\Service\EntrepriseActiveService;
+use Knp\Component\Pager\PaginatorInterface;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
 class DevisController extends AbstractController
 {
-#[Route('/devis', name: 'devis_index')]
-public function index(EntityManagerInterface $em, EntrepriseActiveService $entrepriseService, Request $request): Response
-{
-    $entrepriseActive = $entrepriseService->getEntrepriseActive();
-    $devisList = [];
 
-    $search = $request->query->get('search', '');
-    $statut = $request->query->get('statut', '');
+    #[Route('/devis', name: 'devis_index')]
+    public function index(EntityManagerInterface $em, EntrepriseActiveService $entrepriseService, Request $request, PaginatorInterface $paginator): Response
+    {
+        $entrepriseActive = $entrepriseService->getEntrepriseActive();
+        $search = $request->query->get('search', '');
+        $statut = $request->query->get('statut', '');
 
-    if ($entrepriseActive) {
         $qb = $em->getRepository(Devis::class)
             ->createQueryBuilder('d')
             ->leftJoin('d.client', 'c')
             ->where('d.entreprise = :entreprise')
-            ->setParameter('entreprise', $entrepriseActive)
+            ->setParameter('entreprise', $entrepriseActive ?? 0)
             ->orderBy('d.dateCreation', 'DESC');
 
         if ($search) {
             $qb->andWhere('d.numeroDevis LIKE :search OR c.nom LIKE :search OR c.prenom LIKE :search')
-               ->setParameter('search', '%' . $search . '%');
+            ->setParameter('search', '%' . $search . '%');
         }
 
         if ($statut) {
             $qb->andWhere('d.etat = :statut')
-               ->setParameter('statut', $statut);
+            ->setParameter('statut', $statut);
         }
 
-        $devisList = $qb->getQuery()->getResult();
-    }
+        $devisList = $paginator->paginate(
+            $qb->getQuery(),
+            $request->query->getInt('page', 1),
+            10 // ✅ 10 par page
+        );
 
-    return $this->render('devis/index.html.twig', [
-        'devisList' => $devisList,
-        'search'    => $search,
-        'statut'    => $statut,
-    ]);
-}
+        return $this->render('devis/index.html.twig', [
+            'devisList' => $devisList,
+            'search'    => $search,
+            'statut'    => $statut,
+        ]);
+    }
     #[Route('/devis/generer', name: 'devis_generer')]
     public function generer(EntityManagerInterface $em, Request $request): Response
     {
