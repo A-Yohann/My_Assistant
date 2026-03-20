@@ -7,11 +7,14 @@
     </h1>
 
     {# ✅ Affichage des erreurs globales #}
-    {% if not form.vars.valid %}
-        <div class="bg-red-100 text-red-800 p-4 rounded mb-6">
+{% if not form.vars.valid %}
+    <div class="bg-red-100 text-red-800 p-4 rounded mb-6">
+        <strong>Erreur :</strong> Votre formulaire n'est pas conforme aux attentes.
+        <ul class="mt-2 list-disc list-inside">
             {{ form_errors(form) }}
-        </div>
-    {% endif %}
+        </ul>
+    </div>
+{% endif %}
 
     <div class="bg-white rounded-xl shadow p-8">
         {{ form_start(form, {'attr': {'class': 'space-y-4'}}) }}
@@ -19,25 +22,37 @@
             <div>
                 {{ form_label(form.nomEntreprise, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                 {{ form_widget(form.nomEntreprise, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+               <div class="text-red-600 text-sm mt-1">
+
                 {{ form_errors(form.nomEntreprise) }}
+                </div>
             </div>
 
             <div>
                 {{ form_label(form.siret, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                 {{ form_widget(form.siret, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+                              <div class="text-red-600 text-sm mt-1">
+
                 {{ form_errors(form.siret) }}
+                              </div>
             </div>
 
             <div>
                 {{ form_label(form.email, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                 {{ form_widget(form.email, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
-                {{ form_errors(form.email) }}
+
+                <div class="text-red-600 text-sm mt-1">
+                    {{ form_errors(form.email) }}
+                </div>
             </div>
 
             <div>
                 {{ form_label(form.dateCreation, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                 {{ form_widget(form.dateCreation, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
-                {{ form_errors(form.dateCreation) }}
+
+                <div class="text-red-600 text-sm mt-1">
+                    {{ form_errors(form.dateCreation) }}
+                </div>
             </div>
 
             <div>
@@ -48,50 +63,67 @@
                         PNG, JPG acceptés
                     </p>
                 </div>
-                {{ form_errors(form.logo) }}
+                <div class="text-red-600 text-sm mt-1">
+                    {{ form_errors(form.logo) }}
+                </div>
             </div>
 
             <div>
                 {{ form_label(form.formeJuridique, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                 {{ form_widget(form.formeJuridique, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
-                {{ form_errors(form.formeJuridique) }}
+
+                <div class="text-red-600 text-sm mt-1">
+                    {{ form_errors(form.formeJuridique) }}
+                </div>
             </div>
 
             <div>
                 {{ form_label(form.status, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                 {{ form_widget(form.status, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
-                {{ form_errors(form.status) }}
+                <div class="text-red-600 text-sm mt-1">
+                    {{ form_errors(form.status) }}
+                </div>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     {{ form_label(form.numeroRue, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                     {{ form_widget(form.numeroRue, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2'}}) }}
-                    {{ form_errors(form.numeroRue) }}
+                    <div class="text-red-600 text-sm mt-1">
+                        {{ form_errors(form.numeroRue) }}
+                    </div>
                 </div>
                 <div>
                     {{ form_label(form.nomRue, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                     {{ form_widget(form.nomRue, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2'}}) }}
-                    {{ form_errors(form.nomRue) }}
+                    <div class="text-red-600 text-sm mt-1">
+                        {{ form_errors(form.nomRue) }}
+                    </div>
                 </div>
             </div>
 
             <div>
                 {{ form_label(form.complementAdresse, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                 {{ form_widget(form.complementAdresse, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2'}}) }}
-                {{ form_errors(form.complementAdresse) }}
+                <div class="text-red-600 text-sm mt-1">
+                    {{ form_errors(form.complementAdresse) }}
+                </div>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     {{ form_label(form.codePostal, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                     {{ form_widget(form.codePostal, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2'}}) }}
-                    {{ form_errors(form.codePostal) }}
+                    <div class="text-red-600 text-sm mt-1">
+                        {{ form_errors(form.codePostal) }}
+                    </div>
                 </div>
                 <div>
                     {{ form_label(form.ville, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                     {{ form_widget(form.ville, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2'}}) }}
-                    {{ form_errors(form.ville) }}
+                    <div class="text-red-600 text-sm mt-1">
+                        {{ form_errors(form.ville) }}
+                    </div>
                 </div>
             </div>
 
@@ -99,12 +131,16 @@
                 <div>
                     {{ form_label(form.pays, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                     {{ form_widget(form.pays, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2'}}) }}
-                    {{ form_errors(form.pays) }}
+                    <div class="text-red-600 text-sm mt-1">
+                        {{ form_errors(form.pays) }}
+                    </div>
                 </div>
                 <div>
                     {{ form_label(form.telephone, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
                     {{ form_widget(form.telephone, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2'}}) }}
-                    {{ form_errors(form.telephone) }}
+                    <div class="text-red-600 text-sm mt-1">
+                        {{ form_errors(form.telephone) }}
+                    </div>
                 </div>
             </div>
 

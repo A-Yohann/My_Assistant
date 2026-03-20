@@ -55,10 +55,7 @@ class EntrepriseType extends AbstractType
                 'preferred_choices' => ['FR', 'BE', 'CH', 'CA'],
                 'placeholder'       => 'Sélectionnez un pays',
             ])
-            ->add('telephone', TextType::class)
-            ->add('save', SubmitType::class, [
-                'label' => 'Valider',
-            ]);
+            ->add('telephone', TextType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)
