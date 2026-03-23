@@ -4,7 +4,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -30,6 +30,30 @@ class AccountController extends AbstractController
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
+        if (!$user) {
+            return $this->redirectToRoute('home'); // sécurité si non connecté
+        }
+
+        // ----------------------------
+        // SUPPRESSION DU COMPTE.
+        // ----------------------------
+        if ($request->request->get('action') === 'delete') {
+
+            // 🔒 Bloquer la suppression des admins
+            if (in_array('ROLE_ADMIN', $user->getRoles())) {
+                $this->addFlash('error', 'Impossible de supprimer un compte admin.');
+                return $this->redirectToRoute('account_manage');
+            }
+
+            $em->remove($user);
+            $em->flush();
+
+            $this->addFlash('success', 'Votre compte a été supprimé avec succès.');
+return $this->redirectToRoute('app_home');         }
+
+        // ----------------------------
+        // MISE À JOUR DU COMPTE
+        // ----------------------------
         if ($request->isMethod('POST')) {
 
             // ✅ Upload avatar
@@ -72,6 +96,7 @@ class AccountController extends AbstractController
             return $this->redirectToRoute('account_manage');
         }
 
+        // Rendu final
         return $this->render('account/manage.html.twig', [
             'user'   => $user,
             'avatar' => $user->getAvatar() ?? '/default-avatar.png',

@@ -39,10 +39,16 @@
                               class="block w-full bg-white/10 border border-white/20 text-black placeholder-gray-400 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-white/50 resize-none"
                               placeholder="Votre message..." required></textarea>
                 </div>
+<div class="flex items-center space-x-2">
+    <input type="checkbox" id="terms" name="terms" required
+           class="w-4 h-4 text-green-600 bg-white border-gray-300 rounded focus:ring-green-500">
 
+    <label for="terms" class="text-sm text-gray-200">
+        J’accepte les <a href="/mention" class="underline hover:text-white">terms and conditions</a>
+    </label>
+</div>
                 <button type="submit"
-                        class="w-full bg-[#231F20] text-white py-3 rounded-lg font-semibold hover:opacity-90 transition">
-                    Envoyer
+class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition">                    Envoyer
                 </button>
 
             </form>

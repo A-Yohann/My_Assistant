@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Doctrine\ORM\EntityRepository;
@@ -100,10 +101,16 @@ class DevisType extends AbstractType
                 'required' => false,
             ])
             ->add('clientCodePostal', TextType::class, [
-                'label'    => 'Code postal',
-                'mapped'   => false,
+                'label' => 'Code postal',
+                'mapped' => false,
                 'required' => false,
-            ])
+                'constraints' => [
+                'Regex' => new Regex([
+                    'pattern' => '/^\d{5}$/',
+                'message' => 'Le code postal doit contenir exactement 5 chiffres.',
+        ])
+    ],
+])
             ->add('clientVille', TextType::class, [
                 'label'    => 'Ville',
                 'mapped'   => false,
