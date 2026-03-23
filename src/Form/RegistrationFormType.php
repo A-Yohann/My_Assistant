@@ -19,11 +19,12 @@ class RegistrationFormType extends AbstractType
         $builder
             ->add('email')
             ->add('agreeTerms', CheckboxType::class, [
+                'label' => 'J\'accepte les conditions d\'utilisation',
                 'mapped' => false,
                 'constraints' => [
-                    new IsTrue(message: 'You should agree to our terms.'),
+                    new IsTrue(message: 'Vous devez accepter les conditions d\'utilisation.'),
                 ],
-            ])
+        ])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'first_options'  => [

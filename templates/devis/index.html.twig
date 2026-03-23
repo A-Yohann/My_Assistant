@@ -12,14 +12,39 @@
         </a>
     </div>
 
-    <!-- Table (masquée sur mobile) -->
+    <!-- Filtres -->
+    <form method="GET" action="{{ path('devis_index') }}" class="flex flex-col sm:flex-row gap-3 mb-6">
+        <input type="text" name="search" value="{{ search }}"
+               placeholder="🔍 Rechercher par numéro ou client..."
+               class="flex-1 border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]">
+
+        <select name="statut" class="border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764] bg-white">
+            <option value="">Tous les statuts</option>
+            <option value="en_attente" {% if statut == 'en_attente' %}selected{% endif %}>En attente</option>
+            <option value="valide" {% if statut == 'valide' %}selected{% endif %}>Validé</option>
+            <option value="commande" {% if statut == 'commande' %}selected{% endif %}>En attente de paiement</option>
+            <option value="paye" {% if statut == 'paye' %}selected{% endif %}>Payé</option>
+        </select>
+
+        <button type="submit" class="bg-[#3B0764] text-white px-4 py-2 rounded-lg text-sm hover:opacity-90">
+            Filtrer
+        </button>
+
+        {% if search or statut %}
+            <a href="{{ path('devis_index') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-300">
+                Réinitialiser
+            </a>
+        {% endif %}
+    </form>
+
+    <!-- Table desktop -->
     <div class="hidden md:block overflow-x-auto">
         <table class="min-w-full bg-white">
             <thead>
                 <tr class="bg-[#3B0764] text-white">
                     <th class="px-4 py-2 text-left">Numéro</th>
+                    <th class="px-4 py-2 text-left">Client</th>
                     <th class="px-4 py-2 text-left">Date émission</th>
-                    <th class="px-4 py-2 text-left">Montant HT</th>
                     <th class="px-4 py-2 text-left">Montant TTC</th>
                     <th class="px-4 py-2 text-left">Statut</th>
                     <th class="px-4 py-2 text-left">Actions</th>
@@ -29,8 +54,8 @@
                 {% for devis in devisList %}
                     <tr class="border-b hover:bg-gray-50">
                         <td class="px-4 py-2 font-medium">{{ devis.numeroDevis }}</td>
+                        <td class="px-4 py-2 text-sm">{{ devis.client ? devis.client.nom ~ ' ' ~ devis.client.prenom : 'N/A' }}</td>
                         <td class="px-4 py-2">{{ devis.dateEmission|date('d/m/Y') }}</td>
-                        <td class="px-4 py-2">{{ devis.montantHT }} €</td>
                         <td class="px-4 py-2">{{ devis.montantTtc }} €</td>
                         <td class="px-4 py-2">
                             {% if devis.etat == 'en_attente' %}
@@ -47,7 +72,6 @@
                         </td>
                         <td class="px-4 py-2">
                             <a href="{{ path('devis_show', {'id': devis.id}) }}" class="text-blue-600 hover:underline text-sm">Voir</a>
-                            <div class="text-xs text-gray-500">{{ devis.entreprise.nomEntreprise ?? 'N/A' }}</div>
                         </td>
                     </tr>
                 {% else %}
@@ -75,10 +99,9 @@
                         <span class="bg-gray-100 text-gray-800 text-xs font-semibold px-2 py-1 rounded">{{ devis.etat }}</span>
                     {% endif %}
                 </div>
+                <div class="text-sm text-gray-600 mb-1">👤 {{ devis.client ? devis.client.nom ~ ' ' ~ devis.client.prenom : 'N/A' }}</div>
                 <div class="text-sm text-gray-600 mb-1">📅 {{ devis.dateEmission|date('d/m/Y') }}</div>
-                <div class="text-sm text-gray-600 mb-1">HT : <span class="font-medium">{{ devis.montantHT }} €</span></div>
-                <div class="text-sm text-gray-600 mb-2">TTC : <span class="font-medium">{{ devis.montantTtc }} €</span></div>
-                <div class="text-xs text-gray-400 mb-3">{{ devis.entreprise.nomEntreprise ?? 'N/A' }}</div>
+                <div class="text-sm text-gray-600 mb-3">💰 {{ devis.montantTtc }} €</div>
                 <a href="{{ path('devis_show', {'id': devis.id}) }}"
                    class="block text-center bg-[#3B0764] text-white text-sm px-4 py-2 rounded hover:opacity-90">
                     Voir le devis
@@ -89,4 +112,8 @@
         {% endfor %}
     </div>
 </div>
+    <!-- Pagination -->
+    <div class="flex justify-center mt-6">
+        {{ knp_pagination_render(devisList) }}
+    </div>
 {% endblock %}

@@ -11,36 +11,70 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Devis;
 use App\Form\DevisType;
 use App\Service\EntrepriseActiveService;
+use Knp\Component\Pager\PaginatorInterface;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
 class DevisController extends AbstractController
 {
+
     #[Route('/devis', name: 'devis_index')]
-    public function index(EntityManagerInterface $em, EntrepriseActiveService $entrepriseService): Response
+    public function index(EntityManagerInterface $em, EntrepriseActiveService $entrepriseService, Request $request, PaginatorInterface $paginator): Response
     {
         $entrepriseActive = $entrepriseService->getEntrepriseActive();
-        $devisList = [];
+        $search = $request->query->get('search', '');
+        $statut = $request->query->get('statut', '');
 
-        if ($entrepriseActive) {
-            $devisList = $em->getRepository(Devis::class)
-                ->createQueryBuilder('d')
-                ->where('d.entreprise = :entreprise')
-                ->setParameter('entreprise', $entrepriseActive)
-                ->orderBy('d.dateCreation', 'DESC')
-                ->getQuery()
-                ->getResult();
+        $qb = $em->getRepository(Devis::class)
+            ->createQueryBuilder('d')
+            ->leftJoin('d.client', 'c')
+            ->where('d.entreprise = :entreprise')
+            ->setParameter('entreprise', $entrepriseActive ?? 0)
+            ->orderBy('d.dateCreation', 'DESC');
+
+        if ($search) {
+            $qb->andWhere('d.numeroDevis LIKE :search OR c.nom LIKE :search OR c.prenom LIKE :search')
+            ->setParameter('search', '%' . $search . '%');
         }
 
+        if ($statut) {
+            $qb->andWhere('d.etat = :statut')
+            ->setParameter('statut', $statut);
+        }
+
+        $devisList = $paginator->paginate(
+            $qb->getQuery(),
+            $request->query->getInt('page', 1),
+            10 // ✅ 10 par page
+        );
+
         return $this->render('devis/index.html.twig', [
-            'devisList' => $devisList
+            'devisList' => $devisList,
+            'search'    => $search,
+            'statut'    => $statut,
         ]);
     }
-
     #[Route('/devis/generer', name: 'devis_generer')]
     public function generer(EntityManagerInterface $em, Request $request): Response
     {
         $devis = new Devis();
+
+        // ✅ Numérotation automatique
+        $lastDevis = $em->getRepository(Devis::class)
+            ->createQueryBuilder('d')
+            ->orderBy('d.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        $nextNumber = 1;
+        if ($lastDevis) {
+            $parts = explode('-', $lastDevis->getNumeroDevis());
+            $nextNumber = ((int) end($parts)) + 1;
+        }
+        $numeroAuto = 'DEV-' . date('Y') . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        $devis->setNumeroDevis($numeroAuto);
+
         $form = $this->createForm(DevisType::class, $devis, [
             'user' => $this->getUser(),
         ]);
@@ -146,7 +180,6 @@ class DevisController extends AbstractController
             'client_email'            => $client ? $client->getEmail() : '',
             'client_telephone'        => $client ? $client->getTelephone() : '',
             'client_adresse'          => $clientAdresse,
-            // ✅ Signatures
             'signature_emetteur'      => $devis->getSignatureEmetteur(),
             'signature_emetteur_date' => $devis->getSignatureEmetteurDate() ? $devis->getSignatureEmetteurDate()->format('d/m/Y à H:i') : null,
             'signature_client'        => $devis->getSignatureImage(),
@@ -218,7 +251,6 @@ class DevisController extends AbstractController
             'client_email'            => $client ? $client->getEmail() : '',
             'client_telephone'        => $client ? $client->getTelephone() : '',
             'client_adresse'          => $clientAdresse,
-            // ✅ Signatures
             'signature_emetteur'      => $devis->getSignatureEmetteur(),
             'signature_emetteur_date' => $devis->getSignatureEmetteurDate() ? $devis->getSignatureEmetteurDate()->format('d/m/Y à H:i') : null,
             'signature_client'        => $devis->getSignatureImage(),

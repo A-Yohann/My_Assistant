@@ -41,7 +41,7 @@ class DashboardController extends AbstractDashboardController
         $devisEnAttente  = $this->em->getRepository(Devis::class)->count(['etat' => 'en_attente']);
         $facturesImpayees = $this->em->getRepository(Facture::class)->count(['etat' => 'impayee']);
 
-        return $this->render('admin/dashboard.html.twig', [
+        return $this->render('Admin/dashboard.html.twig', [
             'totalUsers'       => $totalUsers,
             'totalEntreprises' => $totalEntreprises,
             'totalDevis'       => $totalDevis,
