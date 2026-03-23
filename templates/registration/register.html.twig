@@ -60,11 +60,18 @@
         </div>
 
         {# TERMS #}
-        <div class="flex items-center gap-2 mt-4 mb-4">
-            {{ form_widget(registrationForm.agreeTerms) }}
-            {{ form_label(registrationForm.agreeTerms, null, {'label_attr': {'class': 'text-sm'}}) }}
-            {{ form_errors(registrationForm.agreeTerms) }}
-        </div>
+    <div class="flex items-center gap-2 mt-4 mb-4">
+    {{ form_widget(registrationForm.agreeTerms) }}
+
+    <label class="text-sm">
+        J'accepte les
+        <a href="/mention" class="underline hover:text-white">
+            mentions légales
+        </a>
+    </label>
+
+    {{ form_errors(registrationForm.agreeTerms) }}
+</div>
 
         <button type="submit" class="w-full bg-white text-[#3B0764] font-semibold py-2 rounded hover:bg-gray-100 transition mt-5">
             S'inscrire
@@ -135,4 +142,3 @@ document.addEventListener("DOMContentLoaded", function () {
 
 {% endblock %}
 
- 
