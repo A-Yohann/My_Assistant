@@ -69,15 +69,41 @@
         </div>
     </form>
 
+
+    <button type="button"
+        class="bg-red-500 text-white px-6 py-2 rounded w-full mt-6"
+        onclick="document.getElementById('confirmModal').classList.remove('hidden')">
+    Supprimer mon compte
+</button>
+
+
     {# FORMULAIRE SUPPRESSION COMPTE #}
-    <form method="post" action="{{ path('account_manage') }}" class="mt-6">
-        <input type="hidden" name="action" value="delete">
-        <button type="submit"
-                class="bg-red-500 text-white px-6 py-2 rounded w-full"
-                onclick="return confirm('Supprimer votre compte définitivement ? Cette action est irréversible.')">
-            Supprimer mon compte
-        </button>
-    </form>
+<div id="confirmModal"
+     class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+
+    <div class="bg-white p-6 rounded shadow w-96">
+        <p class="mb-4 text-center">
+            Supprimer votre compte définitivement ? Cette action est irréversible.
+        </p>
+
+        <form method="post" action="{{ path('account_manage') }}">
+            <input type="hidden" name="action" value="delete">
+
+            <div class="flex gap-4">
+                <button type="submit"
+                        class="bg-red-500 text-white px-4 py-2 rounded w-full">
+                    Oui, supprimer
+                </button>
+
+                <button type="button"
+                        class="bg-gray-300 px-4 py-2 rounded w-full"
+                        onclick="document.getElementById('confirmModal').classList.add('hidden')">
+                    Annuler
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
 </div>
 <script>
