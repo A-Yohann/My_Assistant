@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription — Étape 1{% endblock %}
+
+{% block body %}
+<div class="flex justify-center py-12 px-4">
+    <div class="bg-[#3B0764] text-white rounded-xl shadow-xl max-w-md w-full p-10 space-y-6">
+
+        <div class="text-center">
+            <h1 class="text-3xl font-bold mb-2">Créer un compte</h1>
+            <p class="text-sm text-white/70">Étape 1 sur 2 — Votre adresse email</p>
+            <div class="flex gap-2 justify-center mt-3">
+                <div class="h-2 w-16 bg-white rounded-full"></div>
+                <div class="h-2 w-16 bg-white/30 rounded-full"></div>
+            </div>
+        </div>
+
+       
+
+        <form method="post" class="space-y-4">
+            <div>
+                <label for="email" class="block mb-1 font-semibold text-sm">Adresse email</label>
+                <input type="email" name="email" id="email"
+                       class="w-full border border-gray-300 text-white bg-white/10 p-2 rounded focus:outline-none focus:ring-2 focus:ring-white"
+                       placeholder="jean@email.fr" required autofocus>
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-white text-[#3B0764] font-semibold py-2 rounded hover:bg-gray-100 transition">
+                Envoyer le lien de confirmation →
+            </button>
+        </form>
+
+        <div class="text-center text-sm">
+            <span>Déjà inscrit ?</span>
+            <a href="{{ path('app_login') }}" class="underline font-semibold hover:text-gray-200">
+                Connexion
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
