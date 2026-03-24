@@ -14,8 +14,8 @@ class ContactController extends AbstractController
     public function contact(Request $request, MailerInterface $mailer): Response
     {
         if ($request->isMethod('POST')) {
-            $email   = $request->request->get('nom'); // champ email dans le form
-            $subject = $request->request->get('email'); // champ sujet dans le form
+            $email   = $request->request->get('email');
+            $subject = $request->request->get('sujet');
             $message = $request->request->get('message');
 
             if (!$email || !$subject || !$message) {
@@ -23,7 +23,6 @@ class ContactController extends AbstractController
             } elseif (!preg_match('/^[^@\s]+@[^@\s]+\.[^@\s]+$/', $email)) {
                 $this->addFlash('error', 'Veuillez entrer une adresse email valide.');
             } else {
-                // ✅ Anti-spam : max 3 messages par heure
                 $session = $request->getSession();
                 $now     = time();
                 $history = $session->get('contact_history', []);
@@ -34,10 +33,13 @@ class ContactController extends AbstractController
                 if (count($history) >= 3) {
                     $this->addFlash('error', 'Vous avez atteint la limite de 3 messages par heure.');
                 } else {
-                    $to   = $_ENV['MAILER_TO'] ?? 'contact@yohanndufresne.fr';
+                    $from = $_ENV['MAILER_FROM'] ?? 'contact@yohanndufresne.fr';
+                    $to   = $_ENV['MAILER_TO']   ?? 'contact@yohanndufresne.fr';
+
                     $mail = (new Email())
-                        ->from($email)
+                        ->from($from)
                         ->to($to)
+                        ->replyTo($email)
                         ->subject('[My Assistant] ' . $subject)
                         ->html(
                             '<p><strong>De :</strong> ' . htmlspecialchars($email) . '</p>' .

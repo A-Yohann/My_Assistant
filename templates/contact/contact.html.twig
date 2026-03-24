@@ -1,54 +1,47 @@
 {% extends 'base.html.twig' %}
 {% block title %}Contact{% endblock %}
 
-
 {% block body %}
 <div class="min-h-screen bg-[#f2f2f2] flex flex-col items-center justify-center px-4 py-10">
 
     <div class="w-full max-w-lg">
         <h1 class="text-4xl font-bold text-center text-[#231F20] mb-8">Contactez-nous</h1>
 
-        {% for label, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="p-4 rounded mb-6 {{ label == 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endfor %}
-
         <div class="bg-[#3B0764] rounded-xl shadow-lg p-8">
             <form method="post" class="space-y-5">
 
                 <div>
-                    <label for="nom" class="block text-sm font-medium text-gray-200 mb-1">Email</label>
-                    <input type="email" name="nom" id="nom"
-                           class="block w-full bg-white/10 border border-white/20 text-black placeholder-gray-400 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-white/50"
+                    <label for="email" class="block text-sm font-medium text-gray-200 mb-1">Email</label>
+                    <input type="email" name="email" id="email"
+                           class="block w-full bg-white border border-gray-300 text-black placeholder-gray-400 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#3B0764]"
                            placeholder="votre@email.fr" required>
                 </div>
 
                 <div>
-                    <label for="email" class="block text-sm font-medium text-gray-200 mb-1">Sujet</label>
-                    <input type="text" name="email" id="email"
-                           class="block w-full bg-white/10 border border-white/20 text-black placeholder-gray-400 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-white/50"
+                    <label for="sujet" class="block text-sm font-medium text-gray-200 mb-1">Sujet</label>
+                    <input type="text" name="sujet" id="sujet"
+                           class="block w-full bg-white border border-gray-300 text-black placeholder-gray-400 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#3B0764]"
                            placeholder="Votre sujet" required>
                 </div>
 
                 <div>
                     <label for="message" class="block text-sm font-medium text-gray-200 mb-1">Message</label>
                     <textarea name="message" id="message" rows="5"
-                              class="block w-full bg-white/10 border border-white/20 text-black placeholder-gray-400 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-white/50 resize-none"
+                              class="block w-full bg-white border border-gray-300 text-black placeholder-gray-400 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#3B0764] resize-none"
                               placeholder="Votre message..." required></textarea>
                 </div>
-<div class="flex items-center space-x-2">
-    <input type="checkbox" id="terms" name="terms" required
-           class="w-4 h-4 text-green-600 bg-white border-gray-300 rounded focus:ring-green-500">
 
-    <label for="terms" class="text-sm text-gray-200">
-        J’accepte les <a href="/mention" class="underline hover:text-white">terms and conditions</a>
-    </label>
-</div>
+                <div class="flex items-center space-x-2">
+                    <input type="checkbox" id="terms" name="terms" required
+                           class="w-4 h-4 text-green-600 bg-white border-gray-300 rounded focus:ring-green-500">
+                    <label for="terms" class="text-sm text-gray-200">
+                        J'accepte les <a href="/mention" class="underline hover:text-white">terms and conditions</a>
+                    </label>
+                </div>
+
                 <button type="submit"
-class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition">                    Envoyer
+                        class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition">
+                    Envoyer
                 </button>
 
             </form>
