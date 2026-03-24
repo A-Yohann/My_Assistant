@@ -5,41 +5,257 @@
 
 {% block body %}
 <div class="flex justify-center py-12 px-4">
-    {# Carte violette centrée avec marges blanches autour.. #}
     <div class="bg-[#3B0764] text-[#f2F2F2] rounded-xl shadow-xl max-w-4xl w-full p-10 space-y-8">
 
         <section>
             <h1 class="text-3xl font-bold mb-4 text-center">Bienvenue chez My Assistant</h1>
             <p class="text-lg leading-relaxed">
-                My Assistant est une solution de gestion d'entreprise conçue pour simplifier le quotidien des équipes et des dirigeants, quelle que soit la taille de leur structure.
-                Notre mission est simple : vous donner les outils pour piloter votre activité avec clarté et efficacité, sans complexité inutile.
+                My Assistant est une solution de gestion d'entreprise conçue pour simplifier le quotidien des équipes et des dirigeants.
             </p>
         </section>
 
         <section>
             <h2 class="text-2xl font-bold mb-4">Ce que nous faisons</h2>
-            <p class="text-lg leading-relaxed mb-2">
-                Nous avons développé une plateforme centralisée qui réunit la gestion de projets et de tâches avec le suivi de facturation, pour que vous puissiez vous concentrer sur l'essentiel : faire avancer votre business.
-            </p>
             <ul class="list-disc list-inside space-y-1 text-left mx-auto max-w-xl">
-                <li><span class="font-semibold">Gestion de projets & tâches:</span> Organisez vos projets, assignez des tâches, suivez l'avancement en temps réel et respectez vos délais.</li>
-                <li><span class="font-semibold">Facturation:</span> Créez et envoyez vos devis et factures en quelques clics, suivez vos paiements et gardez une vue claire sur votre trésorerie.</li>
+                <li><span class="font-semibold">Gestion de projets & tâches:</span> Suivi en temps réel.</li>
+                <li><span class="font-semibold">Facturation:</span> Devis et factures simplifiés.</li>
             </ul>
         </section>
 
         <section>
             <h2 class="text-2xl font-bold mb-4">Notre engagement</h2>
-            <p class="text-lg leading-relaxed mb-2">
-                Nous croyons qu'un bon outil de gestion doit être fiable, intuitif et accessible. C'est pourquoi nous travaillons chaque jour à améliorer notre plateforme en écoutant nos utilisateurs.
-            </p>
-            <p class="text-lg leading-relaxed mb-2">
-                Vos données sont hébergées de manière sécurisée et traitées dans le strict respect du RGPD.
-            </p>
             <p class="text-lg leading-relaxed">
-                Une question ? Un projet ? Contactez-nous à <span class="underline">[EMAIL CONTACT]</span> — nous répondons sous 24h.
+                Plateforme simple, sécurisée et conforme RGPD.
             </p>
         </section>
 
     </div>
+
+    <!-- 💬 CHAT -->
+    <div id="chat-widget" class="fixed bottom-4 right-4 z-50">
+
+        <!-- Bouton -->
+        <button onclick="toggleChat()"
+                class="bg-[#3B0764] text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 transition">
+            💬 Une question ?
+        </button>
+
+        <!-- Chat box -->
+        <div id="chat-box" class="hidden mt-2 w-80 bg-white text-black rounded-xl shadow-xl flex flex-col">
+
+            <div class="bg-[#3B0764] text-white p-3 rounded-t-xl">
+                Assistant
+            </div>
+
+            <!-- Messages -->
+            <div id="chat-messages" class="p-3 h-64 overflow-y-auto text-sm space-y-2">
+
+                <div class="bg-gray-100 p-2 rounded">
+                    Bonjour 👋 Pose-moi une question ou clique ci-dessous :
+                </div>
+
+                <!-- 🔥 QUESTIONS RAPIDES -->
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="quickQuestion('Quel est le taux de TVA ?')" class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded text-xs">
+                        💰 TVA
+                    </button>
+                    <button onclick="quickQuestion('Comment faire un devis ?')" class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded text-xs">
+                        🧾 Devis
+                    </button>
+                    <button onclick="quickQuestion('Que doit contenir une facture ?')" class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded text-xs">
+                        📄 Facture
+                    </button>
+                    <button onclick="quickQuestion('Comment calculer mon bénéfice ?')" class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded text-xs">
+                        📊 Bénéfice
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Input -->
+            <div class="p-2 border-t flex">
+                <input id="chat-input" type="text"
+                       placeholder="Votre question..."
+                       class="flex-1 border p-2 rounded text-sm">
+                <button onclick="sendMessage()" class="ml-2 bg-[#3B0764] text-white px-3 rounded">➤</button>
+            </div>
+        </div>
+    </div>
 </div>
+<script>
+function toggleChat() {
+    document.getElementById('chat-box').classList.toggle('hidden');
+}
+
+function quickQuestion(text) {
+    document.getElementById('chat-input').value = text;
+    sendMessage();
+}
+
+function sendMessage() {
+    const input = document.getElementById('chat-input');
+    const messages = document.getElementById('chat-messages');
+
+    const userText = input.value.trim();
+    if (!userText) return;
+
+    // Message utilisateur
+    messages.innerHTML += `
+        <div class="text-right">
+            <span class="bg-[#3B0764] text-white p-2 rounded inline-block">
+                ${userText}
+            </span>
+        </div>
+    `;
+
+    const response = getBotResponse(userText.toLowerCase());
+
+    setTimeout(() => {
+        messages.innerHTML += `
+            <div class="bg-gray-100 p-2 rounded whitespace-pre-line">
+                ${response}
+            </div>
+        `;
+        messages.scrollTop = messages.scrollHeight;
+    }, 400);
+
+    input.value = '';
+}
+
+function getBotResponse(message) {
+
+    // ===== 🕒 DATE / HEURE =====
+    if (message.includes("date")) {
+        const today = new Date();
+        return "📅 Nous sommes le " + today.toLocaleDateString('fr-FR');
+    }
+
+    if (message.includes("heure")) {
+        const now = new Date();
+        return "🕒 Il est " + now.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'});
+    }
+
+    // ===== 👋 SALUTATION =====
+    if (message.includes("bonjour") || message.includes("salut")) {
+        return "👋 Bonjour ! Je peux vous aider sur la TVA, les devis, les factures ou la gestion de votre activité.";
+    }
+
+    // ===== 💰 TVA =====
+    if (message.includes("tva") && message.includes("livre")) {
+        return "📚 Les livres sont soumis à un taux réduit de TVA de 5,5% en France.";
+    }
+
+    if (message.includes("tva")) {
+        return `
+💰 Voici les taux de TVA en France :
+
+• 20% → taux normal (le plus courant : services, produits classiques)
+• 10% → restauration, transport, travaux de rénovation
+• 5,5% → produits essentiels (alimentation, livres, énergie)
+• 2,1% → cas très spécifiques (médicaments remboursés, presse)
+
+👉 Exemple :
+Un service à 100€ HT → 120€ TTC avec TVA à 20%.
+
+⚠️ Le taux dépend toujours de votre activité.
+`;
+    }
+
+    if (message.includes("calcul tva")) {
+        return "🧮 Calcul : Prix HT × taux = TVA. Exemple : 100€ × 20% = 20€ de TVA → Total TTC = 120€.";
+    }
+
+    if (message.includes("micro") && message.includes("tva")) {
+        return "🚀 En micro-entreprise, vous pouvez être exonéré de TVA (franchise en base).";
+    }
+
+    // ===== 🧾 DEVIS =====
+    if (message.includes("devis")) {
+        return `
+🧾 Un devis doit contenir :
+
+• Date du devis
+• Client
+• Description des prestations
+• Prix HT / TTC
+• Durée de validité
+
+👉 Une fois signé, il devient un contrat.
+`;
+    }
+
+    if (message.includes("validité devis")) {
+        return "⏳ Un devis est généralement valable 15 à 30 jours.";
+    }
+
+    // ===== 📄 FACTURE =====
+    if (message.includes("facture")) {
+        return `
+📄 Une facture doit contenir :
+
+• Numéro unique
+• Date
+• Client
+• Détails des prestations
+• Montant HT / TTC
+• TVA
+
+⚠️ Obligatoire entre professionnels.
+`;
+    }
+
+    // ===== 💸 GESTION =====
+    if (message.includes("bénéfice")) {
+        return `
+💰 Bénéfice = chiffre d'affaires - dépenses
+
+Exemple :
+CA = 3000€
+Dépenses = 1000€
+➡️ Bénéfice = 2000€
+`;
+    }
+
+    if (message.includes("marge")) {
+        return "📊 La marge correspond à la différence entre prix de vente et coût.";
+    }
+
+    if (message.includes("chiffre d'affaire") || message.includes("ca")) {
+        return "📈 Le chiffre d'affaires correspond au total des ventes.";
+    }
+
+    if (message.includes("rentable")) {
+        return "📊 Une activité est rentable si les revenus sont supérieurs aux dépenses.";
+    }
+
+    // ===== 🚀 MICRO ENTREPRISE =====
+    if (message.includes("micro") || message.includes("auto entrepreneur")) {
+        return `
+🚀 Micro-entreprise :
+
+• Charges sur le CA uniquement
+• Comptabilité simplifiée
+• Pas de TVA (souvent)
+
+👉 Idéal pour débuter.
+`;
+    }
+
+    if (message.includes("charges")) {
+        return "💸 Les charges sont environ 12% à 22% du chiffre d'affaires.";
+    }
+
+    if (message.includes("plafond")) {
+        return "📊 Plafonds : 77 700€ services / 188 700€ vente.";
+    }
+
+    // ===== 🆘 AIDE =====
+    if (message.includes("aide") || message.includes("help")) {
+        return "💡 Je peux vous aider sur : TVA, devis, factures, bénéfice, micro-entreprise.";
+    }
+
+    // ===== fallback =====
+    return "🤔 Essayez : TVA, devis, facture, bénéfice, date ou heure.";
+}
+</script>
 {% endblock %}

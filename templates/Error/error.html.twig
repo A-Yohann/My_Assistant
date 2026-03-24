@@ -1,0 +1,45 @@
+{# templates/404.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Page introuvable - My Assistant{% endblock %}
+
+{% block body %}
+<div class="min-h-screen flex items-center justify-center px-4 bg-gray-50">
+
+    <div class="bg-[#3B0764] text-[#f2F2F2] rounded-xl shadow-xl max-w-md w-full p-10 text-center space-y-6">
+
+        <!-- Code erreur -->
+        <div class="text-6xl font-bold">
+            404
+        </div>
+
+        <!-- Message -->
+        <div>
+            <h1 class="text-2xl font-bold mb-2">
+                Page introuvable
+            </h1>
+            <p class="text-sm text-gray-200">
+                Oups… la page que vous cherchez n’existe pas ou a été déplacée.
+            </p>
+        </div>
+
+        <!-- Actions -->
+        <div class="space-y-3">
+
+            <a href="{{ path('app_home') }}"
+               class="block bg-white text-[#3B0764] font-semibold py-2 rounded hover:bg-gray-100 transition">
+                🏠 Retour à l’accueil
+            </a>
+ 
+
+        </div>
+
+        <!-- Petite aide -->
+        <p class="text-xs text-gray-300 pt-2">
+            Si le problème persiste, contactez le support.
+        </p>
+
+    </div>
+
+</div>
+{% endblock %}
