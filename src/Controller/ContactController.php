@@ -14,8 +14,8 @@ class ContactController extends AbstractController
     public function contact(Request $request, MailerInterface $mailer): Response
     {
         if ($request->isMethod('POST')) {
-            $email   = $request->request->get('nom');
-            $subject = $request->request->get('email');
+            $email   = $request->request->get('email');
+            $subject = $request->request->get('sujet');
             $message = $request->request->get('message');
 
             if (!$email || !$subject || !$message) {
@@ -23,7 +23,6 @@ class ContactController extends AbstractController
             } elseif (!preg_match('/^[^@\s]+@[^@\s]+\.[^@\s]+$/', $email)) {
                 $this->addFlash('error', 'Veuillez entrer une adresse email valide.');
             } else {
-                // ✅ Anti-spam : max 3 messages par heure
                 $session = $request->getSession();
                 $now     = time();
                 $history = $session->get('contact_history', []);
