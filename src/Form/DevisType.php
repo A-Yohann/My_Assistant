@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Doctrine\ORM\EntityRepository;
-
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 class DevisType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -51,6 +51,16 @@ class DevisType extends AbstractType
             ->add('montantHT', NumberType::class, [
                 'label' => 'Montant HT',
             ])
+        ->add('tva', ChoiceType::class, [
+    'label' => 'TVA (%)',
+    'choices' => [
+        '0 %'   => 0,
+        '5.5 %' => 5.5,
+        '20 %'  => 20,
+    ],
+    'property_path' => 'tauxTVA',
+    'placeholder' => 'Choisir un taux de TVA',
+])
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
             ])

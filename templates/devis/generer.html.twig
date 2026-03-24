@@ -5,7 +5,7 @@
 {% block body %}
 <div class="container mx-auto max-w-2xl mt-6 lg:mt-10 px-4 mb-10">
 
-    
+
     <div class="bg-white rounded-xl shadow p-6 lg:p-8">
         <h1 class="text-2xl font-bold mb-8 text-[#231F20]">Générer un devis</h1>
 
@@ -56,6 +56,20 @@
                         {{ form_widget(form.dateCreation, {'attr': {'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
                     </div>
                 </div>
+
+                <div class="mt-4">
+    {{ form_label(form.tva, null, {
+        'label_attr': {
+            'class': 'block text-sm font-medium text-gray-700 mb-1'
+        }
+    }) }}
+
+    {{ form_widget(form.tva, {
+        'attr': {
+            'class': 'block w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B0764] bg-white'
+        }
+    }) }}
+</div>
 
                 <div class="mt-4">
                     {{ form_label(form.description, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
