@@ -13,6 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+
 
 class DepenseBudgetaireType extends AbstractType
 {
@@ -46,9 +48,10 @@ class DepenseBudgetaireType extends AbstractType
                 'label'    => 'Payé par carte',
                 'required' => false,
             ])
-            ->add('justificatif', TextareaType::class, [
-                'label'    => 'Justificatif / note',
+            ->add('justificatif', FileType::class, [
+                'label'    => 'Justificatif / (PDF, image)',
                 'required' => false,
+                'mapped'   => false,
             ]);
     }
 

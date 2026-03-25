@@ -78,7 +78,7 @@
         </td></tr>
     </table>
 
-    <div class="flex flex-wrap gap-3">
+        <div class="flex flex-wrap gap-3">
         <a href="{{ path('bon_de_commande_index') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 text-sm">
             ← Retour
         </a>
@@ -86,9 +86,13 @@
             Télécharger PDF
         </a>
         {% if bon.etat == 'en_attente' %}
+            <a href="{{ path('bon_de_commande_envoyer', {'id': bon.id}) }}"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
+                📧 Envoyer par mail
+            </a>
             <a href="{{ path('bon_de_commande_payer', {'id': bon.id}) }}"
-               class="bg-[#3B0764] text-white px-4 py-2 rounded hover:opacity-90 text-sm"
-               onclick="return confirm('Confirmer le paiement ? Une facture sera générée automatiquement.')">
+            class="bg-[#3B0764] text-white px-4 py-2 rounded hover:opacity-90 text-sm"
+            onclick="return confirm('Confirmer le paiement ? Une facture sera générée automatiquement.')">
                 Marquer comme payé → Générer facture
             </a>
         {% endif %}

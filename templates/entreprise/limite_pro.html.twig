@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+{% block title %}Limite atteinte{% endblock %}
+{% block body %}
+<div class="min-h-screen bg-[#f2f2f2] flex items-center justify-center px-4">
+    <div class="bg-white rounded-xl shadow-lg p-10 max-w-md w-full text-center">
+        <div class="text-6xl mb-6">🔒</div>
+        <h1 class="text-2xl font-bold text-[#231F20] mb-4">Limite atteinte</h1>
+        <p class="text-gray-500 mb-6">
+            Vous avez atteint la limite de <strong>3 entreprises</strong> incluses dans le plan Pro.
+        </p>
+        <a href="{{ path('app_entreprise') }}"
+           class="block w-full bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition text-sm">
+            ← Retour à mes entreprises
+        </a>
+    </div>
+</div>
+{% endblock %}
