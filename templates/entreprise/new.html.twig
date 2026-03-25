@@ -144,6 +144,33 @@
                 </div>
             </div>
 
+            <!-- Siège social (optionnel) -->
+            <div class="border-t pt-4 mt-4">
+                <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4">
+                    Siège social <span class="text-xs text-gray-300">(optionnel)</span>
+                </h2>
+
+                <div>
+                    {{ form_label(form.siege.nomSiege, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.siege.nomSiege, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'Ex: Siège Paris'}}) }}
+                </div>
+
+                <div class="mt-4">
+                    {{ form_label(form.siege.addresseSiege, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.siege.addresseSiege, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]', 'placeholder': 'Ex: 12 rue de la Paix, 75000 Paris'}}) }}
+                </div>
+
+                <div class="mt-4">
+                    {{ form_label(form.siege.dateCreation, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.siege.dateCreation, {'attr': {'class': 'block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#3B0764]'}}) }}
+                </div>
+
+                <div class="flex items-center gap-3 mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    {{ form_widget(form.siege.statuJuridique, {'attr': {'class': 'w-4 h-4 accent-[#3B0764]'}}) }}
+                    {{ form_label(form.siege.statuJuridique, null, {'label_attr': {'class': 'text-sm font-medium text-gray-700 cursor-pointer'}}) }}
+                </div>
+            </div>
+
             <div class="flex justify-end gap-3 mt-6">
                 <a href="{{ path('app_entreprise') }}" class="bg-gray-200 text-gray-700 px-6 py-2 rounded hover:bg-gray-300">
                     Annuler

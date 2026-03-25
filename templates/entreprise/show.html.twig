@@ -63,6 +63,37 @@
                     <div>{{ entreprise.pays }}</div>
                 </div>
             </div>
+
+            <!-- ✅ Siège social (optionnel) -->
+            {% if entreprise.siege %}
+                <div class="py-2 border-b">
+                    <span class="text-sm font-semibold text-gray-600 block mb-2">🏛️ Siège social</span>
+                    <div class="text-sm text-gray-700 space-y-1 bg-gray-50 rounded-lg p-3">
+                        <div class="flex justify-between">
+                            <span class="font-medium">Nom</span>
+                            <span>{{ entreprise.siege.nomSiege }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">Adresse</span>
+                            <span>{{ entreprise.siege.addresseSiege }}</span>
+                        </div>
+                        {% if entreprise.siege.dateCreation %}
+                            <div class="flex justify-between">
+                                <span class="font-medium">Date de création</span>
+                                <span>{{ entreprise.siege.dateCreation|date('d/m/Y') }}</span>
+                            </div>
+                        {% endif %}
+                        <div class="flex justify-between">
+                            <span class="font-medium">Statut juridique</span>
+                            {% if entreprise.siege.statuJuridique %}
+                                <span class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">Actif</span>
+                            {% else %}
+                                <span class="bg-gray-100 text-gray-800 text-xs font-semibold px-2 py-1 rounded">Inactif</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
 
