@@ -94,7 +94,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private int $loginAttempts = 0;
 
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $lockedUntil = null;
 
     public function getId(): ?int
     {
@@ -248,5 +252,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->stripeSubscriptionId = $stripeSubscriptionId;
         return $this;
+    }
+
+    public function getLoginAttempts(): int
+    { 
+        return $this->loginAttempts;
+    }
+
+    public function setLoginAttempts(int $loginAttempts): self
+    {
+        $this->loginAttempts = $loginAttempts;
+        return $this;
+    }
+
+    public function getLockedUntil(): ?\DateTimeInterface
+    { 
+        return $this->lockedUntil;
+    }
+    
+    public function setLockedUntil(?\DateTimeInterface $lockedUntil): self 
+    { 
+        $this->lockedUntil = $lockedUntil;
+        return $this; 
+    }
+
+    public function isLocked(): bool
+    {
+        return $this->lockedUntil !== null && $this->lockedUntil > new \DateTime();
     }
 }

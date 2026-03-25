@@ -16,8 +16,20 @@
         {% else %}
 
             {% if error %}
-                <div class="bg-red-500 text-white p-3 rounded">
-                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                <div class="bg-red-500 text-white p-3 rounded text-sm">
+                    ❌ Email ou mot de passe incorrect.
+                    {% if attempts_restants is defined and attempts_restants > 0 %}
+                        <br><span class="font-bold">
+                            {{ attempts_restants }} tentative{{ attempts_restants > 1 ? 's' : '' }} restante{{ attempts_restants > 1 ? 's' : '' }}.
+                        </span>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if is_locked %}
+                <div class="bg-red-600 text-white p-4 rounded text-sm text-center">
+                    🔒 Votre compte est bloqué après 3 tentatives échouées.<br>
+                    <a href="{{ path('app_contact') }}" class="underline font-bold">Contactez le support</a> pour le débloquer.
                 </div>
             {% endif %}
 
@@ -53,19 +65,19 @@
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
                 <button type="submit"
-                        class="w-full bg-white text-[#3B0764] font-semibold py-2 rounded hover:bg-gray-100 transition">
+                        {% if is_locked %}disabled{% endif %}
+                        class="w-full bg-white text-[#3B0764] font-semibold py-2 rounded hover:bg-gray-100 transition {% if is_locked %}opacity-50 cursor-not-allowed{% endif %}">
                     Se connecter
                 </button>
 
                 <div class="text-center text-sm mt-2">
                     <a href="{{ path('app_forgot_password') }}" class="underline hover:text-gray-200">
                         Mot de passe oublié ?
-                    </a>
                 </div>
 
                 <div class="text-center text-sm">
                     <span>Pas encore de compte ?</span>
-                    <a href="{{ path('app_register') }}" class="underline font-semibold hover:text-gray-200">
+                    <a href="{{ path('register_step1') }}" class="underline font-semibold hover:text-gray-200">
                         Inscription
                     </a>
                 </div>
