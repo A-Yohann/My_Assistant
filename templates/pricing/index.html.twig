@@ -1,0 +1,122 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos offres{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-[#f2f2f2] py-16 px-4">
+
+    <div class="max-w-4xl mx-auto text-center mb-12">
+        <h1 class="text-4xl font-bold text-[#231F20] mb-4">Choisissez votre plan</h1>
+        <p class="text-gray-500 text-lg">Commencez gratuitement, passez au Pro quand vous êtes prêt.</p>
+    </div>
+
+    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+
+        <!-- Plan Gratuit -->
+        <div class="bg-white rounded-xl shadow-lg p-8 border-2 border-gray-200">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-[#231F20] mb-2">Gratuit</h2>
+                <div class="text-4xl font-bold text-[#231F20]">0€</div>
+                <div class="text-gray-400 text-sm">pour toujours</div>
+            </div>
+
+            <ul class="space-y-3 mb-8">
+                <li class="flex items-center gap-3 text-sm">
+                    <span class="text-green-500 font-bold">✓</span>
+                    <span>5 devis maximum</span>
+                </li>
+                <li class="flex items-center gap-3 text-sm">
+                    <span class="text-green-500 font-bold">✓</span>
+                    <span>2 clients maximum</span>
+                </li>
+                <li class="flex items-center gap-3 text-sm">
+                    <span class="text-green-500 font-bold">✓</span>
+                    <span>1 entreprise</span>
+                </li>
+                <li class="flex items-center gap-3 text-sm">
+                    <span class="text-green-500 font-bold">✓</span>
+                    <span>Export PDF</span>
+                </li>
+                <li class="flex items-center gap-3 text-sm text-gray-400">
+                    <span class="font-bold">✗</span>
+                    <span>Signature électronique</span>
+                </li>
+                <li class="flex items-center gap-3 text-sm text-gray-400">
+                    <span class="font-bold">✗</span>
+                    <span>Relance automatique</span>
+                </li>
+            </ul>
+
+            {% if user and user.plan == 'free' %}
+                <div class="w-full text-center bg-gray-100 text-gray-500 py-3 rounded-lg font-semibold text-sm">
+                    Plan actuel
+                </div>
+            {% else %}
+                <a href="{{ path('register_step1') }}"
+                   class="block w-full text-center bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold text-sm hover:bg-gray-300">
+                    Commencer gratuitement
+                </a>
+            {% endif %}
+        </div>
+
+        <!-- Plan Pro -->
+        <div class="bg-[#3B0764] rounded-xl shadow-lg p-8 border-2 border-[#3B0764] relative">
+            <div class="absolute -top-4 left-1/2 -translate-x-1/2">
+                <span class="bg-green-500 text-white text-xs font-bold px-4 py-1 rounded-full">
+                    POPULAIRE
+                </span>
+            </div>
+
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-white mb-2">Pro</h2>
+                <div class="text-4xl font-bold text-white">9,99€</div>
+                <div class="text-white/60 text-sm">par mois</div>
+            </div>
+
+            <ul class="space-y-3 mb-8">
+                <li class="flex items-center gap-3 text-sm text-white">
+                    <span class="text-green-400 font-bold">✓</span>
+                    <span>Devis illimités</span>
+                </li>
+                <li class="flex items-center gap-3 text-sm text-white">
+                    <span class="text-green-400 font-bold">✓</span>
+                    <span>Clients illimités</span>
+                </li>
+                <li class="flex items-center gap-3 text-sm text-white">
+                    <span class="text-green-400 font-bold">✓</span>
+                    <span>3 entreprises</span>
+                </li>
+                <li class="flex items-center gap-3 text-sm text-white">
+                    <span class="text-green-400 font-bold">✓</span>
+                    <span>Export PDF</span>
+                </li>
+                <li class="flex items-center gap-3 text-sm text-white">
+                    <span class="text-green-400 font-bold">✓</span>
+                    <span>Signature électronique</span>
+                </li>
+                <li class="flex items-center gap-3 text-sm text-white">
+                    <span class="text-green-400 font-bold">✓</span>
+                    <span>Relance automatique</span>
+                </li>
+            </ul>
+
+            {% if user and user.plan == 'pro' %}
+                <div class="w-full text-center bg-white/20 text-white py-3 rounded-lg font-semibold text-sm mb-3">
+                    Plan actuel ✓
+                </div>
+                <a href="{{ path('pricing_cancel') }}"
+                   class="block w-full text-center text-white/60 text-xs hover:text-white"
+                   onclick="return confirm('Annuler votre abonnement Pro ?')">
+                    Annuler l'abonnement
+                </a>
+            {% else %}
+                <a href="{{ path('pricing_subscribe') }}"
+                   class="block w-full text-center bg-white text-[#3B0764] py-3 rounded-lg font-bold text-sm hover:bg-gray-100 transition">
+                    Passer au Pro →
+                </a>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

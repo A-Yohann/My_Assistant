@@ -17,7 +17,6 @@ use Dompdf\Options;
 
 class DevisController extends AbstractController
 {
-
     #[Route('/devis', name: 'devis_index')]
     public function index(EntityManagerInterface $em, EntrepriseActiveService $entrepriseService, Request $request, PaginatorInterface $paginator): Response
     {
@@ -34,18 +33,18 @@ class DevisController extends AbstractController
 
         if ($search) {
             $qb->andWhere('d.numeroDevis LIKE :search OR c.nom LIKE :search OR c.prenom LIKE :search')
-            ->setParameter('search', '%' . $search . '%');
+               ->setParameter('search', '%' . $search . '%');
         }
 
         if ($statut) {
             $qb->andWhere('d.etat = :statut')
-            ->setParameter('statut', $statut);
+               ->setParameter('statut', $statut);
         }
 
         $devisList = $paginator->paginate(
             $qb->getQuery(),
             $request->query->getInt('page', 1),
-            10 // ✅ 10 par page
+            10
         );
 
         return $this->render('devis/index.html.twig', [
@@ -54,9 +53,27 @@ class DevisController extends AbstractController
             'statut'    => $statut,
         ]);
     }
+
     #[Route('/devis/generer', name: 'devis_generer')]
     public function generer(EntityManagerInterface $em, Request $request): Response
     {
+        // ✅ Vérification limite plan gratuit
+        $user = $this->getUser();
+        if ($user->getPlan() === 'free') {
+            $nbDevis = $em->getRepository(Devis::class)
+                ->createQueryBuilder('d')
+                ->select('COUNT(d.id)')
+                ->join('d.entreprise', 'e')
+                ->where('e.user = :user')
+                ->setParameter('user', $user)
+                ->getQuery()
+                ->getSingleScalarResult();
+
+            if ($nbDevis >= 5) {
+                return $this->render('devis/limite.html.twig');
+            }
+        }
+
         $devis = new Devis();
 
         // ✅ Numérotation automatique
@@ -270,8 +287,10 @@ class DevisController extends AbstractController
             'token' => $token,
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
+        $from = $_ENV['MAILER_FROM'] ?? 'no-reply@my-assistant.fr';
+
         $email = (new \Symfony\Component\Mime\Email())
-            ->from('no-reply@monassistant.fr')
+            ->from($from)
             ->to($clientEmail)
             ->subject('Votre devis ' . $devis->getNumeroDevis())
             ->html('

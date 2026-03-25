@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Limite atteinte{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-[#f2f2f2] flex items-center justify-center px-4">
+    <div class="bg-white rounded-xl shadow-lg p-10 max-w-md w-full text-center">
+
+        <div class="text-6xl mb-6">🔒</div>
+
+        <h1 class="text-2xl font-bold text-[#231F20] mb-4">
+            Limite atteinte
+        </h1>
+
+        <p class="text-gray-500 mb-6">
+            Vous avez atteint la limite de <strong>5 devis</strong> inclus dans le plan gratuit.
+            Passez au plan <strong>Pro</strong> pour générer des devis illimités !
+        </p>
+
+        <div class="space-y-3">
+            <a href="{{ path('pricing') }}"
+               class="block w-full bg-[#3B0764] text-white py-3 rounded-lg font-bold hover:opacity-90 transition">
+                🚀 Passer au plan Pro — 9,99€/mois
+            </a>
+            <a href="{{ path('devis_index') }}"
+               class="block w-full bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition text-sm">
+                ← Retour à mes devis
+            </a>
+        </div>
+
+        <p class="text-xs text-gray-400 mt-4">
+            Annulation possible à tout moment
+        </p>
+    </div>
+</div>
+{% endblock %}

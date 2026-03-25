@@ -10,8 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-
-
 #[Route('/entreprise')]
 class EntrepriseCrudController extends AbstractController
 {
@@ -28,26 +26,34 @@ class EntrepriseCrudController extends AbstractController
     #[Route('/new', name: 'entreprise_new')]
     public function new(Request $request, EntityManagerInterface $em): Response
     {
+        // ✅ Vérification limite plan
+        $user = $this->getUser();
+        $nbEntreprises = count($em->getRepository(Entreprise::class)->findBy(['user' => $user]));
+
+        if ($user->getPlan() === 'free' && $nbEntreprises >= 1) {
+            return $this->render('entreprise/limite.html.twig');
+        }
+
+        if ($user->getPlan() === 'pro' && $nbEntreprises >= 3) {
+            return $this->render('entreprise/limite_pro.html.twig');
+        }
+
         $entreprise = new Entreprise();
         $form = $this->createForm(EntrepriseType::class, $entreprise);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            // Gestion du logo
             $logoFile = $form->get('logo')->getData();
             if ($logoFile) {
                 $logoName = uniqid().'.'.$logoFile->guessExtension();
                 $logoFile->move($this->getParameter('kernel.project_dir').'/public/uploads/logos', $logoName);
                 $entreprise->setLogo('/uploads/logos/'.$logoName);
             }
-            // Valeur par défaut pour roles
             if ($entreprise->getRoles() === null) {
                 $entreprise->setRoles(false);
             }
-            // Valeur par défaut pour complementAdresse
             if ($entreprise->getComplementAdresse() === null) {
                 $entreprise->setComplementAdresse('');
             }
-            // Valeur par défaut pour type
             if ($entreprise->getType() === null) {
                 $entreprise->setType(false);
             }
@@ -65,6 +71,18 @@ class EntrepriseCrudController extends AbstractController
     #[Route('/new-multi', name: 'entreprise_new_multi')]
     public function newMulti(Request $request, EntityManagerInterface $em): Response
     {
+        // ✅ Vérification limite plan
+        $user = $this->getUser();
+        $nbEntreprises = count($em->getRepository(Entreprise::class)->findBy(['user' => $user]));
+
+        if ($user->getPlan() === 'free' && $nbEntreprises >= 1) {
+            return $this->render('entreprise/limite.html.twig');
+        }
+
+        if ($user->getPlan() === 'pro' && $nbEntreprises >= 3) {
+            return $this->render('entreprise/limite_pro.html.twig');
+        }
+
         $session = $request->getSession();
         $step = $request->query->get('step', 1);
         $formData = $session->get('entreprise_data', []);
@@ -72,13 +90,12 @@ class EntrepriseCrudController extends AbstractController
         if ($request->isMethod('POST')) {
             $postData = $request->request->all();
             $formData = array_merge($formData, $postData);
-                // Gestion du logo uploadé
-                if ($request->files->get('logo')) {
-                    $logoFile = $request->files->get('logo');
-                    $logoName = uniqid().'.'.$logoFile->guessExtension();
-                    $logoFile->move($this->getParameter('kernel.project_dir').'/public/uploads/logos', $logoName);
-                    $formData['logo'] = '/uploads/logos/'.$logoName;
-                }
+            if ($request->files->get('logo')) {
+                $logoFile = $request->files->get('logo');
+                $logoName = uniqid().'.'.$logoFile->guessExtension();
+                $logoFile->move($this->getParameter('kernel.project_dir').'/public/uploads/logos', $logoName);
+                $formData['logo'] = '/uploads/logos/'.$logoName;
+            }
             $session->set('entreprise_data', $formData);
 
             if ($step == 1) {
@@ -108,7 +125,6 @@ class EntrepriseCrudController extends AbstractController
                     if (!empty($formData['dateCreation'])) {
                         $entreprise->setDateCreation(new \DateTime($formData['dateCreation']));
                     }
-                    // Vérification et stockage du logo
                     if (!empty($formData['logo'])) {
                         $entreprise->setLogo($formData['logo']);
                     } else {
@@ -121,23 +137,21 @@ class EntrepriseCrudController extends AbstractController
                     $entreprise->setCodePostal($formData['codePostal']);
                     $entreprise->setVille($formData['ville']);
                     $entreprise->setPays($formData['pays']);
-                    // Valeur par défaut pour roles
                     $entreprise->setRoles($formData['roles'] ?? false);
-                    // Valeur par défaut pour type
                     $entreprise->setType($formData['type'] ?? false);
                     $entreprise->setUser($this->getUser());
                     $em->persist($entreprise);
                     $em->flush();
                     $session->remove('entreprise_data');
                     $this->addFlash('success', 'Entreprise créée !');
-                    return $this->redirectToRoute('entreprise_index');
+                    return $this->redirectToRoute('app_entreprise');
                 }
             }
         }
 
         $template = $step == 1 ? 'entreprise/new_step1.html.twig' : 'entreprise/new_step2.html.twig';
         return $this->render($template, [
-            'step' => $step,
+            'step'     => $step,
             'formData' => $formData,
         ]);
     }
@@ -167,15 +181,16 @@ class EntrepriseCrudController extends AbstractController
         $this->addFlash('success', 'Entreprise supprimée !');
         return $this->redirectToRoute('app_entreprise');
     }
-        #[Route('/{id}', name: 'entreprise_show')]
-        public function show(int $id, EntityManagerInterface $em): Response
-        {
-            $entreprise = $em->getRepository(Entreprise::class)->find($id);
-            if (!$entreprise) {
-                throw $this->createNotFoundException('Entreprise non trouvée');
-            }
-            return $this->render('entreprise/show.html.twig', [
-                'entreprise' => $entreprise,
-            ]);
+
+    #[Route('/{id}', name: 'entreprise_show')]
+    public function show(int $id, EntityManagerInterface $em): Response
+    {
+        $entreprise = $em->getRepository(Entreprise::class)->find($id);
+        if (!$entreprise) {
+            throw $this->createNotFoundException('Entreprise non trouvée');
         }
+        return $this->render('entreprise/show.html.twig', [
+            'entreprise' => $entreprise,
+        ]);
+    }
 }
