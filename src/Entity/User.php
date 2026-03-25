@@ -14,6 +14,44 @@ use Doctrine\Common\Collections\Collection;
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    /**
+     * @var Collection<int, Entreprise>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Entreprise::class, orphanRemoval: true)]
+    private Collection $entreprises;
+
+    public function __construct()
+    {
+        $this->entreprises = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection<int, Entreprise>
+     */
+    public function getEntreprises(): Collection
+    {
+        return $this->entreprises;
+    }
+
+    public function addEntreprise(Entreprise $entreprise): static
+    {
+        if (!$this->entreprises->contains($entreprise)) {
+            $this->entreprises[] = $entreprise;
+            $entreprise->setUser($this);
+        }
+        return $this;
+    }
+
+    public function removeEntreprise(Entreprise $entreprise): static
+    {
+        if ($this->entreprises->removeElement($entreprise)) {
+            // set the owning side to null (unless already changed)
+            if ($entreprise->getUser() === $this) {
+                $entreprise->setUser(null);
+            }
+        }
+        return $this;
+    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -31,50 +69,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $telephone = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Entreprise::class, mappedBy="user", cascade={"persist", "remove"})
-     */
-    private $entreprises;
+    #[ORM\Column(length: 20, options: ['default' => 'free'])]
+    private string $plan = 'free';
 
-    public function __construct()
-    {
-        $this->entreprises = new ArrayCollection();
-    }
+    // ✅ Type datetime ajouté
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $planExpiresAt = null;
 
-    /**
-     * @return Collection|Entreprise[]
-     */
-    public function getEntreprises(): Collection
-    {
-        return $this->entreprises ?? new \Doctrine\Common\Collections\ArrayCollection();
-            if (!$this->entreprises->contains($entreprise)) {
-                $this->entreprises[] = $entreprise;
-                $entreprise->setUser($this);
-            }
-            return $this;
-            if ($this->entreprises->contains($entreprise)) {
-                $this->entreprises->removeElement($entreprise);
-                if ($entreprise->getUser() === $this) {
-                    $entreprise->setUser(null);
-                }
-            }
-            return $this;
-    }
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $stripeCustomerId = null;
 
-    /**
-     * @var list<string> The user roles
-     */
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $stripeSubscriptionId = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $avatar = null;
+
     #[ORM\Column]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
     private ?string $password = null;
 
     #[ORM\Column]
     private bool $isVerified = false;
+
+
 
     public function getId(): ?int
     {
@@ -89,45 +109,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
     }
 
-    /**
-     * @see UserInterface
-     */
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
-
         return array_unique($roles);
     }
 
-    /**
-     * @param list<string> $roles
-     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
-
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
     public function getPassword(): ?string
     {
         return $this->password;
@@ -136,26 +138,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
         return $this;
     }
 
-    /**
-     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
-     */
     public function __serialize(): array
     {
         $data = (array) $this;
         $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
-
         return $data;
     }
 
     #[\Deprecated]
-    public function eraseCredentials(): void
-    {
-        // @deprecated, to be removed when upgrading to Symfony 8
-    }
+    public function eraseCredentials(): void {}
 
     public function isVerified(): bool
     {
@@ -165,12 +159,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
-
         return $this;
     }
-
-        #[ORM\Column(nullable: true)]
-    private ?string $avatar = null;
 
     public function getAvatar(): ?string
     {
@@ -205,7 +195,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-        public function getTelephone(): ?string
+    public function getTelephone(): ?string
     {
         return $this->telephone;
     }
@@ -213,6 +203,50 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setTelephone(?string $telephone): static
     {
         $this->telephone = $telephone;
+        return $this;
+    }
+
+    public function getPlan(): string
+    {
+        return $this->plan;
+    }
+
+    public function setPlan(string $plan): self
+    {
+        $this->plan = $plan;
+        return $this;
+    }
+
+    public function getPlanExpiresAt(): ?\DateTimeInterface
+    {
+        return $this->planExpiresAt;
+    }
+
+    public function setPlanExpiresAt(?\DateTimeInterface $planExpiresAt): self
+    {
+        $this->planExpiresAt = $planExpiresAt;
+        return $this;
+    }
+
+    public function getStripeCustomerId(): ?string
+    {
+        return $this->stripeCustomerId;
+    }
+
+    public function setStripeCustomerId(?string $stripeCustomerId): self
+    {
+        $this->stripeCustomerId = $stripeCustomerId;
+        return $this;
+    }
+
+    public function getStripeSubscriptionId(): ?string
+    {
+        return $this->stripeSubscriptionId;
+    }
+
+    public function setStripeSubscriptionId(?string $stripeSubscriptionId): self
+    {
+        $this->stripeSubscriptionId = $stripeSubscriptionId;
         return $this;
     }
 }

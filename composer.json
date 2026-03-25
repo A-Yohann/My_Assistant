@@ -13,6 +13,7 @@
         "dompdf/dompdf": "^3.1",
         "easycorp/easyadmin-bundle": "^5.0",
         "knplabs/knp-paginator-bundle": "^6.10",
+        "stripe/stripe-php": "^19.4",
         "symfony/apache-pack": "*",
         "symfony/console": "7.4.*",
         "symfony/doctrine-messenger": "7.4.*",

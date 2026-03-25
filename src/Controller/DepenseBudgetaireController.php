@@ -40,7 +40,6 @@ class DepenseBudgetaireController extends AbstractController
                 ->getQuery()
                 ->getResult();
 
-            // ✅ Calcul des totaux par catégorie pour le diagramme
             $totaux = $em->getRepository(DepenseBudgetaire::class)
                 ->createQueryBuilder('d')
                 ->select('d.categorie, SUM(d.montant * d.quantite) as total')
@@ -62,15 +61,25 @@ class DepenseBudgetaireController extends AbstractController
             }
         }
 
-        // ✅ Formulaire d'ajout
         $depense = new DepenseBudgetaire();
         $form = $this->createForm(\App\Form\DepenseBudgetaireType::class, $depense);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $depense->setUser($user);
-            // ✅ Lier à l'entreprise active
             $depense->setEntreprise($entrepriseActive);
+
+            // ✅ Gestion de l'upload du justificatif
+            $justificatifFile = $form->get('justificatif')->getData();
+            if ($justificatifFile) {
+                $fileName = uniqid() . '.' . $justificatifFile->guessExtension();
+                $justificatifFile->move(
+                    $this->getParameter('kernel.project_dir') . '/public/uploads/justificatifs',
+                    $fileName
+                );
+                $depense->setJustificatif('/uploads/justificatifs/' . $fileName);
+            }
+
             $em->persist($depense);
             $em->flush();
             $this->addFlash('success', 'Dépense ajoutée avec succès !');
@@ -90,6 +99,13 @@ class DepenseBudgetaireController extends AbstractController
     {
         $depense = $em->getRepository(DepenseBudgetaire::class)->find($id);
         if ($depense && $depense->getUser() === $this->getUser()) {
+            // ✅ Supprimer le fichier si existant
+            if ($depense->getJustificatif()) {
+                $filePath = $this->getParameter('kernel.project_dir') . '/public' . $depense->getJustificatif();
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
             $em->remove($depense);
             $em->flush();
             $this->addFlash('success', 'Dépense supprimée.');
