@@ -8,23 +8,14 @@ use App\Entity\Dashbord;
 
 #[ORM\Entity]
 class Entreprise {
-    #[ORM\Column(type: 'decimal', precision: 5, scale: 2, nullable: false, options: ["default" => 0.2])]
-    private $tva = 0.2;
 
-    public function getTva(): float
-    {
-        return $this->tva;
-    }
-
-    public function setTva(float $tva): self
-    {
-        $this->tva = $tva;
-        return $this;
-    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private $id;
+
+    #[ORM\Column(type: 'decimal', precision: 5, scale: 2, nullable: false, options: ["default" => 0.2])]
+    private $tva = 0.2;
 
     #[ORM\Column(type: 'string', length: 100)]
     private $nomEntreprise;
@@ -74,9 +65,10 @@ class Entreprise {
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private $status;
 
+    // ✅ Siège social optionnel
     #[ORM\ManyToOne(targetEntity: Siege::class)]
-    #[ORM\JoinColumn(name: 'idSiege', referencedColumnName: 'id')]
-    private $siege;
+    #[ORM\JoinColumn(name: 'idSiege', referencedColumnName: 'id', nullable: true)]
+    private ?Siege $siege = null;
 
     #[ORM\ManyToOne(targetEntity: Dashbord::class)]
     #[ORM\JoinColumn(name: 'idDashbord', referencedColumnName: 'id')]
@@ -86,18 +78,16 @@ class Entreprise {
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     private $user;
 
-    public function getUser(): ?User
+    public function getTva(): float
     {
-        return $this->user;
+        return $this->tva;
     }
 
-    public function setUser(?User $user): self
+    public function setTva(float $tva): self
     {
-        $this->user = $user;
+        $this->tva = $tva;
         return $this;
     }
-
-    // Getters & Setters
 
     public function getId(): ?int
     {
@@ -299,6 +289,17 @@ class Entreprise {
     public function setDashbord(?Dashbord $dashbord): self
     {
         $this->dashbord = $dashbord;
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
         return $this;
     }
 }

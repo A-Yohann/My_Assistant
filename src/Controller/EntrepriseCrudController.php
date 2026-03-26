@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Entity\Entreprise;
+use App\Entity\Siege;
 use App\Form\EntrepriseType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,7 +27,6 @@ class EntrepriseCrudController extends AbstractController
     #[Route('/new', name: 'entreprise_new')]
     public function new(Request $request, EntityManagerInterface $em): Response
     {
-        // ✅ Vérification limite plan
         $user = $this->getUser();
         $nbEntreprises = count($em->getRepository(Entreprise::class)->findBy(['user' => $user]));
 
@@ -41,6 +41,7 @@ class EntrepriseCrudController extends AbstractController
         $entreprise = new Entreprise();
         $form = $this->createForm(EntrepriseType::class, $entreprise);
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
             $logoFile = $form->get('logo')->getData();
             if ($logoFile) {
@@ -57,12 +58,25 @@ class EntrepriseCrudController extends AbstractController
             if ($entreprise->getType() === null) {
                 $entreprise->setType(false);
             }
+
+            // ✅ Gestion du siège social optionnel
+            $siege = $form->get('siege')->getData();
+            if ($siege && ($siege->getNomSiege() || $siege->getAddresseSiege())) {
+                $siege->setDateCreation($siege->getDateCreation() ?? new \DateTime());
+                $siege->setStatuJuridique($siege->isStatuJuridique() ?? false);
+                $em->persist($siege);
+                $entreprise->setSiege($siege);
+            } else {
+                $entreprise->setSiege(null);
+            }
+
             $entreprise->setUser($this->getUser());
             $em->persist($entreprise);
             $em->flush();
             $this->addFlash('success', 'Entreprise créée !');
             return $this->redirectToRoute('app_entreprise');
         }
+
         return $this->render('entreprise/new.html.twig', [
             'form' => $form->createView(),
         ]);
@@ -71,7 +85,6 @@ class EntrepriseCrudController extends AbstractController
     #[Route('/new-multi', name: 'entreprise_new_multi')]
     public function newMulti(Request $request, EntityManagerInterface $em): Response
     {
-        // ✅ Vérification limite plan
         $user = $this->getUser();
         $nbEntreprises = count($em->getRepository(Entreprise::class)->findBy(['user' => $user]));
 
@@ -139,6 +152,18 @@ class EntrepriseCrudController extends AbstractController
                     $entreprise->setPays($formData['pays']);
                     $entreprise->setRoles($formData['roles'] ?? false);
                     $entreprise->setType($formData['type'] ?? false);
+
+                    // ✅ Gestion du siège social optionnel
+                    if (!empty($formData['siege']['nomSiege']) || !empty($formData['siege']['addresseSiege'])) {
+                        $siege = new Siege();
+                        $siege->setNomSiege($formData['siege']['nomSiege'] ?? '');
+                        $siege->setAddresseSiege($formData['siege']['addresseSiege'] ?? '');
+                        $siege->setDateCreation(new \DateTime($formData['siege']['dateCreation'] ?? 'now'));
+                        $siege->setStatuJuridique((bool)($formData['siege']['statuJuridique'] ?? false));
+                        $em->persist($siege);
+                        $entreprise->setSiege($siege);
+                    }
+
                     $entreprise->setUser($this->getUser());
                     $em->persist($entreprise);
                     $em->flush();
@@ -163,6 +188,18 @@ class EntrepriseCrudController extends AbstractController
         $form = $this->createForm(EntrepriseType::class, $entreprise);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // ✅ Gestion du siège social optionnel à l'édition
+            $siege = $form->get('siege')->getData();
+            if ($siege && ($siege->getNomSiege() || $siege->getAddresseSiege())) {
+                $siege->setDateCreation($siege->getDateCreation() ?? new \DateTime());
+                $siege->setStatuJuridique($siege->isStatuJuridique() ?? false);
+                $em->persist($siege);
+                $entreprise->setSiege($siege);
+            } else {
+                $entreprise->setSiege(null);
+            }
+
             $em->flush();
             $this->addFlash('success', 'Entreprise modifiée !');
             return $this->redirectToRoute('app_entreprise');
