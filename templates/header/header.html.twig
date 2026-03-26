@@ -3,9 +3,11 @@
         <div class="flex justify-between items-center h-16">
 
             <!-- Logo -->
-            <div class="flex items-center">
+            <div class="flex items-center shrink-0">
                 <a href="{{ path('app_home') }}">
-                    <dotlottie-player src="{{ asset('assets/Isometric_data_analysis.lottie') }}" autoplay loop style="height: 60px; width: auto;"></dotlottie-player>
+                    <div style="height: 60px; width: 60px; overflow: hidden; flex-shrink: 0;">
+                        <dotlottie-player src="{{ asset('assets/Isometric_data_analysis.lottie') }}" autoplay loop style="height: 60px; width: 60px; display: block;"></dotlottie-player>
+                    </div>
                 </a>
             </div>
 
