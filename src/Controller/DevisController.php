@@ -57,7 +57,7 @@ class DevisController extends AbstractController
     #[Route('/devis/generer', name: 'devis_generer')]
     public function generer(EntityManagerInterface $em, Request $request): Response
     {
-        // ✅ Vérification limite plan gratuit
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
         if ($user->getPlan() === 'free') {
             $nbDevis = $em->getRepository(Devis::class)
@@ -76,7 +76,6 @@ class DevisController extends AbstractController
 
         $devis = new Devis();
 
-        // ✅ Numérotation automatique
         $lastDevis = $em->getRepository(Devis::class)
             ->createQueryBuilder('d')
             ->orderBy('d.id', 'DESC')
@@ -98,6 +97,17 @@ class DevisController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // ✅ Vérification date émission >= date création
+            $dateCreation = $devis->getDateCreation();
+            $dateEmission = $devis->getDateEmission();
+            if ($dateEmission && $dateCreation && $dateEmission < $dateCreation) {
+                $this->addFlash('error', 'La date d\'émission ne peut pas être antérieure à la date de création.');
+                return $this->render('devis/generer.html.twig', [
+                    'form' => $form->createView()
+                ]);
+            }
+
             /** @var \App\Entity\Entreprise|null $entreprise */
             $entreprise = $form->get('entreprise')->getData();
             if ($entreprise) {
@@ -106,7 +116,6 @@ class DevisController extends AbstractController
                 $devis->setMontantTtc($devis->getMontantHT() * (1 + $entreprise->getTva()));
             }
 
-            // ✅ Création et enregistrement du client
             $client = new \App\Entity\Client();
             $client->setNom($form->get('clientNom')->getData());
             $client->setPrenom($form->get('clientPrenom')->getData());
@@ -122,7 +131,6 @@ class DevisController extends AbstractController
 
             $em->persist($client);
 
-            // ✅ Signature émetteur
             $signatureEmetteur = $request->request->get('signature_emetteur');
             if ($signatureEmetteur) {
                 $devis->setSignatureEmetteur($signatureEmetteur);

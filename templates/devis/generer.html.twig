@@ -160,7 +160,7 @@
                 <a href="{{ path('devis_index') }}" class="text-center bg-gray-200 text-gray-700 px-5 py-3 rounded-lg hover:bg-gray-300 text-sm font-medium">
                     Annuler
                 </a>
-                <button type="submit" id="submitBtn" class="text-center bg-[#3B0764] text-white px-5 py-3 rounded-lg hover:opacity-90 font-semibold text-sm">
+                <button type="button" id="submitBtn" class="text-center bg-[#3B0764] text-white px-5 py-3 rounded-lg hover:opacity-90 font-semibold text-sm">
                     Générer le devis
                 </button>
             </div>
@@ -234,14 +234,35 @@ document.getElementById('clearBtn').addEventListener('click', () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
 
-document.getElementById('submitBtn').addEventListener('click', function() {
+document.getElementById('submitBtn').addEventListener('click', function(e) {
+    // ✅ Vérification dates
+    const dateCreation = document.querySelector('input[name*="dateCreation"]').value;
+    const dateEmission = document.querySelector('input[name*="dateEmission"]').value;
+
+    if (dateCreation && dateEmission && dateEmission < dateCreation) {
+        e.preventDefault();
+        alert('⚠️ La date d\'émission ne peut pas être antérieure à la date de création.');
+        return;
+    }
+
+    // ✅ Vérification signature
     const blank = document.createElement('canvas');
     blank.width = canvas.width;
     blank.height = canvas.height;
     const data = canvas.toDataURL('image/png');
-    if (data !== blank.toDataURL('image/png')) {
-        document.getElementById('signatureEmetteurInput').value = data;
+
+    if (data === blank.toDataURL('image/png')) {
+        e.preventDefault();
+        alert('⚠️ Veuillez signer le devis avant de le générer.');
+        canvas.classList.add('border-red-500');
+        canvas.classList.remove('border-gray-300');
+        return;
     }
+
+    // ✅ Signature présente → on enregistre
+    document.getElementById('signatureEmetteurInput').value = data;
+    canvas.classList.remove('border-red-500');
+    canvas.classList.add('border-gray-300');
 });
 </script>
 
