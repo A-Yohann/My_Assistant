@@ -7,7 +7,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -35,8 +35,31 @@ class EntrepriseType extends AbstractType
                 'required' => false,
                 'mapped'   => false,
             ])
-            ->add('formeJuridique', TextType::class)
-            ->add('status', TextType::class)
+            ->add('formeJuridique', ChoiceType::class, [
+                'label'       => 'Forme juridique',
+                'placeholder' => 'Sélectionnez une forme juridique',
+                'choices'     => [
+                    'Auto-entrepreneur / Micro-entreprise' => 'Auto-entrepreneur / Micro-entreprise',
+                    'EI (Entreprise Individuelle)'         => 'EI',
+                    'EURL'                                 => 'EURL',
+                    'SARL'                                 => 'SARL',
+                    'SAS'                                  => 'SAS',
+                    'SASU'                                 => 'SASU',
+                    'SA'                                   => 'SA',
+                    'SNC'                                  => 'SNC',
+                    'Association'                          => 'Association',
+                ],
+            ])
+            ->add('status', ChoiceType::class, [
+                'label'       => 'Statut',
+                'placeholder' => 'Sélectionnez un statut',
+                'choices'     => [
+                    'En activité'           => 'En activité',
+                    'En création'           => 'En création',
+                    'Cessation d\'activité' => 'Cessation d\'activité',
+                    'En liquidation'        => 'En liquidation',
+                ],
+            ])
             ->add('numeroRue', TextType::class)
             ->add('nomRue', TextType::class)
             ->add('complementAdresse', TextType::class, [

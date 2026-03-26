@@ -27,6 +27,7 @@ class EntrepriseCrudController extends AbstractController
     #[Route('/new', name: 'entreprise_new')]
     public function new(Request $request, EntityManagerInterface $em): Response
     {
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
         $nbEntreprises = count($em->getRepository(Entreprise::class)->findBy(['user' => $user]));
 
@@ -42,49 +43,68 @@ class EntrepriseCrudController extends AbstractController
         $form = $this->createForm(EntrepriseType::class, $entreprise);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        // ✅ Logo temporaire en session
+        $session = $request->getSession();
+        $logoTemp = $session->get('logo_temp');
+
+        if ($form->isSubmitted()) {
             $logoFile = $form->get('logo')->getData();
+
+            // ✅ Si nouveau logo uploadé → on le sauvegarde en session
             if ($logoFile) {
                 $logoName = uniqid().'.'.$logoFile->guessExtension();
                 $logoFile->move($this->getParameter('kernel.project_dir').'/public/uploads/logos', $logoName);
-                $entreprise->setLogo('/uploads/logos/'.$logoName);
-            }
-            if ($entreprise->getRoles() === null) {
-                $entreprise->setRoles(false);
-            }
-            if ($entreprise->getComplementAdresse() === null) {
-                $entreprise->setComplementAdresse('');
-            }
-            if ($entreprise->getType() === null) {
-                $entreprise->setType(false);
+                $logoTemp = '/uploads/logos/'.$logoName;
+                $session->set('logo_temp', $logoTemp);
             }
 
-            // ✅ Gestion du siège social optionnel
-            $siege = $form->get('siege')->getData();
-            if ($siege && ($siege->getNomSiege() || $siege->getAddresseSiege())) {
-                $siege->setDateCreation($siege->getDateCreation() ?? new \DateTime());
-                $siege->setStatuJuridique($siege->isStatuJuridique() ?? false);
-                $em->persist($siege);
-                $entreprise->setSiege($siege);
-            } else {
-                $entreprise->setSiege(null);
-            }
+            if ($form->isValid()) {
+                // ✅ On utilise le logo temp si pas de nouveau logo
+                $entreprise->setLogo($logoTemp ?? '');
 
-            $entreprise->setUser($this->getUser());
-            $em->persist($entreprise);
-            $em->flush();
-            $this->addFlash('success', 'Entreprise créée !');
-            return $this->redirectToRoute('app_entreprise');
+                if ($entreprise->getRoles() === null) {
+                    $entreprise->setRoles(false);
+                }
+                if ($entreprise->getComplementAdresse() === null) {
+                    $entreprise->setComplementAdresse('');
+                }
+                if ($entreprise->getType() === null) {
+                    $entreprise->setType(false);
+                }
+
+                // ✅ Gestion du siège social optionnel
+                $siege = $form->get('siege')->getData();
+                if ($siege && ($siege->getNomSiege() || $siege->getAddresseSiege())) {
+                    $siege->setDateCreation($siege->getDateCreation() ?? new \DateTime());
+                    $siege->setStatuJuridique($siege->isStatuJuridique() ?? false);
+                    $em->persist($siege);
+                    $entreprise->setSiege($siege);
+                } else {
+                    $entreprise->setSiege(null);
+                }
+
+                $entreprise->setUser($this->getUser());
+                $em->persist($entreprise);
+                $em->flush();
+
+                // ✅ Nettoyer la session
+                $session->remove('logo_temp');
+
+                $this->addFlash('success', 'Entreprise créée !');
+                return $this->redirectToRoute('app_entreprise');
+            }
         }
 
         return $this->render('entreprise/new.html.twig', [
-            'form' => $form->createView(),
+            'form'      => $form->createView(),
+            'logo_temp' => $logoTemp,
         ]);
     }
 
     #[Route('/new-multi', name: 'entreprise_new_multi')]
     public function newMulti(Request $request, EntityManagerInterface $em): Response
     {
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
         $nbEntreprises = count($em->getRepository(Entreprise::class)->findBy(['user' => $user]));
 
@@ -118,7 +138,7 @@ class EntrepriseCrudController extends AbstractController
                     empty($postData['formeJuridique']) ||
                     empty($postData['status']) ||
                     empty($postData['dateCreation']) ||
-                    !$request->files->get('logo')
+                    (!$request->files->get('logo') && empty($formData['logo']))
                 ) {
                     $this->addFlash('error', 'Tous les champs sont requis');
                 } else {
@@ -188,6 +208,14 @@ class EntrepriseCrudController extends AbstractController
         $form = $this->createForm(EntrepriseType::class, $entreprise);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // ✅ Gestion du logo à l'édition
+            $logoFile = $form->get('logo')->getData();
+            if ($logoFile) {
+                $logoName = uniqid().'.'.$logoFile->guessExtension();
+                $logoFile->move($this->getParameter('kernel.project_dir').'/public/uploads/logos', $logoName);
+                $entreprise->setLogo('/uploads/logos/'.$logoName);
+            }
 
             // ✅ Gestion du siège social optionnel à l'édition
             $siege = $form->get('siege')->getData();
