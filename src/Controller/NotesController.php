@@ -18,6 +18,12 @@ class NotesController extends AbstractController
         $user = $this->getUser();
         $entrepriseActive = $entrepriseService->getEntrepriseActive();
 
+        // ✅ Vérifier si une entreprise est active
+        if (!$entrepriseActive) {
+            $this->addFlash('error', 'Vous devez créer une entreprise pour accéder aux notes.');
+            return $this->redirectToRoute('app_entreprise');
+        }
+
         $notes = $em->getRepository(Note::class)->createQueryBuilder('n')
             ->where('n.user = :user')
             ->andWhere('n.entreprise = :entreprise')
@@ -80,13 +86,18 @@ class NotesController extends AbstractController
         $user = $this->getUser();
         $entrepriseActive = $entrepriseService->getEntrepriseActive();
 
+        // ✅ Vérifier si une entreprise est active
+        if (!$entrepriseActive) {
+            $this->addFlash('error', 'Vous devez créer une entreprise pour ajouter des notes.');
+            return $this->redirectToRoute('app_entreprise');
+        }
+
         $note = new Note();
         $form = $this->createForm(NoteType::class, $note);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $note->setDateModification(new \DateTime());
             $note->setUser($user);
-            // ✅ Lier la note à l'entreprise active
             $note->setEntreprise($entrepriseActive);
             $em->persist($note);
             $em->flush();
