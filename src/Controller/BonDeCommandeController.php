@@ -15,8 +15,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Knp\Component\Pager\PaginatorInterface;
 use Dompdf\Dompdf;
 use Dompdf\Options;
-use Stripe\Stripe;
-use Stripe\Checkout\Session as StripeSession;
 
 class BonDeCommandeController extends AbstractController
 {
@@ -103,6 +101,7 @@ class BonDeCommandeController extends AbstractController
 
         $options = new Options();
         $options->set('defaultFont', 'Arial');
+        $options->set('isRemoteEnabled', true);
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
@@ -118,7 +117,7 @@ class BonDeCommandeController extends AbstractController
         );
     }
 
-    // ✅ Envoi du bon de commande par mail avec lien Stripe
+    // ✅ Envoi du bon de commande par mail avec PDF en pièce jointe
     #[Route('/bon-de-commande/{id}/envoyer', name: 'bon_de_commande_envoyer', requirements: ['id' => '\\d+'])]
     public function envoyer(EntityManagerInterface $em, MailerInterface $mailer, int $id): Response
     {
@@ -127,8 +126,8 @@ class BonDeCommandeController extends AbstractController
             throw $this->createNotFoundException('Bon de commande non trouvé');
         }
 
-        $devis  = $bon->getDevis();
-        $client = $devis ? $devis->getClient() : null;
+        $devis       = $bon->getDevis();
+        $client      = $devis ? $devis->getClient() : null;
         $clientEmail = $client ? $client->getEmail() : null;
         $clientName  = $client ? $client->getNom() . ' ' . $client->getPrenom() : 'Client';
 
@@ -137,9 +136,51 @@ class BonDeCommandeController extends AbstractController
             return $this->redirectToRoute('bon_de_commande_show', ['id' => $id]);
         }
 
-        $payUrl = $this->generateUrl('bon_de_commande_stripe', [
-            'id' => $id
-        ], UrlGeneratorInterface::ABSOLUTE_URL);
+        $entreprise    = $bon->getEntreprise();
+        $adresse       = $entreprise ? (
+            $entreprise->getNumeroRue() . ' ' . $entreprise->getNomRue() . ', ' .
+            ($entreprise->getComplementAdresse() ? $entreprise->getComplementAdresse() . ', ' : '') .
+            $entreprise->getCodePostal() . ' ' . $entreprise->getVille() . ', ' . $entreprise->getPays()
+        ) : '';
+
+        $clientAdresse = $client ? (
+            $client->getNumeroRue() . ' ' . $client->getNomRue() . ', ' .
+            $client->getCodePostal() . ' ' . $client->getVille() . ', ' . $client->getPays()
+        ) : '';
+
+        // ✅ Génération du PDF en mémoire
+        $html = $this->renderView('bon_de_commande/pdf.html.twig', [
+            'numero'                  => $bon->getNumeroBon(),
+            'date'                    => $bon->getDateCreation()->format('d/m/Y'),
+            'articles'                => [
+                ['libelle' => $bon->getDescription(), 'qty' => 1, 'price' => $bon->getMontantHT()],
+            ],
+            'totalHT'                 => $bon->getMontantHT(),
+            'tva'                     => $bon->getMontantHT() * $bon->getTauxTVA(),
+            'totalTTC'                => $bon->getMontantTtc(),
+            'entreprise_nom'          => $entreprise ? $entreprise->getNomEntreprise() : '',
+            'entreprise_tel'          => $entreprise ? $entreprise->getTelephone() : '',
+            'entreprise_email'        => $entreprise ? $entreprise->getEmail() : '',
+            'entreprise_adresse'      => $adresse,
+            'client_nom'              => $client ? $client->getNom() : '',
+            'client_prenom'           => $client ? $client->getPrenom() : '',
+            'client_email'            => $client ? $client->getEmail() : '',
+            'client_telephone'        => $client ? $client->getTelephone() : '',
+            'client_adresse'          => $clientAdresse,
+            'signature_emetteur'      => $devis ? $devis->getSignatureEmetteur() : null,
+            'signature_emetteur_date' => $devis && $devis->getSignatureEmetteurDate() ? $devis->getSignatureEmetteurDate()->format('d/m/Y à H:i') : null,
+            'signature_client'        => $devis ? $devis->getSignatureImage() : null,
+            'signature_client_date'   => $devis && $devis->getSignatureDate() ? $devis->getSignatureDate()->format('d/m/Y à H:i') : null,
+        ]);
+
+        $options = new Options();
+        $options->set('defaultFont', 'Arial');
+        $options->set('isRemoteEnabled', true);
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $pdfOutput = $dompdf->output();
 
         $from = $_ENV['MAILER_FROM'] ?? 'no-reply@my-assistant.fr';
 
@@ -149,16 +190,10 @@ class BonDeCommandeController extends AbstractController
             ->subject('Votre bon de commande ' . $bon->getNumeroBon())
             ->html('
                 <p>Bonjour ' . htmlspecialchars($clientName) . ',</p>
-                <p>Votre bon de commande <strong>' . $bon->getNumeroBon() . '</strong> 
-                d\'un montant de <strong>' . number_format($bon->getMontantTtc(), 2, ',', ' ') . ' €</strong> est prêt.</p>
-                <p>Cliquez sur le bouton ci-dessous pour procéder au paiement en ligne :</p>
-                <p>
-                    <a href="' . $payUrl . '" style="background:#3B0764;color:white;padding:12px 24px;border-radius:5px;text-decoration:none;font-weight:bold;">
-                        💳 Payer en ligne
-                    </a>
-                </p>
+                <p>Veuillez trouver votre bon de commande en pièce jointe.</p>
                 <p>Cordialement,<br>L\'équipe My Assistant</p>
-            ');
+            ')
+            ->attach($pdfOutput, 'bon-commande-' . $bon->getNumeroBon() . '.pdf', 'application/pdf');
 
         try {
             $mailer->send($email);
@@ -170,74 +205,7 @@ class BonDeCommandeController extends AbstractController
         return $this->redirectToRoute('bon_de_commande_show', ['id' => $id]);
     }
 
-    // ✅ Page Stripe Checkout
-    #[Route('/bon-de-commande/{id}/stripe', name: 'bon_de_commande_stripe', requirements: ['id' => '\\d+'])]
-    public function stripe(EntityManagerInterface $em, int $id): Response
-    {
-        $bon = $em->getRepository(BonDeCommande::class)->find($id);
-        if (!$bon) {
-            throw $this->createNotFoundException('Bon de commande non trouvé');
-        }
-
-        if ($bon->getEtat() === 'paye') {
-            $this->addFlash('info', 'Ce bon de commande est déjà payé.');
-            return $this->redirectToRoute('bon_de_commande_show', ['id' => $id]);
-        }
-
-        Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
-
-        $session = StripeSession::create([
-            'payment_method_types' => ['card'],
-            'line_items' => [[
-                'price_data' => [
-                    'currency'     => 'eur',
-                    'unit_amount'  => (int)($bon->getMontantTtc() * 100),
-                    'product_data' => [
-                        'name' => 'Bon de commande ' . $bon->getNumeroBon(),
-                    ],
-                ],
-                'quantity' => 1,
-            ]],
-            'mode'        => 'payment',
-            'success_url' => $this->generateUrl('bon_de_commande_stripe_success', ['id' => $id], UrlGeneratorInterface::ABSOLUTE_URL),
-            'cancel_url'  => $this->generateUrl('bon_de_commande_show', ['id' => $id], UrlGeneratorInterface::ABSOLUTE_URL),
-        ]);
-
-        return $this->redirect($session->url, 303);
-    }
-
-    // ✅ Succès paiement Stripe → facture générée auto
-    #[Route('/bon-de-commande/{id}/stripe-success', name: 'bon_de_commande_stripe_success', requirements: ['id' => '\\d+'])]
-    public function stripeSuccess(EntityManagerInterface $em, int $id): Response
-    {
-        $bon = $em->getRepository(BonDeCommande::class)->find($id);
-        if (!$bon) {
-            throw $this->createNotFoundException('Bon de commande non trouvé');
-        }
-
-        if ($bon->getEtat() !== 'paye') {
-            $bon->setEtat('paye');
-
-            $facture = new Facture();
-            $facture->setNumeroFacture('FAC-' . date('Y') . '-' . str_pad($id, 4, '0', STR_PAD_LEFT));
-            $facture->setDateCreation(new \DateTime());
-            $facture->setDateEcheance(new \DateTime('+30 days'));
-            $facture->setMontantHT($bon->getMontantHT());
-            $facture->setMontantTtc($bon->getMontantTtc());
-            $facture->setTauxTVA($bon->getTauxTVA());
-            $facture->setDescription($bon->getDescription());
-            $facture->setEntreprise($bon->getEntreprise());
-            $facture->setBonDeCommande($bon);
-            $facture->setEtat('payee'); // ✅ Directement payée via Stripe
-
-            $em->persist($facture);
-            $em->flush();
-        }
-
-        $this->addFlash('success', 'Paiement effectué ! Facture générée automatiquement.');
-        return $this->redirectToRoute('facture_show', ['id' => $bon->getId()]);
-    }
-
+    // ✅ Marquer comme payé → génère la facture
     #[Route('/bon-de-commande/{id}/payer', name: 'bon_de_commande_payer', requirements: ['id' => '\\d+'])]
     public function payer(EntityManagerInterface $em, int $id): Response
     {

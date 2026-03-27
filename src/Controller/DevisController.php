@@ -116,20 +116,28 @@ class DevisController extends AbstractController
                 $devis->setMontantTtc($devis->getMontantHT() * (1 + $entreprise->getTva()));
             }
 
-            $client = new \App\Entity\Client();
-            $client->setNom($form->get('clientNom')->getData());
-            $client->setPrenom($form->get('clientPrenom')->getData());
-            $client->setEmail($form->get('clientEmail')->getData());
-            $client->setTelephone($form->get('clientTelephone')->getData());
-            $client->setNumeroRue($form->get('clientNumeroRue')->getData());
-            $client->setNomRue($form->get('clientNomRue')->getData());
-            $client->setCodePostal($form->get('clientCodePostal')->getData());
-            $client->setVille($form->get('clientVille')->getData());
-            $client->setPays($form->get('clientPays')->getData());
-            $client->setDateCreation(new \DateTime());
-            $client->setUser($this->getUser());
+            // ✅ Client existant sélectionné → on le réutilise sans recréer
+            $clientExistant = $form->get('clientExistant')->getData();
 
-            $em->persist($client);
+            if ($clientExistant) {
+                $devis->setClient($clientExistant);
+            } else {
+                // ✅ Nouveau client → création
+                $client = new \App\Entity\Client();
+                $client->setNom($form->get('clientNom')->getData());
+                $client->setPrenom($form->get('clientPrenom')->getData());
+                $client->setEmail($form->get('clientEmail')->getData());
+                $client->setTelephone($form->get('clientTelephone')->getData());
+                $client->setNumeroRue($form->get('clientNumeroRue')->getData());
+                $client->setNomRue($form->get('clientNomRue')->getData());
+                $client->setCodePostal($form->get('clientCodePostal')->getData());
+                $client->setVille($form->get('clientVille')->getData());
+                $client->setPays($form->get('clientPays')->getData());
+                $client->setDateCreation(new \DateTime());
+                $client->setUser($this->getUser());
+                $em->persist($client);
+                $devis->setClient($client);
+            }
 
             $signatureEmetteur = $request->request->get('signature_emetteur');
             if ($signatureEmetteur) {
@@ -137,7 +145,6 @@ class DevisController extends AbstractController
                 $devis->setSignatureEmetteurDate(new \DateTime());
             }
 
-            $devis->setClient($client);
             $devis->setEtat('en_attente');
 
             $em->persist($devis);
