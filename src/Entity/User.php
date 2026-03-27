@@ -100,6 +100,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $lockedUntil = null;
 
+    #[ORM\Column(type: 'datetime', nullable: true)]
+private ?\DateTimeInterface $lastLogin = null;
+
+public function getLastLogin(): ?\DateTimeInterface
+{
+    return $this->lastLogin;
+}
+
+public function setLastLogin(?\DateTimeInterface $lastLogin): self
+{
+    $this->lastLogin = $lastLogin;
+    return $this;
+}
+
     public function getId(): ?int
     {
         return $this->id;
