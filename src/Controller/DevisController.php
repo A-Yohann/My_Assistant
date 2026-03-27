@@ -98,7 +98,6 @@ class DevisController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // ✅ Vérification date émission >= date création
             $dateCreation = $devis->getDateCreation();
             $dateEmission = $devis->getDateEmission();
             if ($dateEmission && $dateCreation && $dateEmission < $dateCreation) {
@@ -116,13 +115,20 @@ class DevisController extends AbstractController
                 $devis->setMontantTtc($devis->getMontantHT() * (1 + $entreprise->getTva()));
             }
 
+<<<<<<< HEAD
             // ✅ Client existant sélectionné → on le réutilise sans recréer
+=======
+            // ✅ Client existant → réutilisé sans recréer
+>>>>>>> yohann
             $clientExistant = $form->get('clientExistant')->getData();
 
             if ($clientExistant) {
                 $devis->setClient($clientExistant);
             } else {
+<<<<<<< HEAD
                 // ✅ Nouveau client → création
+=======
+>>>>>>> yohann
                 $client = new \App\Entity\Client();
                 $client->setNom($form->get('clientNom')->getData());
                 $client->setPrenom($form->get('clientPrenom')->getData());
@@ -146,7 +152,6 @@ class DevisController extends AbstractController
             }
 
             $devis->setEtat('en_attente');
-
             $em->persist($devis);
             $em->flush();
 
@@ -171,16 +176,10 @@ class DevisController extends AbstractController
         ]);
     }
 
-    #[Route('/devis/{id}/pdf', name: 'devis_pdf', requirements: ['id' => '\\d+'])]
-    public function pdf(EntityManagerInterface $em, int $id): Response
+    private function buildPdfVariables(Devis $devis): array
     {
-        $devis = $em->getRepository(Devis::class)->find($id);
-        if (!$devis) {
-            throw $this->createNotFoundException('Devis non trouvé');
-        }
-
         $entreprise = $devis->getEntreprise();
-        $client = $devis->getClient();
+        $client     = $devis->getClient();
 
         $adresse = $entreprise ? (
             $entreprise->getNumeroRue() . ' ' . $entreprise->getNomRue() . ', ' .
@@ -193,7 +192,7 @@ class DevisController extends AbstractController
             $client->getCodePostal() . ' ' . $client->getVille() . ', ' . $client->getPays()
         ) : '';
 
-        $html = $this->renderView('devis/pdf.html.twig', [
+        return [
             'numero'                  => $devis->getNumeroDevis(),
             'date'                    => $devis->getDateEmission() ? $devis->getDateEmission()->format('d/m/Y') : '',
             'articles'                => [
@@ -207,6 +206,7 @@ class DevisController extends AbstractController
             'entreprise_tel'          => $entreprise ? $entreprise->getTelephone() : '',
             'entreprise_email'        => $entreprise ? $entreprise->getEmail() : '',
             'entreprise_adresse'      => $adresse,
+            'entreprise_siret'        => $entreprise ? $entreprise->getSiret() : '', // ✅ SIRET
             'client_nom'              => $client ? $client->getNom() : '',
             'client_prenom'           => $client ? $client->getPrenom() : '',
             'client_email'            => $client ? $client->getEmail() : '',
@@ -216,8 +216,12 @@ class DevisController extends AbstractController
             'signature_emetteur_date' => $devis->getSignatureEmetteurDate() ? $devis->getSignatureEmetteurDate()->format('d/m/Y à H:i') : null,
             'signature_client'        => $devis->getSignatureImage(),
             'signature_client_date'   => $devis->getSignatureDate() ? $devis->getSignatureDate()->format('d/m/Y à H:i') : null,
-        ]);
+        ];
+    }
 
+    private function generatePdf(array $variables, string $template): string
+    {
+        $html = $this->renderView($template, $variables);
         $options = new Options();
         $options->set('defaultFont', 'Arial');
         $options->set('isRemoteEnabled', true);
@@ -225,15 +229,23 @@ class DevisController extends AbstractController
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
+        return $dompdf->output();
+    }
 
-        return new Response(
-            $dompdf->output(),
-            200,
-            [
-                'Content-Type'        => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="devis-' . $devis->getNumeroDevis() . '.pdf"',
-            ]
-        );
+    #[Route('/devis/{id}/pdf', name: 'devis_pdf', requirements: ['id' => '\\d+'])]
+    public function pdf(EntityManagerInterface $em, int $id): Response
+    {
+        $devis = $em->getRepository(Devis::class)->find($id);
+        if (!$devis) {
+            throw $this->createNotFoundException('Devis non trouvé');
+        }
+
+        $pdfOutput = $this->generatePdf($this->buildPdfVariables($devis), 'devis/pdf.html.twig');
+
+        return new Response($pdfOutput, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="devis-' . $devis->getNumeroDevis() . '.pdf"',
+        ]);
     }
 
     #[Route('/devis/{id}/envoyer', name: 'devis_envoyer', requirements: ['id' => '\\d+'])]
@@ -248,54 +260,12 @@ class DevisController extends AbstractController
         $devis->setSignatureToken($token);
         $em->flush();
 
-        $entreprise = $devis->getEntreprise();
-        $client = $devis->getClient();
+        $client      = $devis->getClient();
+        $entreprise  = $devis->getEntreprise();
         $clientEmail = $client ? $client->getEmail() : ($entreprise ? $entreprise->getEmail() : 'client@email.fr');
         $clientName  = $client ? $client->getNom() . ' ' . $client->getPrenom() : ($entreprise ? $entreprise->getNomEntreprise() : 'Nom du client');
 
-        $adresse = $entreprise ? (
-            $entreprise->getNumeroRue() . ' ' . $entreprise->getNomRue() . ', ' .
-            ($entreprise->getComplementAdresse() ? $entreprise->getComplementAdresse() . ', ' : '') .
-            $entreprise->getCodePostal() . ' ' . $entreprise->getVille() . ', ' . $entreprise->getPays()
-        ) : '';
-
-        $clientAdresse = $client ? (
-            $client->getNumeroRue() . ' ' . $client->getNomRue() . ', ' .
-            $client->getCodePostal() . ' ' . $client->getVille() . ', ' . $client->getPays()
-        ) : '';
-
-        $html = $this->renderView('devis/pdf.html.twig', [
-            'numero'                  => $devis->getNumeroDevis(),
-            'date'                    => $devis->getDateEmission() ? $devis->getDateEmission()->format('d/m/Y') : '',
-            'articles'                => [
-                ['libelle' => $devis->getDescription(), 'qty' => 1, 'price' => $devis->getMontantHT()],
-            ],
-            'totalHT'                 => $devis->getMontantHT(),
-            'tva'                     => $devis->getMontantHT() * $devis->getTauxTVA(),
-            'totalTTC'                => $devis->getMontantTtc(),
-            'conditions'              => 'Paiement sous 30 jours.',
-            'entreprise_nom'          => $entreprise ? $entreprise->getNomEntreprise() : '',
-            'entreprise_tel'          => $entreprise ? $entreprise->getTelephone() : '',
-            'entreprise_email'        => $entreprise ? $entreprise->getEmail() : '',
-            'entreprise_adresse'      => $adresse,
-            'client_nom'              => $client ? $client->getNom() : '',
-            'client_prenom'           => $client ? $client->getPrenom() : '',
-            'client_email'            => $client ? $client->getEmail() : '',
-            'client_telephone'        => $client ? $client->getTelephone() : '',
-            'client_adresse'          => $clientAdresse,
-            'signature_emetteur'      => $devis->getSignatureEmetteur(),
-            'signature_emetteur_date' => $devis->getSignatureEmetteurDate() ? $devis->getSignatureEmetteurDate()->format('d/m/Y à H:i') : null,
-            'signature_client'        => $devis->getSignatureImage(),
-            'signature_client_date'   => $devis->getSignatureDate() ? $devis->getSignatureDate()->format('d/m/Y à H:i') : null,
-        ]);
-
-        $options = new Options();
-        $options->set('defaultFont', 'Arial');
-        $dompdf = new Dompdf($options);
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-        $pdfOutput = $dompdf->output();
+        $pdfOutput = $this->generatePdf($this->buildPdfVariables($devis), 'devis/pdf.html.twig');
 
         $signUrl = $this->generateUrl('devis_signer', [
             'id'    => $devis->getId(),
