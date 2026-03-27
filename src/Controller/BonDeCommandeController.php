@@ -54,14 +54,8 @@ class BonDeCommandeController extends AbstractController
         ]);
     }
 
-    #[Route('/bon-de-commande/{id}/pdf', name: 'bon_de_commande_pdf', requirements: ['id' => '\\d+'])]
-    public function pdf(EntityManagerInterface $em, int $id): Response
+    private function buildPdfVariables(BonDeCommande $bon): array
     {
-        $bon = $em->getRepository(BonDeCommande::class)->find($id);
-        if (!$bon) {
-            throw $this->createNotFoundException('Bon de commande non trouvé');
-        }
-
         $entreprise = $bon->getEntreprise();
         $devis      = $bon->getDevis();
         $client     = $devis ? $devis->getClient() : null;
@@ -77,7 +71,7 @@ class BonDeCommandeController extends AbstractController
             $client->getCodePostal() . ' ' . $client->getVille() . ', ' . $client->getPays()
         ) : '';
 
-        $html = $this->renderView('bon_de_commande/pdf.html.twig', [
+        return [
             'numero'                  => $bon->getNumeroBon(),
             'date'                    => $bon->getDateCreation()->format('d/m/Y'),
             'articles'                => [
@@ -90,6 +84,7 @@ class BonDeCommandeController extends AbstractController
             'entreprise_tel'          => $entreprise ? $entreprise->getTelephone() : '',
             'entreprise_email'        => $entreprise ? $entreprise->getEmail() : '',
             'entreprise_adresse'      => $adresse,
+            'entreprise_siret'        => $entreprise ? $entreprise->getSiret() : '', // ✅ SIRET
             'client_nom'              => $client ? $client->getNom() : '',
             'client_prenom'           => $client ? $client->getPrenom() : '',
             'client_email'            => $client ? $client->getEmail() : '',
@@ -99,23 +94,36 @@ class BonDeCommandeController extends AbstractController
             'signature_emetteur_date' => $devis && $devis->getSignatureEmetteurDate() ? $devis->getSignatureEmetteurDate()->format('d/m/Y à H:i') : null,
             'signature_client'        => $devis ? $devis->getSignatureImage() : null,
             'signature_client_date'   => $devis && $devis->getSignatureDate() ? $devis->getSignatureDate()->format('d/m/Y à H:i') : null,
-        ]);
+        ];
+    }
 
+    private function generatePdf(array $variables, string $template): string
+    {
+        $html = $this->renderView($template, $variables);
         $options = new Options();
         $options->set('defaultFont', 'Arial');
+        $options->set('isRemoteEnabled', true);
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
+        return $dompdf->output();
+    }
 
-        return new Response(
-            $dompdf->output(),
-            200,
-            [
-                'Content-Type'        => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="bon-commande-' . $bon->getNumeroBon() . '.pdf"',
-            ]
-        );
+    #[Route('/bon-de-commande/{id}/pdf', name: 'bon_de_commande_pdf', requirements: ['id' => '\\d+'])]
+    public function pdf(EntityManagerInterface $em, int $id): Response
+    {
+        $bon = $em->getRepository(BonDeCommande::class)->find($id);
+        if (!$bon) {
+            throw $this->createNotFoundException('Bon de commande non trouvé');
+        }
+
+        $pdfOutput = $this->generatePdf($this->buildPdfVariables($bon), 'bon_de_commande/pdf.html.twig');
+
+        return new Response($pdfOutput, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="bon-commande-' . $bon->getNumeroBon() . '.pdf"',
+        ]);
     }
 
     // ✅ Envoi du bon de commande par mail avec lien Stripe
@@ -149,7 +157,7 @@ class BonDeCommandeController extends AbstractController
             ->subject('Votre bon de commande ' . $bon->getNumeroBon())
             ->html('
                 <p>Bonjour ' . htmlspecialchars($clientName) . ',</p>
-                <p>Votre bon de commande <strong>' . $bon->getNumeroBon() . '</strong> 
+                <p>Votre bon de commande <strong>' . $bon->getNumeroBon() . '</strong>
                 d\'un montant de <strong>' . number_format($bon->getMontantTtc(), 2, ',', ' ') . ' €</strong> est prêt.</p>
                 <p>Cliquez sur le bouton ci-dessous pour procéder au paiement en ligne :</p>
                 <p>
@@ -228,7 +236,7 @@ class BonDeCommandeController extends AbstractController
             $facture->setDescription($bon->getDescription());
             $facture->setEntreprise($bon->getEntreprise());
             $facture->setBonDeCommande($bon);
-            $facture->setEtat('payee'); // ✅ Directement payée via Stripe
+            $facture->setEtat('payee'); // ✅ Payée via Stripe
 
             $em->persist($facture);
             $em->flush();
