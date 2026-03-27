@@ -115,20 +115,13 @@ class DevisController extends AbstractController
                 $devis->setMontantTtc($devis->getMontantHT() * (1 + $entreprise->getTva()));
             }
 
-<<<<<<< HEAD
             // ✅ Client existant sélectionné → on le réutilise sans recréer
-=======
-            // ✅ Client existant → réutilisé sans recréer
->>>>>>> yohann
             $clientExistant = $form->get('clientExistant')->getData();
 
             if ($clientExistant) {
                 $devis->setClient($clientExistant);
             } else {
-<<<<<<< HEAD
                 // ✅ Nouveau client → création
-=======
->>>>>>> yohann
                 $client = new \App\Entity\Client();
                 $client->setNom($form->get('clientNom')->getData());
                 $client->setPrenom($form->get('clientPrenom')->getData());
