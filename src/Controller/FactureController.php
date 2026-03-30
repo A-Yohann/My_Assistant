@@ -9,14 +9,11 @@ use App\Entity\Facture;
 use App\Service\EntrepriseActiveService;
 use Symfony\Component\HttpFoundation\Request;
 use Knp\Component\Pager\PaginatorInterface;
-
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
 class FactureController extends AbstractController
 {
-    
-
     #[Route('/facture', name: 'facture_index')]
     public function index(EntityManagerInterface $em, EntrepriseActiveService $entrepriseService, Request $request, PaginatorInterface $paginator): Response
     {
@@ -32,12 +29,12 @@ class FactureController extends AbstractController
 
         if ($search) {
             $qb->andWhere('f.numeroFacture LIKE :search')
-            ->setParameter('search', '%' . $search . '%');
+               ->setParameter('search', '%' . $search . '%');
         }
 
         if ($statut) {
             $qb->andWhere('f.etat = :statut')
-            ->setParameter('statut', $statut);
+               ->setParameter('statut', $statut);
         }
 
         $factures = $paginator->paginate(
@@ -103,12 +100,12 @@ class FactureController extends AbstractController
             'entreprise_tel'          => $entreprise ? $entreprise->getTelephone() : '',
             'entreprise_email'        => $entreprise ? $entreprise->getEmail() : '',
             'entreprise_adresse'      => $adresse,
+            'entreprise_siret'        => $entreprise ? $entreprise->getSiret() : '', // ✅ SIRET
             'client_nom'              => $client ? $client->getNom() : '',
             'client_prenom'           => $client ? $client->getPrenom() : '',
             'client_email'            => $client ? $client->getEmail() : '',
             'client_telephone'        => $client ? $client->getTelephone() : '',
             'client_adresse'          => $clientAdresse,
-            // ✅ Signatures héritées du devis
             'signature_emetteur'      => $devis ? $devis->getSignatureEmetteur() : null,
             'signature_emetteur_date' => $devis && $devis->getSignatureEmetteurDate() ? $devis->getSignatureEmetteurDate()->format('d/m/Y à H:i') : null,
             'signature_client'        => $devis ? $devis->getSignatureImage() : null,
@@ -117,6 +114,7 @@ class FactureController extends AbstractController
 
         $options = new Options();
         $options->set('defaultFont', 'Arial');
+        $options->set('isRemoteEnabled', true);
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
