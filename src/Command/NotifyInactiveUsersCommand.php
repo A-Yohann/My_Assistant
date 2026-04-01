@@ -11,7 +11,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 
 #[AsCommand(
-    name: 'app:notify-inactive-users',
+    name: 'app:Notify-Inactive-Users',
     description: 'Envoie un mail aux utilisateurs inactifs depuis 2 ans'
 )]
 class NotifyInactiveUsersCommand extends Command
@@ -50,7 +50,7 @@ class NotifyInactiveUsersCommand extends Command
                     <p>Bonjour ' . htmlspecialchars($user->getPrenom() ?? $user->getEmail()) . ',</p>
                     <p>Nous avons remarqué que vous n\'avez pas utilisé votre compte depuis plus de 2 ans.</p>
                     <p>Si vous ne vous reconnectez pas bientôt, votre compte sera supprimé pour inactivité.</p>
-                    <p>Cordialement,<br>L\'équipe My Assistant</p>
+                    <p>Cordialement,<br>L\'équipe de tonassistant.fr</p>
                 ');
 
             try {

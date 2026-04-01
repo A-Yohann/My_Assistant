@@ -40,7 +40,7 @@ class ContactController extends AbstractController
                         ->from($from)
                         ->to($to)
                         ->replyTo($email)
-                        ->subject('[My Assistant] ' . $subject)
+                        ->subject('[tonassistant.fr] ' . $subject)
                         ->html(
                             '<p><strong>De :</strong> ' . htmlspecialchars($email) . '</p>' .
                             '<p><strong>Sujet :</strong> ' . htmlspecialchars($subject) . '</p>' .
