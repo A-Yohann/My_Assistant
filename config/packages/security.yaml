@@ -37,6 +37,7 @@ security:
         - { path: ^/notes, roles: ROLE_USER }
         - { path: ^/depense, roles: ROLE_USER }
         - { path: ^/entreprise, roles: ROLE_USER }
+        - { path: ^/stripe/webhook, roles: PUBLIC_ACCESS}
 
 when@test:
     security:
