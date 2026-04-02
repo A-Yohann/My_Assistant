@@ -36,7 +36,7 @@ class ForgotPasswordController extends AbstractController
                     // Envoyer l'email
                     $resetUrl = $this->generateUrl('app_reset_password', ['token' => $token], 0);
                     $mail = (new TemplatedEmail())
-                        ->from('no-reply@myassistant.com')
+                        ->from('no-reply@tonassistant.fr')
                         ->to($email)
                         ->subject('Réinitialisation de votre mot de passe')
                         ->htmlTemplate('security/reset_password_email.html.twig')
