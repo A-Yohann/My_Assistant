@@ -1,0 +1,32 @@
+{% if app.request.cookies.get('cookie_consent') is null %}
+<div id="cookie-consent-banner" 
+     style="position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 9999; width: min(640px, calc(100vw - 32px));"
+     class="bg-white rounded-xl shadow-2xl p-6 border border-gray-100">
+    
+    <div class="flex items-start gap-4 mb-4">
+        <span class="text-2xl">🍪</span>
+        <div>
+            <h3 class="font-bold text-gray-900 text-lg">Nous utilisons des cookies</h3>
+            <p class="text-gray-600 text-sm mt-1">
+                Ce site utilise des cookies essentiels pour assurer le bon fonctionnement et la sécurité de votre session.
+                <a href="{{ path('app_mention') }}" class="text-[#3B0764] underline hover:text-purple-900">
+                    En savoir plus
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <form method="post" action="{{ path('app_save_cookie_consent') }}">
+        <div class="flex gap-3">
+            <button type="submit" name="choice" value="decline"
+                    class="flex-1 py-2 px-4 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-100 transition">
+                Refuser
+            </button>
+            <button type="submit" name="choice" value="accept"
+                    class="flex-1 py-2 px-4 rounded-lg bg-[#3B0764] hover:bg-purple-900 text-white text-sm font-medium transition">
+                Accepter
+            </button>
+        </div>
+    </form>
+</div>
+{% endif %}

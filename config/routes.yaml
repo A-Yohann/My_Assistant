@@ -10,3 +10,5 @@
 controllers:
     resource: routing.controllers
 
+ch_cookie_consent:
+    resource: "@CHCookieConsentBundle/Resources/config/routing.yaml"

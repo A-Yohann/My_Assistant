@@ -1,0 +1,5 @@
+ch_cookie_consent:
+    theme: 'light'
+    categories: []
+    use_logger: true
+    http_only: true

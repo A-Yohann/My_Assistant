@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3f3ad7b9c7d0b42517b61e3d146aa161",
+    "content-hash": "c663ae28a6bd5b3a462e7ae842299048",
     "packages": [
         {
             "name": "doctrine/collections",
@@ -1680,6 +1680,61 @@
             "time": "2025-07-25T09:04:22+00:00"
         },
         {
+            "name": "pierre-brtrd/cookie-consent-bundle",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Pierre-brtrd/cookie-consent-bundle.git",
+                "reference": "5c24e9bc5d014fb7b53bc3bfe774aca6afdbcaf7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Pierre-brtrd/cookie-consent-bundle/zipball/5c24e9bc5d014fb7b53bc3bfe774aca6afdbcaf7",
+                "reference": "5c24e9bc5d014fb7b53bc3bfe774aca6afdbcaf7",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/doctrine-bundle": "^1.10 || ^2.0",
+                "doctrine/orm": "^2.5 || ^3.0",
+                "php": "^7.2 || ^8.0",
+                "symfony/asset": "^3.4 || ^4.2 || ^5.0 || ^6.0 || ^7.0",
+                "symfony/dependency-injection": "^3.4 || ^4.2 || ^5.0 || ^6.0 || ^7.0",
+                "symfony/doctrine-bridge": "^3.4 || ^4.2 || ^5.0 || ^6.0 || ^7.0",
+                "symfony/expression-language": "^3.4 || ^4.2 || ^5.0 || ^6.0 || ^7.0",
+                "symfony/form": "^3.4 || ^4.2 || ^5.0 || ^6.0 || ^7.0",
+                "symfony/framework-bundle": "^3.4 || ^4.2 || ^5.0 || ^6.0 || ^7.0",
+                "symfony/http-foundation": "^3.4 || ^4.2 || ^5.0 || ^6.0 || ^7.0",
+                "symfony/templating": "^3.4 || ^4.2 || ^5.0 || ^6.0 || ^7.0",
+                "symfony/translation": "^3.4 || ^4.2 || ^5.0 || ^6.0 || ^7.0",
+                "symfony/twig-bridge": "^3.4 || ^4.2 || ^5.0 || ^6.0 || ^7.0",
+                "symfony/twig-bundle": "^3.4 || ^4.2 || ^5.0 || ^6.0 || ^7.0",
+                "twig/twig": "^2.6 || ^3.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.14",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
+                "symfony/yaml": "^3.4 || ^4.2 || ^5.0 || ^6.0 || ^7.0"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "ConnectHolland\\CookieConsentBundle\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Symfony bundle for implementing Cookie Consent to comply to AVG/GDPR.",
+            "support": {
+                "source": "https://github.com/Pierre-brtrd/cookie-consent-bundle/tree/v1.0.2"
+            },
+            "time": "2025-08-31T16:01:56+00:00"
+        },
+        {
             "name": "psr/cache",
             "version": "3.0.0",
             "source": {
@@ -3262,6 +3317,74 @@
                 }
             ],
             "time": "2024-09-25T14:21:43+00:00"
+        },
+        {
+            "name": "symfony/expression-language",
+            "version": "v7.4.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/expression-language.git",
+                "reference": "87ff95687748f4af65e4d5a6e917d448ec52aa83"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/expression-language/zipball/87ff95687748f4af65e4d5a6e917d448ec52aa83",
+                "reference": "87ff95687748f4af65e4d5a6e917d448ec52aa83",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2",
+                "symfony/cache": "^6.4|^7.0|^8.0",
+                "symfony/deprecation-contracts": "^2.5|^3",
+                "symfony/service-contracts": "^2.5|^3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\ExpressionLanguage\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Provides an engine that can compile and evaluate expressions",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/expression-language/tree/v7.4.8"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-03-24T13:12:05+00:00"
         },
         {
             "name": "symfony/filesystem",
@@ -6216,6 +6339,76 @@
             "time": "2026-02-09T09:33:46+00:00"
         },
         {
+            "name": "symfony/templating",
+            "version": "v6.4.24",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/templating.git",
+                "reference": "c55c6f96eafa9388390d3ba099fe844f892dbcd6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/templating/zipball/c55c6f96eafa9388390d3ba099fe844f892dbcd6",
+                "reference": "c55c6f96eafa9388390d3ba099fe844f892dbcd6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1",
+                "symfony/deprecation-contracts": "^2.5|^3",
+                "symfony/polyfill-ctype": "~1.8"
+            },
+            "require-dev": {
+                "psr/log": "^1|^2|^3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Templating\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Provides all the tools needed to build any kind of template system",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/templating/tree/v6.4.24"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2025-07-10T08:14:14+00:00"
+        },
+        {
             "name": "symfony/translation",
             "version": "v7.4.6",
             "source": {
@@ -8090,5 +8283,5 @@
         "ext-iconv": "*"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }

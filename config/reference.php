@@ -37,7 +37,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * @psalm-type ArgumentsType = list<mixed>|array<string, mixed>
  * @psalm-type CallType = array<string, ArgumentsType>|array{0:string, 1?:ArgumentsType, 2?:bool}|array{method:string, arguments?:ArgumentsType, returns_clone?:bool}
  * @psalm-type TagsType = list<string|array<string, array<string, mixed>>> // arrays inside the list must have only one element, with the tag name as the key
- * @psalm-type CallbackType = string|array{0:string|ReferenceConfigurator,1:string}|\Closure|ReferenceConfigurator
+ * @psalm-type CallbackType = string|array{0:string|ReferenceConfigurator,1:string}|\Closure|ReferenceConfigurator|ExpressionConfigurator
  * @psalm-type DeprecationType = array{package: string, version: string, message?: string}
  * @psalm-type DefaultsType = array{
  *     public?: bool,
@@ -1400,6 +1400,16 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     convert_exception?: bool|Param, // Default: false
  *     remove_first_page_param?: bool|Param, // Default: false
  * }
+ * @psalm-type ChCookieConsentConfig = array{
+ *     categories?: mixed, // Default: ["tracking","marketing","social_media"]
+ *     theme?: "light"|"dark"|Param, // Default: "light"
+ *     position?: "top"|"bottom"|Param, // Default: "top"
+ *     use_logger?: bool|Param, // Default: true
+ *     simplified?: bool|Param, // Default: false
+ *     http_only?: bool|Param, // Default: true
+ *     form_action?: scalar|Param|null, // Default: null
+ *     csrf_protection?: bool|Param, // Default: true
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1416,6 +1426,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
  *     twig_component?: TwigComponentConfig,
  *     knp_paginator?: KnpPaginatorConfig,
+ *     ch_cookie_consent?: ChCookieConsentConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1433,6 +1444,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
  *         twig_component?: TwigComponentConfig,
  *         knp_paginator?: KnpPaginatorConfig,
+ *         ch_cookie_consent?: ChCookieConsentConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1450,6 +1462,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
  *         twig_component?: TwigComponentConfig,
  *         knp_paginator?: KnpPaginatorConfig,
+ *         ch_cookie_consent?: ChCookieConsentConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1467,6 +1480,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
  *         twig_component?: TwigComponentConfig,
  *         knp_paginator?: KnpPaginatorConfig,
+ *         ch_cookie_consent?: ChCookieConsentConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,
