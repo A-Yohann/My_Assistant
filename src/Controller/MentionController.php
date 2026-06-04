@@ -13,4 +13,10 @@ class MentionController extends AbstractController
     {
         return $this->render('mention/mention.html.twig');
     }
+
+    #[Route('/cgv', name: 'app_cgv')]
+    public function cgv(): Response
+    {
+        return $this->render('mention/cgv.html.twig');
+    }
 }

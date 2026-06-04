@@ -1,0 +1,295 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Conditions Générales de Vente — Ton Assistant{% endblock %}
+
+{% block body %}
+<div class="max-w-3xl mx-auto px-6 py-16">
+
+    {# HEADER #}
+    <header class="border-b border-gray-200 pb-8 mb-10">
+        <p class="text-2xl font-semibold tracking-tight text-gray-900 mb-1">Ton Assistant</p>
+        <h1 class="text-4xl font-bold leading-tight text-gray-900 mt-4 mb-3">
+            Conditions Générales de Vente
+        </h1>
+        <p class="text-sm text-gray-400 flex flex-wrap gap-x-4 gap-y-1">
+            <span>Version 1.0</span>
+            <span class="border-l border-gray-300 pl-4">En vigueur au 1er juin 2026</span>
+            <span class="border-l border-gray-300 pl-4">Applicable en France</span>
+        </p>
+    </header>
+
+    {# TABLE DES MATIÈRES #}
+    <nav class="bg-gray-50 rounded-xl p-5 mb-12">
+        <p class="text-xs uppercase tracking-widest text-gray-400 mb-3">Sommaire</p>
+        <ol class="list-decimal list-inside space-y-1.5 text-sm text-gray-500">
+            <li><a href="#art1" class="hover:text-gray-900 transition-colors">Présentation et champ d'application</a></li>
+            <li><a href="#art2" class="hover:text-gray-900 transition-colors">Description des offres</a></li>
+            <li><a href="#art3" class="hover:text-gray-900 transition-colors">Souscription et création de compte</a></li>
+            <li><a href="#art4" class="hover:text-gray-900 transition-colors">Modalités de paiement</a></li>
+            <li><a href="#art5" class="hover:text-gray-900 transition-colors">Durée, renouvellement et résiliation</a></li>
+            <li><a href="#art6" class="hover:text-gray-900 transition-colors">Droit de rétractation</a></li>
+            <li><a href="#art7" class="hover:text-gray-900 transition-colors">Accès au service et disponibilité</a></li>
+            <li><a href="#art8" class="hover:text-gray-900 transition-colors">Responsabilité</a></li>
+            <li><a href="#art9" class="hover:text-gray-900 transition-colors">Données personnelles</a></li>
+            <li><a href="#art10" class="hover:text-gray-900 transition-colors">Dispositions générales</a></li>
+        </ol>
+    </nav>
+
+    {# ARTICLE 1 #}
+    <section id="art1" class="mb-10">
+        <h2 class="text-xl font-semibold border-b border-gray-200 pb-3 mb-4 text-gray-900">
+            1. Présentation et champ d'application
+        </h2>
+        <p class="text-gray-600 leading-relaxed mb-3">
+            Les présentes Conditions Générales de Vente (« CGV ») régissent l'ensemble des relations contractuelles entre
+            <strong class="text-gray-800 font-medium">Ton Assistant</strong>, service en ligne accessible à l'adresse
+            <strong class="text-gray-800 font-medium">tonassistant.fr</strong>
+            (ci-après « nous » ou « la Société »), et toute personne physique ou morale souhaitant souscrire à l'un de nos
+            services (ci-après « l'Utilisateur »).
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+            Tout accès à nos services implique l'acceptation pleine et entière des présentes CGV. La Société se réserve le droit
+            de les modifier à tout moment, les nouvelles conditions prenant effet dès leur publication sur le site.
+        </p>
+    </section>
+
+    {# ARTICLE 2 #}
+    <section id="art2" class="mb-10">
+        <h2 class="text-xl font-semibold border-b border-gray-200 pb-3 mb-4 text-gray-900">
+            2. Description des offres
+        </h2>
+        <p class="text-gray-600 leading-relaxed mb-5">
+            Nous proposons deux formules d'accès à notre plateforme :
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+
+            {# Plan Free #}
+            <div class="border border-gray-200 rounded-xl p-5">
+                <span class="inline-block bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full mb-3">Gratuit</span>
+                <p class="text-lg font-semibold text-gray-900">Free</p>
+                <p class="text-2xl font-bold text-gray-900 mt-1 mb-1">
+                    0 € <span class="text-sm font-normal text-gray-400">/ mois</span>
+                </p>
+                <p class="text-sm text-gray-500 leading-relaxed">
+                    Accès aux fonctionnalités de base. Sans engagement, sans moyen de paiement requis.
+                </p>
+            </div>
+
+            {# Plan Pro #}
+            <div class="border-2 border-[#231F20] rounded-xl p-5">
+                <span class="inline-block bg-[#231F20] text-white text-xs px-3 py-1 rounded-full mb-3">Pro</span>
+                <p class="text-lg font-semibold text-gray-900">Pro</p>
+                <p class="text-2xl font-bold text-gray-900 mt-1 mb-1">
+                    9,99 € <span class="text-sm font-normal text-gray-400">/ mois TTC</span>
+                </p>
+                <p class="text-sm text-gray-500 leading-relaxed">
+                    Accès illimité à toutes les fonctionnalités. Abonnement mensuel reconductible.
+                </p>
+            </div>
+        </div>
+
+        <h3 class="text-base font-semibold text-gray-800 mt-5 mb-2">Plan Free (gratuit)</h3>
+        <p class="text-gray-600 leading-relaxed mb-2">L'offre gratuite est accessible à tout utilisateur ayant créé un compte. Elle comprend :</p>
+        <ul class="list-disc list-inside space-y-1 text-sm text-gray-500 mb-5">
+            <li>5 devis maximum</li>
+            <li>2 clients maximum</li>
+            <li>1 entreprise</li>
+            <li>Génération de PDF et envoi par email</li>
+            <li>Gestion des notes et calendrier</li>
+            <li>Usage personnel uniquement</li>
+        </ul>
+
+        <h3 class="text-base font-semibold text-gray-800 mb-2">Plan Pro</h3>
+        <p class="text-gray-600 leading-relaxed mb-2">L'offre Pro est un abonnement mensuel payant donnant accès à :</p>
+        <ul class="list-disc list-inside space-y-1 text-sm text-gray-500 mb-5">
+            <li>Devis, bons de commande et factures en nombre illimité</li>
+            <li>Clients illimités</li>
+            <li>Plusieurs entreprises</li>
+            <li>Signature électronique sur les devis</li>
+            <li>Gestion des dépenses budgétaires avec upload de justificatifs</li>
+            <li>Support prioritaire</li>
+            <li>Toutes les fonctionnalités présentes et futures</li>
+        </ul>
+
+        <div class="bg-gray-50 border-l-2 border-[#231F20] rounded-r-lg px-4 py-3 text-sm text-gray-700 leading-relaxed">
+            <strong>Note :</strong> Les fonctionnalités incluses dans chaque offre peuvent évoluer. Tout changement substantiel
+            affectant l'offre Pro fera l'objet d'une notification préalable par email sous un délai de 30 jours.
+        </div>
+    </section>
+
+    {# ARTICLE 3 #}
+    <section id="art3" class="mb-10">
+        <h2 class="text-xl font-semibold border-b border-gray-200 pb-3 mb-4 text-gray-900">
+            3. Souscription et création de compte
+        </h2>
+        <p class="text-gray-600 leading-relaxed mb-3">
+            Pour accéder à nos services, l'Utilisateur doit créer un compte en deux étapes : renseignement d'une adresse email
+            valide et d'un mot de passe, puis confirmation par email. L'Utilisateur garantit l'exactitude des informations
+            communiquées et s'engage à les maintenir à jour.
+        </p>
+        <p class="text-gray-600 leading-relaxed mb-3">
+            La souscription à l'offre Pro nécessite en outre de renseigner un moyen de paiement valide via notre prestataire
+            Stripe. Le contrat d'abonnement est conclu à compter de la validation du paiement et de l'envoi d'un email de
+            confirmation.
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+            L'Utilisateur doit être âgé d'au moins 18 ans ou, s'il est mineur, disposer de l'autorisation de son représentant
+            légal.
+        </p>
+    </section>
+
+    {# ARTICLE 4 #}
+    <section id="art4" class="mb-10">
+        <h2 class="text-xl font-semibold border-b border-gray-200 pb-3 mb-4 text-gray-900">
+            4. Modalités de paiement
+        </h2>
+        <p class="text-gray-600 leading-relaxed mb-3">
+            Le paiement de l'abonnement Pro s'effectue par carte bancaire (Visa, Mastercard, American Express) via notre
+            prestataire de paiement sécurisé <strong class="text-gray-800 font-medium">Stripe</strong>. Aucune donnée bancaire
+            n'est stockée sur nos serveurs.
+        </p>
+        <p class="text-gray-600 leading-relaxed mb-3">
+            Le montant de 9,99 € TTC est débité le même jour du mois que la date de souscription initiale. En cas d'échec du
+            prélèvement, nous nous réservons le droit de suspendre l'accès Pro jusqu'à régularisation.
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+            Les prix sont indiqués en euros, toutes taxes comprises. La Société se réserve le droit de modifier ses tarifs,
+            sous réserve d'en informer l'Utilisateur 30 jours à l'avance.
+        </p>
+    </section>
+
+    {# ARTICLE 5 #}
+    <section id="art5" class="mb-10">
+        <h2 class="text-xl font-semibold border-b border-gray-200 pb-3 mb-4 text-gray-900">
+            5. Durée, renouvellement et résiliation
+        </h2>
+        <h3 class="text-base font-semibold text-gray-800 mt-4 mb-2">Durée</h3>
+        <p class="text-gray-600 leading-relaxed mb-3">
+            L'abonnement Pro est souscrit pour une durée d'un mois, renouvelable automatiquement par tacite reconduction, sauf
+            résiliation préalable.
+        </p>
+        <h3 class="text-base font-semibold text-gray-800 mb-2">Résiliation par l'Utilisateur</h3>
+        <p class="text-gray-600 leading-relaxed mb-3">
+            L'Utilisateur peut résilier son abonnement Pro à tout moment depuis les paramètres de son compte, sans frais ni
+            pénalité. La résiliation prend effet à la fin de la période mensuelle en cours ; l'accès aux fonctionnalités Pro
+            est maintenu jusqu'à cette date.
+        </p>
+        <h3 class="text-base font-semibold text-gray-800 mb-2">Résiliation par la Société</h3>
+        <p class="text-gray-600 leading-relaxed">
+            Nous nous réservons le droit de suspendre ou résilier un compte en cas de violation des présentes CGV, notamment
+            après 3 tentatives de connexion échouées ou en cas de comportement frauduleux avéré.
+        </p>
+    </section>
+
+    {# ARTICLE 6 #}
+    <section id="art6" class="mb-10">
+        <h2 class="text-xl font-semibold border-b border-gray-200 pb-3 mb-4 text-gray-900">
+            6. Droit de rétractation
+        </h2>
+        <p class="text-gray-600 leading-relaxed mb-3">
+            Conformément à l'article L.221-18 du Code de la consommation, l'Utilisateur consommateur dispose d'un délai de
+            <strong class="text-gray-800 font-medium">14 jours</strong> à compter de la souscription de l'abonnement Pro pour
+            exercer son droit de rétractation, sans avoir à motiver sa décision.
+        </p>
+        <p class="text-gray-600 leading-relaxed mb-4">
+            Pour exercer ce droit, l'Utilisateur doit nous contacter via la page
+            <a href="{{ path('app_contact') }}" class="text-gray-900 underline underline-offset-2 hover:opacity-70 transition-opacity">
+                Contact
+            </a>
+            ou par email. Un remboursement intégral sera effectué dans les 14 jours suivant la réception de la notification.
+        </p>
+        <div class="bg-gray-50 border-l-2 border-[#231F20] rounded-r-lg px-4 py-3 text-sm text-gray-700 leading-relaxed">
+            Le droit de rétractation ne s'applique pas si l'Utilisateur a explicitement demandé l'exécution du service avant
+            l'expiration du délai et renonce expressément à ce droit, conformément à l'article L.221-28 du Code de la
+            consommation.
+        </div>
+    </section>
+
+    {# ARTICLE 7 #}
+    <section id="art7" class="mb-10">
+        <h2 class="text-xl font-semibold border-b border-gray-200 pb-3 mb-4 text-gray-900">
+            7. Accès au service et disponibilité
+        </h2>
+        <p class="text-gray-600 leading-relaxed mb-3">
+            Nous mettons tout en œuvre pour assurer la disponibilité de la plateforme 24h/24 et 7j/7. Toutefois, des
+            interruptions ponctuelles peuvent survenir pour des raisons de maintenance ou de force majeure.
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+            En cas d'indisponibilité supérieure à 24 heures consécutives imputable à nos services, l'Utilisateur Pro pourra
+            bénéficier d'un avoir correspondant à la durée d'interruption, sur simple demande auprès de notre support.
+        </p>
+    </section>
+
+    {# ARTICLE 8 #}
+    <section id="art8" class="mb-10">
+        <h2 class="text-xl font-semibold border-b border-gray-200 pb-3 mb-4 text-gray-900">
+            8. Responsabilité
+        </h2>
+        <p class="text-gray-600 leading-relaxed mb-3">
+            La responsabilité de la Société ne peut être engagée qu'en cas de faute prouvée et est limitée aux dommages directs
+            subis par l'Utilisateur. En aucun cas, la Société ne pourra être tenue responsable des dommages indirects (perte de
+            données, manque à gagner, préjudice commercial).
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+            L'Utilisateur est seul responsable du contenu qu'il produit, partage ou publie via la plateforme, notamment les
+            devis, factures et informations clients, et garantit la Société contre toute réclamation de tiers.
+        </p>
+    </section>
+
+    {# ARTICLE 9 #}
+    <section id="art9" class="mb-10">
+        <h2 class="text-xl font-semibold border-b border-gray-200 pb-3 mb-4 text-gray-900">
+            9. Données personnelles
+        </h2>
+        <p class="text-gray-600 leading-relaxed mb-3">
+            Dans le cadre de la fourniture de nos services, nous collectons et traitons certaines données à caractère personnel
+            conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés.
+        </p>
+        <p class="text-gray-600 leading-relaxed mb-3">
+            L'Utilisateur dispose d'un droit d'accès, de rectification, de suppression et de portabilité de ses données.
+            Ces droits peuvent être exercés via la page
+            <a href="{{ path('app_contact') }}" class="text-gray-900 underline underline-offset-2 hover:opacity-70 transition-opacity">
+                Contact
+            </a>.
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+            Les données collectées (email, informations de facturation, données d'activité) sont utilisées exclusivement dans
+            le cadre de la fourniture du service et ne sont jamais revendues à des tiers.
+        </p>
+    </section>
+
+    {# ARTICLE 10 #}
+    <section id="art10" class="mb-12">
+        <h2 class="text-xl font-semibold border-b border-gray-200 pb-3 mb-4 text-gray-900">
+            10. Dispositions générales
+        </h2>
+        <h3 class="text-base font-semibold text-gray-800 mb-2">Droit applicable et juridiction compétente</h3>
+        <p class="text-gray-600 leading-relaxed mb-4">
+            Les présentes CGV sont soumises au droit français. En cas de litige, et après tentative de résolution amiable,
+            les tribunaux compétents français seront seuls compétents.
+        </p>
+        <h3 class="text-base font-semibold text-gray-800 mb-2">Médiation</h3>
+        <p class="text-gray-600 leading-relaxed mb-4">
+            Conformément aux articles L.616-1 et R.616-1 du Code de la consommation, nous proposons un dispositif de médiation
+            de la consommation. Le médiateur peut être saisi gratuitement via la plateforme européenne de règlement en ligne
+            des litiges : <strong class="text-gray-800 font-medium">ec.europa.eu/consumers/odr</strong>.
+        </p>
+        <h3 class="text-base font-semibold text-gray-800 mb-2">Divisibilité</h3>
+        <p class="text-gray-600 leading-relaxed">
+            Si l'une des clauses des présentes CGV venait à être déclarée nulle ou inapplicable, les autres clauses
+            resteraient en vigueur.
+        </p>
+    </section>
+
+    {# FOOTER #}
+    <footer class="border-t border-gray-200 pt-6 flex flex-wrap justify-between items-center gap-4 text-sm text-gray-400">
+        <p>© {{ "now"|date("Y") }} Ton Assistant — Tous droits réservés</p>
+        <div class="flex flex-wrap gap-5">
+            <a href="{{ path('pricing') }}" class="hover:text-gray-700 transition-colors">Nos offres</a>
+            <a href="{{ path('app_contact') }}" class="hover:text-gray-700 transition-colors">Contact</a>
+        </div>
+    </footer>
+
+</div>
+{% endblock %}
