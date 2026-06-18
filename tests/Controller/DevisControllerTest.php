@@ -197,4 +197,230 @@ class DevisControllerTest extends WebTestCase
 
         $this->cleanUpAll($em, $email);
     }
+
+    private function createTestClient($em, User $user): Client
+    {
+        $client = new Client();
+        $client->setNom('Dupont');
+        $client->setPrenom('Jean');
+        $client->setEmail('jean.dupont.client@example.com');
+        $client->setTelephone('0612345678');
+        $client->setCodePostal('75000');
+        $client->setVille('Paris');
+        $client->setPays('France');
+        $client->setDateCreation(new \DateTime());
+        $client->setUser($user);
+        $em->persist($client);
+        $em->flush();
+
+        return $client;
+    }
+
+    private function createTestDevis($em, Entreprise $entreprise, Client $client, string $numero = 'DEV-TEST-SHOW-0001'): Devis
+    {
+        $devis = new Devis();
+        $devis->setNumeroDevis($numero);
+        $devis->setDateEmission(new \DateTime());
+        $devis->setDateValidite((new \DateTime())->modify('+30 days'));
+        $devis->setMontantHT(1000.0);
+        $devis->setTauxTVA(20.0);
+        $devis->setMontantTtc(1200.0);
+        $devis->setDescription('Devis de test');
+        $devis->setDateCreation(new \DateTime());
+        $devis->setEntreprise($entreprise);
+        $devis->setClient($client);
+        $devis->setEtat('en_attente');
+        $em->persist($devis);
+        $em->flush();
+
+        return $devis;
+    }
+
+    public function testDevisShowDisplaysExistingDevis(): void
+    {
+        $client = static::createClient();
+        $container = static::getContainer();
+        $em = $container->get('doctrine')->getManager();
+        $passwordHasher = $container->get(UserPasswordHasherInterface::class);
+
+        $email = 'test.devis.show@example.com';
+        $this->cleanUpAll($em, $email);
+
+        $user = $this->createTestUser($em, $passwordHasher, $email);
+        $entreprise = $this->createTestEntreprise($em, $user);
+        $testClient = $this->createTestClient($em, $user);
+        $devis = $this->createTestDevis($em, $entreprise, $testClient);
+
+        $client->loginUser($user);
+        $client->request('GET', '/devis/' . $devis->getId());
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('body', $devis->getNumeroDevis());
+
+        $this->cleanUpAll($em, $email);
+    }
+
+    public function testDevisShowReturns404ForNonExistentDevis(): void
+    {
+        $client = static::createClient();
+        $container = static::getContainer();
+        $em = $container->get('doctrine')->getManager();
+        $passwordHasher = $container->get(UserPasswordHasherInterface::class);
+
+        $email = 'test.devis.show404@example.com';
+        $this->cleanUpAll($em, $email);
+
+        $user = $this->createTestUser($em, $passwordHasher, $email);
+
+        $client->loginUser($user);
+        $client->request('GET', '/devis/999999');
+
+        $this->assertResponseStatusCodeSame(404);
+
+        $this->cleanUpAll($em, $email);
+    }
+
+    public function testDevisPdfGeneratesValidPdfResponse(): void
+    {
+        $client = static::createClient();
+        $container = static::getContainer();
+        $em = $container->get('doctrine')->getManager();
+        $passwordHasher = $container->get(UserPasswordHasherInterface::class);
+
+        $email = 'test.devis.pdf@example.com';
+        $this->cleanUpAll($em, $email);
+
+        $user = $this->createTestUser($em, $passwordHasher, $email);
+        $entreprise = $this->createTestEntreprise($em, $user);
+        $testClient = $this->createTestClient($em, $user);
+        $devis = $this->createTestDevis($em, $entreprise, $testClient, 'DEV-TEST-PDF-0001');
+
+        $client->loginUser($user);
+        $client->request('GET', '/devis/' . $devis->getId() . '/pdf');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/pdf');
+
+        $this->cleanUpAll($em, $email);
+    }
+
+    public function testDevisEnvoyerSendsEmailAndGeneratesSignatureToken(): void
+    {
+        $client = static::createClient();
+        $container = static::getContainer();
+        $em = $container->get('doctrine')->getManager();
+        $passwordHasher = $container->get(UserPasswordHasherInterface::class);
+
+        $email = 'test.devis.envoyer@example.com';
+        $this->cleanUpAll($em, $email);
+
+        $user = $this->createTestUser($em, $passwordHasher, $email);
+        $entreprise = $this->createTestEntreprise($em, $user);
+        $testClient = $this->createTestClient($em, $user);
+        $devis = $this->createTestDevis($em, $entreprise, $testClient, 'DEV-TEST-ENVOYER-0001');
+
+        $this->assertNull($devis->getSignatureToken(), 'Le token ne devrait pas exister avant envoi.');
+
+        $client->loginUser($user);
+        $client->request('GET', '/devis/' . $devis->getId() . '/envoyer');
+
+        $this->assertResponseRedirects('/devis/' . $devis->getId());
+
+        $this->assertCount(2, self::getMailerEvents());
+
+        $em->refresh($devis);
+        $this->assertNotNull($devis->getSignatureToken(), 'Un token de signature devrait avoir été généré.');
+
+        $this->cleanUpAll($em, $email);
+    }
+
+    public function testDevisSignerWithValidTokenDisplaysSignaturePage(): void
+    {
+        $client = static::createClient();
+        $container = static::getContainer();
+        $em = $container->get('doctrine')->getManager();
+        $passwordHasher = $container->get(UserPasswordHasherInterface::class);
+
+        $email = 'test.devis.signer@example.com';
+        $this->cleanUpAll($em, $email);
+
+        $user = $this->createTestUser($em, $passwordHasher, $email);
+        $entreprise = $this->createTestEntreprise($em, $user);
+        $testClient = $this->createTestClient($em, $user);
+        $devis = $this->createTestDevis($em, $entreprise, $testClient, 'DEV-TEST-SIGNER-0001');
+        $devis->setSignatureToken('test-signature-token-123');
+        $em->flush();
+
+        $client->request('GET', '/devis/' . $devis->getId() . '/signer/test-signature-token-123');
+
+        $this->assertResponseIsSuccessful();
+
+        $this->cleanUpAll($em, $email);
+    }
+
+    public function testDevisSignerWithInvalidTokenReturns404(): void
+    {
+        $client = static::createClient();
+        $container = static::getContainer();
+        $em = $container->get('doctrine')->getManager();
+        $passwordHasher = $container->get(UserPasswordHasherInterface::class);
+
+        $email = 'test.devis.signerinvalid@example.com';
+        $this->cleanUpAll($em, $email);
+
+        $user = $this->createTestUser($em, $passwordHasher, $email);
+        $entreprise = $this->createTestEntreprise($em, $user);
+        $testClient = $this->createTestClient($em, $user);
+        $devis = $this->createTestDevis($em, $entreprise, $testClient, 'DEV-TEST-SIGNERINVALID-0001');
+        $devis->setSignatureToken('le-bon-token');
+        $em->flush();
+
+        $client->request('GET', '/devis/' . $devis->getId() . '/signer/mauvais-token');
+
+        $this->assertResponseStatusCodeSame(404);
+
+        $this->cleanUpAll($em, $email);
+    }
+
+    public function testDevisSignerConfirmerCreatesSignatureAndBonDeCommande(): void
+    {
+        $client = static::createClient();
+        $container = static::getContainer();
+        $em = $container->get('doctrine')->getManager();
+        $passwordHasher = $container->get(UserPasswordHasherInterface::class);
+
+        $email = 'test.devis.signerconfirmer@example.com';
+        $this->cleanUpAll($em, $email);
+
+        $user = $this->createTestUser($em, $passwordHasher, $email);
+        $entreprise = $this->createTestEntreprise($em, $user);
+        $testClient = $this->createTestClient($em, $user);
+        $devis = $this->createTestDevis($em, $entreprise, $testClient, 'DEV-TEST-CONFIRM-0001');
+        $devis->setSignatureToken('token-confirmer-123');
+        $em->flush();
+        $devisId = $devis->getId();
+
+        $client->request(
+            'POST',
+            '/devis/' . $devisId . '/signer/token-confirmer-123/confirmer',
+            [
+                'signature_image' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVQYV2NgAAIAAAUAAen63NgAAAAASUVORK5CYII=',
+            ]
+        );
+
+        $this->assertResponseIsSuccessful();
+
+        $em->clear();
+        $updatedDevis = $em->getRepository(Devis::class)->find($devisId);
+        $this->assertTrue($updatedDevis->isSignature(), 'Le devis devrait être marqué comme signé.');
+        $this->assertEquals('valide', $updatedDevis->getEtat());
+        $this->assertNull($updatedDevis->getSignatureToken(), 'Le token devrait être invalidé après signature.');
+
+        $bon = $em->getRepository(\App\Entity\BonDeCommande::class)->findOneBy(['devis' => $updatedDevis]);
+        $this->assertNotNull($bon, 'Un bon de commande devrait avoir été créé après signature.');
+
+        $em->remove($bon);
+        $em->flush();
+        $this->cleanUpAll($em, $email);
+    }
 }
