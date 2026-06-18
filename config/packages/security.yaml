@@ -30,6 +30,7 @@ security:
     access_control:
         - { path: ^/devis/\d+/signer, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/account, roles: ROLE_USER }
         - { path: ^/dashboard, roles: ROLE_USER }
         - { path: ^/devis, roles: ROLE_USER }
         - { path: ^/facture, roles: ROLE_USER }
