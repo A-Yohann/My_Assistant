@@ -45,7 +45,11 @@
         </div>
         <div class="flex justify-between py-2 border-b">
             <span class="text-sm font-semibold text-gray-600">Devis source</span>
-            <a href="{{ path('devis_show', {'id': bon.devis.id}) }}" class="text-blue-600 hover:underline text-sm">{{ bon.devis.numeroDevis }}</a>
+            {% if bon.devis %}
+                <a href="{{ path('devis_show', {'id': bon.devis.id}) }}" class="text-blue-600 hover:underline text-sm">{{ bon.devis.numeroDevis }}</a>
+            {% else %}
+                <span class="text-sm text-gray-400">N/A</span>
+            {% endif %}
         </div>
         <div class="flex justify-between py-2 border-b items-center">
             <span class="text-sm font-semibold text-gray-600">Statut</span>
@@ -67,7 +71,11 @@
         <tr class="border-b"><th class="text-left px-4 py-2">Description</th><td class="px-4 py-2">{{ bon.description }}</td></tr>
         <tr class="border-b"><th class="text-left px-4 py-2">Entreprise</th><td class="px-4 py-2">{{ bon.entreprise.nomEntreprise ?? 'N/A' }}</td></tr>
         <tr class="border-b"><th class="text-left px-4 py-2">Devis source</th><td class="px-4 py-2">
-            <a href="{{ path('devis_show', {'id': bon.devis.id}) }}" class="text-blue-600 hover:underline">{{ bon.devis.numeroDevis }}</a>
+            {% if bon.devis %}
+                <a href="{{ path('devis_show', {'id': bon.devis.id}) }}" class="text-blue-600 hover:underline">{{ bon.devis.numeroDevis }}</a>
+            {% else %}
+                <span class="text-gray-400">N/A</span>
+            {% endif %}
         </td></tr>
         <tr class="border-b"><th class="text-left px-4 py-2">Statut</th><td class="px-4 py-2">
             {% if bon.etat == 'en_attente' %}

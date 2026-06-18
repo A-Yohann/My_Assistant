@@ -91,7 +91,7 @@ class StripeWebhookController extends AbstractController
 
                     if (in_array($status, ['canceled', 'unpaid', 'past_due'])) {
                         $user->setPlan('free');
-                        $user->setPlanExpiresAt(new \DateTimeImmutable());
+                        $user->setPlanExpiresAt(new \DateTime());
                         $user->setStripeSubscriptionId(null);
                         $em->flush();
 
