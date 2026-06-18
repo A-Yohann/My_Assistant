@@ -10,6 +10,6 @@ class ErrorController extends AbstractController
     #[Route('/error', name: 'error')]
     public function about(Request $request): Response
     {
-        return $this->render('error/error.html.twig');
+        return $this->render('bundles/TwigBundle/Exception/error404.html.twig');
     }
 }
