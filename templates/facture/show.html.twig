@@ -49,9 +49,13 @@
         </div>
         <div class="flex justify-between py-2 border-b">
             <span class="text-sm font-semibold text-gray-600">Bon de commande</span>
-            <a href="{{ path('bon_de_commande_show', {'id': facture.bonDeCommande.id}) }}" class="text-blue-600 hover:underline text-sm">
-                {{ facture.bonDeCommande.numeroBon }}
-            </a>
+            {% if facture.bonDeCommande %}
+                <a href="{{ path('bon_de_commande_show', {'id': facture.bonDeCommande.id}) }}" class="text-blue-600 hover:underline text-sm">
+                    {{ facture.bonDeCommande.numeroBon }}
+                </a>
+            {% else %}
+                <span class="text-sm text-gray-400">N/A</span>
+            {% endif %}
         </div>
         <div class="flex justify-between py-2 border-b items-center">
             <span class="text-sm font-semibold text-gray-600">Statut</span>
@@ -74,9 +78,13 @@
         <tr class="border-b"><th class="text-left px-4 py-2">Description</th><td class="px-4 py-2">{{ facture.description }}</td></tr>
         <tr class="border-b"><th class="text-left px-4 py-2">Entreprise</th><td class="px-4 py-2">{{ facture.entreprise.nomEntreprise ?? 'N/A' }}</td></tr>
         <tr class="border-b"><th class="text-left px-4 py-2">Bon de commande source</th><td class="px-4 py-2">
-            <a href="{{ path('bon_de_commande_show', {'id': facture.bonDeCommande.id}) }}" class="text-blue-600 hover:underline">
-                {{ facture.bonDeCommande.numeroBon }}
-            </a>
+            {% if facture.bonDeCommande %}
+                <a href="{{ path('bon_de_commande_show', {'id': facture.bonDeCommande.id}) }}" class="text-blue-600 hover:underline">
+                    {{ facture.bonDeCommande.numeroBon }}
+                </a>
+            {% else %}
+                <span class="text-gray-400">N/A</span>
+            {% endif %}
         </td></tr>
         <tr class="border-b"><th class="text-left px-4 py-2">Statut</th><td class="px-4 py-2">
             {% if facture.etat == 'impayee' %}
